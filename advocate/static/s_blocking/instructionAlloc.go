@@ -27,8 +27,8 @@ func instInfoAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) *
 	}
 
 	resources := make(map[*trace.Resource]struct{})
-	if r, ok := blocking.Blocked[elem.ObjID()]; ok {
-		resources[r] = struct{}{}
+	if r, ok := blocking.blocked[elem.ObjID()]; ok {
+	resources[r] = struct{}{}
 	}
 
 	return addPathInstr(rout, inst, resources)

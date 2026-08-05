@@ -15,11 +15,11 @@ import (
 )
 
 func instInfoPhi(inst *s_ssa.InstructionPhi, rout int, _ trace.Element) *instructionWithInfo {
-	lastBlock := blocking.LastBlockIdPerRoutine[rout]
+	lastBlock := blocking.lastBlockIdPerRoutine[rout]
 
 	pred := inst.GetPred()[lastBlock]
 
-	ssaVar := findDecOfSSAVar(rout, pred)
+	ssaVar := getDecOfSSAVar(rout, pred)
 
 	return addPathInstr(rout, inst, ssaVar.Resource)
 }

@@ -26,12 +26,12 @@ func determineResouceToSSAAtTermination() {
 	b := f.Blocks()[1]
 	for _, inst := range b.Instrs() {
 		if inst.InTrace() {
-			blocking.NextPerRout[1] = inst
+			blocking.nextPerRout[1] = inst
 			break
 		}
 	}
 
-	blocking.JumpBackPos[1] = types.NewStack[s_ssa.Instruction]()
+	blocking.jumpBackPos[1] = types.NewStack[s_ssa.Instruction]()
 	blocking.NewPathPerRoutine(1)
 
 	lastWasFork := make(map[int]bool)
@@ -45,7 +45,7 @@ func determineResouceToSSAAtTermination() {
 			// skip non relevant instructions in main
 			for _, inst := range b.Instrs() {
 				if inst.InTrace() {
-					blocking.NextPerRout[1] = inst
+					blocking.nextPerRout[1] = inst
 					break
 				}
 			}
@@ -67,11 +67,11 @@ func determineResouceToSSAAtTermination() {
 			lastWasFork[routine] = false
 		}
 
-		next := parseInstructions(elem, blocking.NextPerRout[routine], routine)
+		next := parseInstructions(elem, blocking.nextPerRout[routine], routine)
 		if next != nil {
-			blocking.NextPerRout[routine] = next
+			blocking.nextPerRout[routine] = next
 		} else {
-			delete(blocking.NextPerRout, routine)
+			delete(blocking.nextPerRout, routine)
 		}
 	}
 }
@@ -102,12 +102,10 @@ func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ss
 		}
 	}
 
-	if rout == 3 {
-		if elem != nil {
-			log.Debug("ELEM1 -> ", inst.String(), " -> ", elem.StringDebug(), " -> ", infoStr)
-		} else {
-			log.Debug("ELEM2 -> ", inst.String(), " -> ", infoStr)
-		}
+	if elem != nil {
+		log.Debug("ELEM1 $ ", inst.String(), " $ ", elem.StringDebug(), " $ ", infoStr)
+	} else {
+		log.Debug("ELEM2 $ ", inst.String(), " $ ", infoStr)
 	}
 
 	return next
@@ -126,7 +124,7 @@ func skipNonRelevant(inst s_ssa.Instruction, rout int) s_ssa.Instruction {
 
 		p = parseInstruction(p, rout, nil)
 
-		blocking.LastBlockIdPerRoutine[rout] = inst.Inst().Block().Index
+		blocking.lastBlockIdPerRoutine[rout] = inst.Inst().Block().Index
 
 	}
 

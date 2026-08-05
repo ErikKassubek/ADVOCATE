@@ -60,13 +60,13 @@ type Data struct {
 
 	Pkgs []*packages.Package
 
-	fset *token.FileSet
+	Fset *token.FileSet
 
 	pkgInfo map[*packages.Package]*types.Info
 	uses    map[*ast.Ident]types.Object
 	defs    map[*ast.Ident]types.Object
 
-	astMap map[string][]*ast.File         // pkg path -> files
+	AstMap map[string][]*ast.File         // pkg path -> files
 	ast    []*ast.File                    // flattened list
 	npm    map[ast.Node]*packages.Package // node packages map
 
@@ -81,9 +81,9 @@ type Data struct {
 func BuildAst(dir string) (*Data, error) {
 	data := &Data{
 		dir:  dir,
-		fset: token.NewFileSet(),
+		Fset: token.NewFileSet(),
 
-		astMap: make(map[string][]*ast.File),
+		AstMap: make(map[string][]*ast.File),
 		ast:    make([]*ast.File, 0),
 		npm:    make(map[ast.Node]*packages.Package),
 
@@ -115,7 +115,7 @@ func BuildAst(dir string) (*Data, error) {
 //   - dir: string: root directory of project
 func (self *Data) loadPackages() error {
 	cfg := &packages.Config{
-		Fset: self.fset,
+		Fset: self.Fset,
 		Mode: packages.LoadAllSyntax,
 		Dir:  self.dir,
 		Env: append(os.Environ(),

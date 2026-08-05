@@ -26,9 +26,9 @@ func ParseMakeClosure(inst *s_ssa.InstructionMakeClosure, rout int, elem trace.E
 	info := instInfoMakeClosure(inst, rout, elem)
 
 	bindings := inst.Inst().(*ssa.MakeClosure).Bindings
-	blocking.LastClosure[rout] = make([]*instructionWithInfo, len(bindings))
+	blocking.lastClosure[rout] = make([]*instructionWithInfo, len(bindings))
 	for i, b := range bindings {
-		blocking.LastClosure[rout][i] = findDecOfSSAVar(rout, b.Name())
+		blocking.lastClosure[rout][i] = getDecOfSSAVar(rout, b.Name())
 	}
 
 	return inst.Next(), info

@@ -26,7 +26,7 @@ func ParseCall(inst *s_ssa.InstructionCall, rout int, _ trace.Element) (s_ssa.In
 
 	info := instInfoCall(inst, rout, nil)
 	if f != nil {
-		blocking.JumpBackPos[rout].Push(inst.Next())
+		blocking.jumpBackPos[rout].Push(inst.Next())
 		return s_ssa.NewSsaPosFunc(f), info
 	}
 
@@ -39,25 +39,28 @@ func parseCallParameter(inst ssa.CallInstruction, routCall int, routFunc int, f 
 		return
 	}
 
-	// if routCall != routFunc {
-	log.Debug(routCall, routFunc)
-	blocking.NewFuncStack(routFunc, retVarName)
-	// }
+	paras := make(map[string]*instructionWithInfo)
 
 	if inst != nil {
 		for i, param := range f.Params() {
 			if !sharesUnderlyingResource(param.Type()) {
-				addPathParam(routFunc, param.Name(), nil)
+				paras[param.Name()] = nil
 			} else {
 				arg := inst.Common().Args[i].String()
-				d := findDecOfSSAVar(routCall, arg)
-				addPathParam(routFunc, arg, d.Resource)
+				d := getDecOfSSAVar(routCall, arg)
+				paras[arg] = d
 			}
 		}
 	}
 
+	blocking.NewFuncStack(routFunc, retVarName)
+
+	for p, i := range paras {
+		addPathParam(routFunc, p, i.Resource)
+	}
+
 	if routCall != routFunc { // fork
-		info := blocking.LastClosure[routCall]
+		info := blocking.lastClosure[routCall]
 
 		fv := f.FreeVar()
 

@@ -41,9 +41,9 @@ func BuildStaticBlockingAnalysis() (err error) {
 }
 
 func isBlockingBug() {
-	blocking.Blocked = getBlockedResources()
+	blocking.blocked = getBlockedResources()
 
-	for _, r := range blocking.Blocked {
+	for _, r := range blocking.blocked {
 		f, s := data.Ssa().TraceToSSA(r.Alloc())
 
 		if f == nil || s == nil {

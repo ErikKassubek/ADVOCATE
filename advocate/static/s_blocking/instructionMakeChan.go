@@ -21,7 +21,7 @@ func instInfoMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Elem
 	}
 
 	resources := make(map[*trace.Resource]struct{})
-	if r, ok := blocking.Blocked[elem.ObjID()]; ok {
+	if r, ok := blocking.blocked[elem.ObjID()]; ok {
 		resources[r] = struct{}{}
 	}
 

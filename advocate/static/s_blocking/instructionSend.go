@@ -13,10 +13,18 @@ import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
 	"advocate/utils/log"
+	"advocate/utils/types"
 )
 
-func instInfoSend(inst *s_ssa.InstructionSend, rout int, _ trace.Element) *instructionWithInfo {
-	log.Todo("InstructionSend NOT IMPLEMENTED YET")
+func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element) *instructionWithInfo {
+	log.Debug("SEND: ", elem.ObjID())
+	if _, ok := blocking.chanBuffer[elem.ObjID()]; !ok {
+		blocking.chanBuffer[elem.ObjID()] = types.NewStack[*instructionWithInfo]()
+	}
+
+	d := getDecOfSSAVar(rout, inst.Instruction().X.Name())
+	blocking.chanBuffer[elem.ObjID()].Push(d)
+
 	return addPathInstr(rout, inst, nil)
 }
 

@@ -12,7 +12,6 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 	"advocate/utils/types"
 
 	"golang.org/x/tools/go/ssa"
@@ -23,7 +22,6 @@ func instInfoGo(inst *s_ssa.InstructionGo, rout int, _ trace.Element) *instructi
 }
 
 func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
-	log.Debug(inst.StringInfo())
 	info := instInfoGo(inst, rout, elem)
 
 	v := inst.Inst().(*ssa.Go)
@@ -40,17 +38,16 @@ func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Ins
 
 	f := s_ssa.GetSSAFuncFromName(data.Ssa(), fName)
 
-	blocking.NextPerRout[elem.ObjID()] = s_ssa.NewSsaPosFunc(f)
+	firstInFunc := s_ssa.NewSsaPosFunc(f)
 
-	blocking.JumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.Instruction]()
+	blocking.jumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.Instruction]()
 
 	blocking.NewPathPerRoutine(elem.ObjID())
 
 	// we skip the func call in this case. For this case, perform it here
-	if rout == 3 {
-		log.Debug("PARSE CALL PARAMETER: ", rout)
-	}
 	parseCallParameter(inst.Instruction(), rout, elem.ObjID(), f, "")
+
+	blocking.nextPerRout[elem.ObjID()] = skipNonRelevant(firstInFunc, elem.ObjID())
 
 	return inst.Next(), info
 }

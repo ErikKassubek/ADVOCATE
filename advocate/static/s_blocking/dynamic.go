@@ -31,11 +31,20 @@ func getBlockedResources() map[int]*trace.Resource {
 		}
 	}
 
+	log.Debug("CURRENTLY ALL ELEMENTS ARE TRACKED. REMOVE THE FOLLOWING BLOCK TO ONLY TRACK BLOCKED RESOURCES")
+	res = make(map[int]*trace.Resource)
+
+	resources := a_base.MainTrace.Resources()
+	for _, r := range resources {
+		res[r.Alloc().ObjID()] = r
+	}
+	// END BLOCK
+
 	return res
 }
 
 func buildFuncCallToSSAFunc() {
-	blocking.FuncCallToSSAFunc = make(map[*trace.ElementFunc]*s_ssa.Function)
+	blocking.funcCallToSSAFunc = make(map[*trace.ElementFunc]*s_ssa.Function)
 
 	for f := range a_base.MainTrace.CallTree().GetTree() {
 		fn := s_ssa.GetSSAFuncFromName(data.Ssa(), f.GetSSAName())
@@ -43,6 +52,6 @@ func buildFuncCallToSSAFunc() {
 			log.Errorf("Could not find ssa function for %s", f.GetSSAName())
 			continue
 		}
-		blocking.FuncCallToSSAFunc[f] = fn
+		blocking.funcCallToSSAFunc[f] = fn
 	}
 }

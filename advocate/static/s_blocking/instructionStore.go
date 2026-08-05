@@ -18,7 +18,7 @@ import (
 )
 
 func instInfoStore(inst *s_ssa.InstructionStore, rout int, _ trace.Element) *instructionWithInfo {
-	ssaVar := findDecOfSSAVar(rout, inst.Term())
+	ssaVar := getDecOfSSAVar(rout, inst.Term())
 	if ssaVar == nil {
 		log.Errorf("Could not find ssa var %s for %s", inst.Term(), inst)
 	}
@@ -26,7 +26,7 @@ func instInfoStore(inst *s_ssa.InstructionStore, rout int, _ trace.Element) *ins
 
 	switch inst.Inst().(*ssa.Store).Addr.(type) {
 	case *ssa.Global:
-		blocking.GlobalVars[inst.Variable()] = res
+		blocking.globalVars[inst.Variable()] = res
 	}
 	return res
 }

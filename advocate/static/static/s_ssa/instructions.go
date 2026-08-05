@@ -47,7 +47,7 @@ func (this *Data) analysisInstruction(f *Function, inst ssa.Instruction, i int) 
 	case *ssa.Go:
 		instru = NewGo(f, inst, i)
 	case *ssa.If:
-		instru = newIf(f, inst, i)
+		instru = newIf(f, inst, i, this)
 	case *ssa.Index:
 		instru = NewIndex(f, inst, i)
 	case *ssa.IndexAddr:

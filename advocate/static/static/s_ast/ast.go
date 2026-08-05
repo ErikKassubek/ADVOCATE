@@ -29,7 +29,7 @@ import (
 func (self *Data) buildAst() {
 
 	for _, pkg := range self.Pkgs {
-		self.astMap[pkg.PkgPath] = pkg.Syntax
+		self.AstMap[pkg.PkgPath] = pkg.Syntax
 		self.ast = append(self.ast, pkg.Syntax...)
 
 		for _, file := range pkg.Syntax {
@@ -113,7 +113,7 @@ func (self *Data) GetPosFromPos(pos token.Pos) string {
 		return "<invalid position>"
 	}
 
-	loc := self.fset.Position(pos)
+	loc := self.Fset.Position(pos)
 
 	if strings.Contains(loc.Filename, ".cache/go-build/") {
 		return "[internal]"

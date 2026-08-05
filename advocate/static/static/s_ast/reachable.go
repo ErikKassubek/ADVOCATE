@@ -118,7 +118,7 @@ func (self *Data) FuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool
 	res := ""
 	for i, fn := range path {
 		if i > 0 {
-			res += " -> "
+			res += " $ "
 		}
 		res += fn.Name.Name
 	}
@@ -225,11 +225,11 @@ func (self *Data) OpFromFunc(start *ast.FuncDecl, targetOp Operation, calcPath b
 	res := ""
 	for i, fn := range path {
 		if i > 0 {
-			res += " -> "
+			res += " $ "
 		}
 		res += fn.Name.Name
 	}
-	res += " -> " + string(targetOp.Op)
+	res += " $ " + string(targetOp.Op)
 
 	return true, res, nil
 }

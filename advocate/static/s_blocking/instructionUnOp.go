@@ -13,17 +13,19 @@ import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
 	"advocate/utils/log"
-	"strings"
+	"go/token"
 )
 
-func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, _ trace.Element) *instructionWithInfo {
-	term := inst.Term()
-	if strings.HasPrefix(term, "*") && !strings.Contains(term, " ") {
-		if rout == 3 {
-			log.Debug(inst.StringInfo())
-		}
-		ssaVar := findDecOfSSAVar(rout, term)
+func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element) *instructionWithInfo {
+	switch inst.Instruction().Op {
+	case token.MUL: // pointer dereference
+		term := inst.Term()
+		ssaVar := getDecOfSSAVar(rout, term)
 		return addPathInstr(rout, inst, ssaVar.Resource)
+	case token.ARROW: // channel receive
+		log.Debug("RECV: ", inst.StringInfo(), elem.StringDebug())
+		receivedValue := blocking.chanBuffer[elem.ObjID()].Pop()
+		return addPathInstr(rout, inst, receivedValue.Resource)
 	}
 
 	return nil

@@ -1,6 +1,6 @@
 .PHONY: all build-patch patch clean-cache advocate
 
-all: adv
+all: build
 
 advocate: 
 	cd advocate && go build

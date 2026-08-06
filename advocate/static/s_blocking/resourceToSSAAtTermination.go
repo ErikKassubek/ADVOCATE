@@ -28,6 +28,8 @@ func determineResouceToSSAAtTermination() {
 		if inst.InTrace() {
 			blocking.nextPerRout[1] = inst
 			break
+		} else {
+			printInstr(inst, nil, nil)
 		}
 	}
 
@@ -47,6 +49,8 @@ func determineResouceToSSAAtTermination() {
 				if inst.InTrace() {
 					blocking.nextPerRout[1] = inst
 					break
+				} else {
+					printInstr(inst, elem, nil)
 				}
 			}
 			continue
@@ -98,13 +102,25 @@ func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ss
 
 	next, info := parse(inst, rout, elem)
 
+	printInstr(inst, elem, info)
+
+	return next
+}
+
+func printInstr(inst s_ssa.Instruction, elem trace.Element, info *instructionWithInfo) {
 	infoStr := "<NIL>"
 	if info != nil && len(info.Resource) != 0 {
 		infoStr = ""
 
 		if len(info.Resource) != 1 {
 			for i, res := range info.Resource {
+				if i != 0 {
+					infoStr += " "
+				}
 				infoStr += fmt.Sprintf("#%d: ", i)
+				if len(res) == 0 {
+					infoStr += "<NIL>"
+				}
 				for r := range res {
 					infoStr += fmt.Sprint(r.Alloc().ObjID())
 				}
@@ -114,20 +130,20 @@ func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ss
 				infoStr += fmt.Sprint(r.Alloc().ObjID())
 			}
 		}
+
 	}
 
 	if elem != nil {
-		log.Debug("ELEM1 $ ", inst.StringInfo(), " $ ", elem.StringDebug(), " $ ", infoStr)
+		log.Debugf("%-80.80s | %-25s | %s", inst.StringInfo(), infoStr, elem.StringDebug())
 	} else {
-		log.Debug("ELEM2 $ ", inst.StringInfo(), " $ ", infoStr)
+		log.Debugf("%-80.80s | %-25s |", inst.StringInfo(), infoStr)
 	}
-
-	return next
 }
 
 func skipNonRelevant(inst s_ssa.Instruction, rout int) s_ssa.Instruction {
 	for p := inst; p != nil; {
 		if !p.Relevant() {
+			printInstr(inst, nil, nil)
 			p = p.Next()
 			continue
 		}

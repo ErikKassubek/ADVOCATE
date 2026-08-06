@@ -50,7 +50,7 @@ func isBlockingBug() {
 			continue
 		}
 
-		log.Debug(r.Id(), " # ", f.Name(), " # ", s.String())
+		log.Debug(r.Id(), " | ", f.Name(), " | ", s.String())
 	}
 
 	buildFuncCallToSSAFunc()

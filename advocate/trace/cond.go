@@ -325,7 +325,7 @@ func (this *ElementCond) StringDebug() string {
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
 }
 
 // ========================================================

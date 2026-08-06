@@ -115,7 +115,7 @@ func (this *InstructionBase) StringInfo() (res string) {
 		res += "- "
 	}
 
-	res += fmt.Sprintf("%-40s", this.String())
+	res += fmt.Sprintf("%-60s", this.String())
 
 	// name
 	obj := func(i int) s_base.ObjName {
@@ -134,20 +134,22 @@ func (this *InstructionBase) StringInfo() (res string) {
 	}
 
 	if this.class != Ic_unknown {
-		res += "\t-> " + fmt.Sprintf("%-20s", string(this.class))
+		res += " | " + fmt.Sprintf("%-20s", string(this.class)) + " | "
 	}
 
 	found := false
 	for i := 0; i < 4; i++ {
 		if this.conc[i] {
-			if !found {
-				res += "  -> "
-			} else {
+			if found {
 				res += ", "
 			}
 			res += string(obj(i))
 			found = true
 		}
+	}
+
+	if !found {
+		res += "-"
 	}
 
 	return

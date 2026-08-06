@@ -19,7 +19,10 @@ func instInfoReturn(inst *s_ssa.InstructionReturn, rout int, _ trace.Element) *i
 
 	retInfo := make([]map[*trace.Resource]struct{}, len(retSSAVar))
 	for i, v := range retSSAVar {
-		retInfo[i] = getDecOfSSAVar(rout, v.Name()).Resource[0]
+		ret := getDecOfSSAVar(rout, v.Name()).Resource
+		if len(ret) != 0 {
+			retInfo[i] = ret[0]
+		}
 	}
 
 	retVar := blocking.ReturnStack(rout)
@@ -35,5 +38,8 @@ func ParseReturn(inst *s_ssa.InstructionReturn, rout int, elem trace.Element) (s
 
 	i := blocking.jumpBackPos[rout].Pop()
 
+	// if i != nil {
+	// 	log.Debug("JUMP BACK: ", i.StringInfo())
+	// }
 	return i, info
 }

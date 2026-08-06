@@ -143,7 +143,7 @@ func printInstr(inst s_ssa.Instruction, elem trace.Element, info *instructionWit
 func skipNonRelevant(inst s_ssa.Instruction, rout int) s_ssa.Instruction {
 	for p := inst; p != nil; {
 		if !p.Relevant() {
-			printInstr(inst, nil, nil)
+			printInstr(p, nil, nil)
 			p = p.Next()
 			continue
 		}

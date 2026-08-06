@@ -75,6 +75,8 @@ type Data struct {
 	RoutFunc    map[*ast.GoStmt]*ast.FuncDecl
 	FuncLitDecl map[*ast.FuncLit]*ast.FuncDecl // dummy for func lit
 
+	IfStmtMap map[token.Pos]*ast.IfStmt
+
 	nextFuncLitId int
 }
 
@@ -92,6 +94,8 @@ func BuildAst(dir string) (*Data, error) {
 		RoutFunc:    make(map[*ast.GoStmt]*ast.FuncDecl),
 
 		FuncLitDecl: make(map[*ast.FuncLit]*ast.FuncDecl),
+
+		IfStmtMap: make(map[token.Pos]*ast.IfStmt),
 	}
 
 	err := data.loadPackages()

@@ -92,6 +92,10 @@ func parseInstructions(elem trace.Element, inst s_ssa.Instruction, rout int) s_s
 }
 
 func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ssa.Instruction {
+	if elem != nil && !elem.Committed() {
+		return inst.Next()
+	}
+
 	next, info := parse(inst, rout, elem)
 
 	infoStr := "<NIL>"
@@ -103,9 +107,9 @@ func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ss
 	}
 
 	if elem != nil {
-		log.Debug("ELEM1 $ ", inst.String(), " $ ", elem.StringDebug(), " $ ", infoStr)
+		log.Debug("ELEM1 $ ", inst.StringInfo(), " $ ", elem.StringDebug(), " $ ", infoStr)
 	} else {
-		log.Debug("ELEM2 $ ", inst.String(), " $ ", infoStr)
+		log.Debug("ELEM2 $ ", inst.StringInfo(), " $ ", infoStr)
 	}
 
 	return next

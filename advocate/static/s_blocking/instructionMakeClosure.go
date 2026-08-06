@@ -12,24 +12,16 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 
 	"golang.org/x/tools/go/ssa"
 )
 
-func instInfoMakeClosure(inst *s_ssa.InstructionMakeClosure, rout int, elem trace.Element) *instructionWithInfo {
-	log.Todo("InstructionMakeClosure NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
-}
-
 func ParseMakeClosure(inst *s_ssa.InstructionMakeClosure, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
-	info := instInfoMakeClosure(inst, rout, elem)
-
 	bindings := inst.Inst().(*ssa.MakeClosure).Bindings
 	blocking.lastClosure[rout] = make([]*instructionWithInfo, len(bindings))
 	for i, b := range bindings {
 		blocking.lastClosure[rout][i] = getDecOfSSAVar(rout, b.Name())
 	}
 
-	return inst.Next(), info
+	return inst.Next(), addPathInstr(rout, inst, nil)
 }

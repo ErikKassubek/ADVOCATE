@@ -11,6 +11,7 @@ package s_ast
 
 import (
 	"advocate/static/static/s_base"
+	"advocate/utils/log"
 	"fmt"
 	"go/ast"
 	"go/token"
@@ -64,6 +65,14 @@ func (self *Data) detOpsInFile(file *ast.File) {
 		}
 		self.detOpsInFunc(fdecl)
 	}
+
+	ast.Inspect(file, func(n ast.Node) bool {
+		if ifStmt, ok := n.(*ast.IfStmt); ok {
+			log.Debug("ADD IF: ", ifStmt.Pos())
+			self.IfStmtMap[ifStmt.Pos()] = ifStmt
+		}
+		return true
+	})
 }
 
 func (self *Data) detOpsInFunc(fdecl *ast.FuncDecl) {

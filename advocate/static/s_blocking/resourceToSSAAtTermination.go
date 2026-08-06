@@ -101,8 +101,18 @@ func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ss
 	infoStr := "<NIL>"
 	if info != nil && len(info.Resource) != 0 {
 		infoStr = ""
-		for r := range info.Resource {
-			infoStr += fmt.Sprint(r.Alloc().ObjID())
+
+		if len(info.Resource) != 1 {
+			for i, res := range info.Resource {
+				infoStr += fmt.Sprintf("#%d: ", i)
+				for r := range res {
+					infoStr += fmt.Sprint(r.Alloc().ObjID())
+				}
+			}
+		} else {
+			for r := range info.Resource[0] {
+				infoStr += fmt.Sprint(r.Alloc().ObjID())
+			}
 		}
 	}
 

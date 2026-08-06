@@ -23,13 +23,13 @@ func ParseAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) (s_s
 func instInfoAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) *instructionWithInfo {
 	elem, ok := elem.(*trace.ElementAlloc)
 	if !ok {
-		return addPathInstr(rout, inst, make(map[*trace.Resource]struct{}))
+		return addPathInstr(rout, inst, newInstructionWithInfoResorce(nil))
 	}
 
 	resources := make(map[*trace.Resource]struct{})
 	if r, ok := blocking.blocked[elem.ObjID()]; ok {
-	resources[r] = struct{}{}
+		resources[r] = struct{}{}
 	}
 
-	return addPathInstr(rout, inst, resources)
+	return addPathInstr(rout, inst, newInstructionWithInfoResorce(resources))
 }

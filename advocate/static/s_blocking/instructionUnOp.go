@@ -12,7 +12,6 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 	"go/token"
 )
 
@@ -23,7 +22,6 @@ func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element) *in
 		ssaVar := getDecOfSSAVar(rout, term)
 		return addPathInstr(rout, inst, ssaVar.Resource)
 	case token.ARROW: // channel receive
-		log.Debug("RECV: ", inst.StringInfo(), elem.StringDebug())
 		receivedValue := blocking.chanBuffer[elem.ObjID()].Pop()
 		return addPathInstr(rout, inst, receivedValue.Resource)
 	}

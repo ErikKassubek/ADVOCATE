@@ -30,6 +30,7 @@ type BlockingData struct {
 	pathPerRoutine        map[int]*types.Stack[[]*instructionWithInfo]
 	lastBlockIdPerRoutine map[int]int
 	chanBuffer            map[int]*types.Stack[*instructionWithInfo]
+	returnVariables       map[int]*types.Stack[*s_ssa.InstructionCall]
 
 	funcCallToSSAFunc map[*trace.ElementFunc]*s_ssa.Function
 	blocked           map[int]*trace.Resource
@@ -47,33 +48,45 @@ func newBlockData() *BlockingData {
 		blocked:               make(map[int]*trace.Resource),
 		lastBlockIdPerRoutine: make(map[int]int),
 		chanBuffer:            make(map[int]*types.Stack[*instructionWithInfo]),
+		returnVariables:       make(map[int]*types.Stack[*s_ssa.InstructionCall]),
 	}
 }
 
 type instructionWithInfo struct {
 	Inst     s_ssa.Instruction
-	Resource map[*trace.Resource]struct{}
+	Resource []map[*trace.Resource]struct{} // make list to deal with extract.
 	Variable string
 }
 
-func (self *BlockingData) NewFuncStack(rout int, inst string) {
+func newInstructionWithInfoResorce(resource map[*trace.Resource]struct{}) []map[*trace.Resource]struct{} {
+	if resource == nil {
+		return make([]map[*trace.Resource]struct{}, 0)
+	}
+
+	return []map[*trace.Resource]struct{}{resource}
+}
+
+func (self *BlockingData) NewFuncStack(rout int, inst *s_ssa.InstructionCall) {
 	res := make([]*instructionWithInfo, 0)
-	if inst != "" {
-		res = append(res, &instructionWithInfo{Variable: inst})
+	if inst != nil && inst.Variable() != "" {
+		res = append(res, &instructionWithInfo{Variable: inst.Variable()})
 	}
 
 	self.pathPerRoutine[rout].Push(res)
+	self.returnVariables[rout].Push(inst)
 }
 
-func (self *BlockingData) ReturnStack(rout int, ret []*instructionWithInfo) {
+func (self *BlockingData) ReturnStack(rout int) *s_ssa.InstructionCall {
 	self.pathPerRoutine[rout].Pop()
+	return self.returnVariables[rout].Pop()
 }
 
 func (self *BlockingData) NewPathPerRoutine(rout int) {
 	self.pathPerRoutine[rout] = types.NewStack[[]*instructionWithInfo]()
+	self.returnVariables[rout] = &types.Stack[*s_ssa.InstructionCall]{}
 }
 
-func addPathInstr(rout int, inst s_ssa.Instruction, resources map[*trace.Resource]struct{}) *instructionWithInfo {
+func addPathInstr(rout int, inst s_ssa.Instruction, resources []map[*trace.Resource]struct{}) *instructionWithInfo {
 	if _, ok := blocking.pathPerRoutine[rout]; !ok {
 		blocking.NewPathPerRoutine(rout)
 	}
@@ -89,7 +102,7 @@ func addPathInstr(rout int, inst s_ssa.Instruction, resources map[*trace.Resourc
 	return newElem
 }
 
-func addPathParam(rout int, v string, resources map[*trace.Resource]struct{}) *instructionWithInfo {
+func addPathParam(rout int, v string, resources []map[*trace.Resource]struct{}) *instructionWithInfo {
 	if _, ok := blocking.pathPerRoutine[rout]; !ok {
 		blocking.NewPathPerRoutine(rout)
 	}

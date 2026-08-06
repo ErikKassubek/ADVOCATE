@@ -137,8 +137,6 @@ func (this *InstructionBase) StringInfo() (res string) {
 		res += "\t-> " + fmt.Sprintf("%-20s", string(this.class))
 	}
 
-	res += "\t-> " + fmt.Sprintf("%-10v", this.inst.Pos())
-
 	found := false
 	for i := 0; i < 4; i++ {
 		if this.conc[i] {

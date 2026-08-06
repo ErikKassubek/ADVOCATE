@@ -12,7 +12,6 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 	"fmt"
 	"go/types"
 
@@ -22,38 +21,37 @@ import (
 func ParseCall(inst *s_ssa.InstructionCall, rout int, _ trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
 	f := inst.GetFunc(data.Ssa())
 
-	parseCallParameter(inst.Instruction(), rout, rout, f, inst.Variable())
+	parseCallParameter(inst.Instruction(), inst, rout, rout, f, inst.Variable())
 
-	info := instInfoCall(inst, rout, nil)
 	if f != nil {
 		blocking.jumpBackPos[rout].Push(inst.Next())
-		return s_ssa.NewSsaPosFunc(f), info
+		return s_ssa.NewSsaPosFunc(f), nil
 	}
 
-	return inst.Next(), info
+	return inst.Next(), nil
 
 }
 
-func parseCallParameter(inst ssa.CallInstruction, routCall int, routFunc int, f *s_ssa.Function, retVarName string) {
+func parseCallParameter(call ssa.CallInstruction, inst *s_ssa.InstructionCall, routCall int, routFunc int, f *s_ssa.Function, retVarName string) {
 	if f == nil {
 		return
 	}
 
 	paras := make(map[string]*instructionWithInfo)
 
-	if inst != nil {
+	if call != nil {
 		for i, param := range f.Params() {
 			if !sharesUnderlyingResource(param.Type()) {
 				paras[param.Name()] = nil
 			} else {
-				arg := inst.Common().Args[i].String()
+				arg := call.Common().Args[i].String()
 				d := getDecOfSSAVar(routCall, arg)
 				paras[arg] = d
 			}
 		}
 	}
 
-	blocking.NewFuncStack(routFunc, retVarName)
+	blocking.NewFuncStack(routFunc, inst)
 
 	for p, i := range paras {
 		addPathParam(routFunc, p, i.Resource)
@@ -76,11 +74,6 @@ func parseCallParameter(inst ssa.CallInstruction, routCall int, routFunc int, f 
 			addPathParam(routFunc, fv[i].Name(), info[i].Resource)
 		}
 	}
-}
-
-func instInfoCall(inst *s_ssa.InstructionCall, rout int, elem trace.Element) *instructionWithInfo {
-	log.Todo("InstructionCall NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
 }
 
 func sharesUnderlyingResource(t types.Type) bool {

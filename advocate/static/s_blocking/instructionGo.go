@@ -45,7 +45,7 @@ func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Ins
 	blocking.NewPathPerRoutine(elem.ObjID())
 
 	// we skip the func call in this case. For this case, perform it here
-	parseCallParameter(inst.Instruction(), rout, elem.ObjID(), f, "")
+	parseCallParameter(inst.Instruction(), nil, rout, elem.ObjID(), f, "")
 
 	blocking.nextPerRout[elem.ObjID()] = skipNonRelevant(firstInFunc, elem.ObjID())
 

@@ -12,24 +12,22 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 )
 
 func instInfoReturn(inst *s_ssa.InstructionReturn, rout int, _ trace.Element) *instructionWithInfo {
-	log.Todo("InstructionReturn NOT IMPLEMENTED YET")
-
 	retSSAVar := inst.Instruction().Results
 
-	retInfo := make([]*instructionWithInfo, len(retSSAVar))
+	retInfo := make([]map[*trace.Resource]struct{}, len(retSSAVar))
 	for i, v := range retSSAVar {
-		retInfo[i] = getDecOfSSAVar(rout, v.Name())
+		retInfo[i] = getDecOfSSAVar(rout, v.Name()).Resource[0]
 	}
 
-	blocking.ReturnStack(rout, retInfo)
+	retVar := blocking.ReturnStack(rout)
+	if retVar != nil {
+		return addPathInstr(rout, retVar, retInfo)
+	}
 
-	res := addPathInstr(rout, inst, nil)
-
-	return res
+	return nil
 }
 
 func ParseReturn(inst *s_ssa.InstructionReturn, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

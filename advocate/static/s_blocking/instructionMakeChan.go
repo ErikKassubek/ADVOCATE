@@ -17,7 +17,7 @@ import (
 func instInfoMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Element) *instructionWithInfo {
 	elem, ok := elem.(*trace.ElementAlloc)
 	if !ok {
-		return addPathInstr(rout, inst, make(map[*trace.Resource]struct{}))
+		return addPathInstr(rout, inst, newInstructionWithInfoResorce(nil))
 	}
 
 	resources := make(map[*trace.Resource]struct{})
@@ -25,7 +25,7 @@ func instInfoMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Elem
 		resources[r] = struct{}{}
 	}
 
-	return addPathInstr(rout, inst, resources)
+	return addPathInstr(rout, inst, newInstructionWithInfoResorce(resources))
 }
 
 func ParseMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

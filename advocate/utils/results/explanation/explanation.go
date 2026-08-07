@@ -330,22 +330,24 @@ func writeFile(path string, index string, description map[bugKeys]string,
 	}
 
 	// write the code of the bug elements
-	res += "## Bug Elements\n\n"
-	res += "The elements involved in the found "
-	res += strings.ToLower(description[crit])
-	res += " are located at the following positions:\n\n"
+	if len(positions) > 0 {
+		res += "## Bug Elements\n\n"
+		res += "The elements involved in the found "
+		res += strings.ToLower(description[crit])
+		res += " are located at the following positions:\n\n"
 
-	for key := range positions {
-		res += "###  "
-		res += bugElemType[key] + "\n\n"
+		for key := range positions {
+			res += "###  "
+			res += bugElemType[key] + "\n\n"
 
-		for j, pos := range positions[key] {
-			if pos == ":-1" {
-				return nil
+			for j, pos := range positions[key] {
+				if pos == ":-1" {
+					return nil
+				}
+				code := code[key][j]
+				res += "-> " + pos + "\n\n"
+				res += code + "\n\n"
 			}
-			code := code[key][j]
-			res += "-> " + pos + "\n\n"
-			res += code + "\n\n"
 		}
 	}
 

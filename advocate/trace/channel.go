@@ -553,7 +553,7 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 			pos:         this.pos.copy(),
 			selIndex:    this.selIndex,
 			ci:          newConcInfo(),
-			function:    this.function.Copy(mapping, keep).(*ElementFunc),
+			function:    this.function.CopyFunc(mapping, keep),
 		}
 
 		mapping[id] = &newCh
@@ -587,7 +587,7 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 		pos:         this.pos.copy(),
 		selIndex:    this.selIndex,
 		ci:          this.ci.copy(),
-		function:    this.function.Copy(mapping, keep).(*ElementFunc),
+		function:    this.function.CopyFunc(mapping, keep),
 	}
 
 	mapping[id] = &newCh

@@ -414,7 +414,7 @@ func (this *ElementAlloc) Copy(mapping map[int]Element, keep bool) Element {
 		elemType:    this.elemType,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.Copy(mapping, keep).(*ElementFunc),
+		function:    this.function.CopyFunc(mapping, keep),
 	}
 }
 

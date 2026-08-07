@@ -194,7 +194,7 @@ func parseTraceFile(tracePath string, stats *map[statsType]int, known *map[stats
 			}
 		case "E":
 			(*stats)[numberRoutineEnds]++
-		case "N":
+		case "N", "I", "R", "F", "OAT":
 			// do notring
 		default:
 			err = errors.New("Unknown trace element: " + fields[0])

@@ -38,8 +38,7 @@ func CommandLine() bool {
 
 	flag.StringVar(&flags.TracePath, "trace", "", "Path to the trace folder to replay")
 
-	flag.IntVar(&flags.TimeoutRecording, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
-	flag.IntVar(&flags.TimeoutReplay, "timeoutRep", 900, "Set a timeout in seconds for the replay. Default: 600s. To disable set to -1")
+	flag.IntVar(&flags.Timeout, "timeoutRec", 180, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
 	flag.IntVar(&flags.TimeoutFuzzing, "timeoutFuz", 420, "Timeout of fuzzing per test/program in seconds. Default: 7min. To Disable, set to -1")
 	flag.IntVar(&flags.MaxFuzzingRun, "maxFuzzingRuns", -1, "Maximum number of fuzzing runs per test/prog. Default: -1. To Disable, set to -1")
 	flag.IntVar(&flags.MaxNumberElements, "maxNumberElements", 10000000, "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set -1. Default: 10000000")

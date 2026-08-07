@@ -406,7 +406,7 @@ func (this *ElementOnce) Copy(mapping map[int]Element, keep bool) Element {
 			suc:         false,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.Copy(mapping, keep).(*ElementFunc),
+			function:    this.function.CopyFunc(mapping, keep),
 		}
 	}
 
@@ -418,7 +418,7 @@ func (this *ElementOnce) Copy(mapping map[int]Element, keep bool) Element {
 		suc:         this.suc,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.Copy(mapping, keep).(*ElementFunc),
+		function:    this.function.CopyFunc(mapping, keep),
 	}
 }
 

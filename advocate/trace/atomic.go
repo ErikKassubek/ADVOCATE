@@ -368,7 +368,7 @@ func (this *ElementAtomic) Copy(mapping map[int]Element, keep bool) Element {
 			op:          this.op,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.Copy(mapping, keep).(*ElementFunc),
+			function:    this.function.CopyFunc(mapping, keep),
 		}
 	}
 
@@ -379,7 +379,7 @@ func (this *ElementAtomic) Copy(mapping map[int]Element, keep bool) Element {
 		op:          this.op,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.Copy(mapping, keep).(*ElementFunc),
+		function:    this.function.CopyFunc(mapping, keep),
 	}
 }
 

@@ -244,25 +244,21 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 
 			// add mutation based on guided fuzzing
 			if f_base.FuzzingModeGuided {
-				log.Infof("Create roc mutation")
 				f_roc.CreateMutations()
 			}
 
 			// Add mutation based on GFuzz
 			if f_base.FuzzingModeGFuzz {
-				log.Infof("Create GFuzz mutations")
 				f_gfuzz.CreateMutations(false)
 			}
 
 			// add new mutations based on flow path expansion
 			if f_base.FuzzingModeFlow {
-				log.Infof("Create Flow mutations")
 				f_flow.CreateMutations()
 			}
 
 			// add mutations based on GoPie
 			if f_base.FuzzingModeGoPie {
-				log.Infof("Create GoPie mutations")
 				f_gopie.CreateMutations(order.MutPie)
 			}
 

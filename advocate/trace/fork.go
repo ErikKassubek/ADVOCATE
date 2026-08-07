@@ -342,7 +342,7 @@ func (this *ElementFork) Copy(mapping map[int]Element, keep bool) Element {
 			objId:       this.objId,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.Copy(mapping, keep).(*ElementFunc),
+			function:    this.function.CopyFunc(mapping, keep),
 		}
 	}
 
@@ -352,7 +352,7 @@ func (this *ElementFork) Copy(mapping map[int]Element, keep bool) Element {
 		objId:       this.objId,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.Copy(mapping, keep).(*ElementFunc),
+		function:    this.function.CopyFunc(mapping, keep),
 	}
 }
 

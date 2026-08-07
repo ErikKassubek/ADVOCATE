@@ -28,10 +28,9 @@ var (
 
 // timeouts and limits
 var (
-	TimeoutRecording int
-	TimeoutReplay    int
-	TimeoutFuzzing   int
-	MaxFuzzingRun    int
+	Timeout        int
+	TimeoutFuzzing int
+	MaxFuzzingRun  int
 
 	MaxNumberElements int
 )

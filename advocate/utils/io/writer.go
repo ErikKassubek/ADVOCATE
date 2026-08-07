@@ -18,7 +18,6 @@ import (
 	"math"
 	"os"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"sync"
 )
@@ -66,9 +65,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 			rout := traceToWrite.GetRoutineTrace(i)
 
 			// sort trace by tPre
-			sort.Slice(rout, func(i, j int) bool {
-				return rout.At(i).T(trace.Request) < rout.At(j).T(trace.Request)
-			})
+			rout.Sort()
 
 			for index, element := range rout.Elems() {
 				if !replay || !isReplay(element) {

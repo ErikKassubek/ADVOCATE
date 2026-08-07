@@ -35,7 +35,7 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 
 	if replay { // replay
 		if record {
-			buildArg += fmt.Sprintf("-advocatefuzzing -advocatepath=%s -advocatetimeout=%d", tracePath, flags.TimeoutRecording)
+			buildArg += fmt.Sprintf("-advocatefuzzing -advocatepath=%s -advocatetimeout=%d", tracePath, flags.Timeout)
 		} else {
 			buildArg += fmt.Sprintf("-advocatereplay -advocatepath=%s -advocatetimeout=%d -advocateatomic=%s", tracePath, replayTimeout, atomicReplayStr)
 		}
@@ -154,7 +154,7 @@ func importInsertMain(fileName string, replay bool, replayNumber string,
 		replayPath = "advocateTrace"
 	}
 
-	return getBuildArg(fileName, replay, replayPath, flags.TimeoutReplay, record, fuzzing, fuzzingTrace), fileName, importLine, nil
+	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, fuzzingTrace), fileName, importLine, nil
 }
 
 // Remove the header from a file with a header in a main function
@@ -322,7 +322,7 @@ func importInsertUnit(fileName, testName string, replay bool, fuzzing int, repla
 		replayPath = "advocateTrace"
 	}
 
-	return getBuildArg(fileName, replay, replayPath, flags.TimeoutReplay, record, fuzzing, replayInfo), nil
+	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, replayInfo), nil
 }
 
 // Remove all headers from a unit test file
@@ -425,7 +425,7 @@ func testExists(fileName string, testName string) (bool, error) {
 func ImportInsertStatic() (file string, line int) {
 	if flags.ModeMain {
 		var err error
-		_, file, line, err = importInsertMain(paths.Prog, false, "1", flags.TimeoutReplay, false, 0, "", true)
+		_, file, line, err = importInsertMain(paths.Prog, false, "1", flags.Timeout, false, 0, "", true)
 		if err != nil {
 			log.Error(err.Error())
 		}

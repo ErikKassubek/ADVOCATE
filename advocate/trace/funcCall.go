@@ -263,6 +263,10 @@ func (this *ElementFunc) ReplayID() string {
 // ========================================================
 
 func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
+	if this == nil {
+		return nil
+	}
+
 	id := this.ID()
 
 	if existing, ok := mapping[id]; ok {
@@ -281,6 +285,20 @@ func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
 	mapping[id] = elem
 
 	return elem
+}
+
+func (this *ElementFunc) CopyFunc(mapping map[int]Element, keep bool) *ElementFunc {
+	if this == nil {
+		return nil
+	}
+
+	var funcCopy *ElementFunc
+
+	if fc, ok := this.function.Copy(mapping, keep).(*ElementFunc); ok {
+		funcCopy = fc
+	}
+
+	return funcCopy
 }
 
 // ========================================================

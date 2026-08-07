@@ -48,6 +48,8 @@ func InitReplay(tracePath string, timeout int, atomic bool, init bool) {
 	}
 	initRun = true
 
+	FinishFunc = FinishReplay
+
 	// use first as default
 	// runtime.SetForceExit(false)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic

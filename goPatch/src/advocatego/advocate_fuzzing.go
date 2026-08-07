@@ -40,6 +40,8 @@ func InitFuzzing(tracePath string, timeout int, init bool) {
 	}
 	initRun = true
 
+	FinishFunc = FinishFuzzing
+
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 

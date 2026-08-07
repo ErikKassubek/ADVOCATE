@@ -83,6 +83,7 @@ Modifications in files are marked with
 - [src/sync/atomic/doc_64.go](../goPatch/src/sync/atomic/doc_64.go)
 - [src/sync/atomic/doc.go](../goPatch/src/sync/atomic/doc.go)
 - [src/sync/atomic/type.go](../goPatch/src/sync/atomic/type.go)
+- [src/testing/testing.go](../goPatch/src/testing/testing.go)
 - [src/cmd/compile/internal/ssagen/intrinsics.go](../goPatch/src/cmd/compile/internal/ssagen/intrinsics.go)
 - [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go)
 - [src/cmd/compile/internal/walk/walk.go](../goPatch/src/cmd/compile/internal/walk/walk.go)

@@ -42,6 +42,8 @@ func InitTracing(timeout int, init bool) {
 	}
 	initRun = true
 
+	FinishFunc = FinishReplay
+
 	startTime = time.Now()
 	timerStarted = true
 

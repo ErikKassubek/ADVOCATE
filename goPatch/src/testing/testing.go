@@ -399,6 +399,7 @@
 package testing
 
 import (
+	"advocatego"
 	"bytes"
 	"context"
 	"errors"
@@ -2232,6 +2233,9 @@ var (
 // of failure. For machine readable test results, parse the output of
 // 'go test -json'.
 func (m *M) Run() (code int) {
+	// ADVOCATE-START
+	defer advocatego.FinishFunc()
+	// ADVOCATE-END
 	defer func() {
 		code = m.exitCode
 	}()

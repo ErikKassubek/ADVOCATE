@@ -101,6 +101,8 @@ func (this *Trace) AddElement(elem Element) {
 		this.forks[e.objId] = e
 	}
 
+	this.AddRoutine(routine)
+
 	this.AddResource(elem)
 
 	this.routines[routine].addElement(elem)
@@ -302,6 +304,10 @@ func (this *Trace) NumberElemInRoutine(routine int) int {
 			total += rout.Len()
 		}
 		return total
+	}
+
+	if _, ok := this.routines[routine]; ok {
+		return 0
 	}
 
 	return this.routines[routine].Len()
@@ -519,7 +525,7 @@ func (a sortByTSort) Less(i, j int) bool {
 // Sort each routine of the trace by tPost
 func (this *Trace) Sort() {
 	for routine, _ := range this.routines {
-		this.routines[routine].sort()
+		this.routines[routine].Sort()
 	}
 }
 

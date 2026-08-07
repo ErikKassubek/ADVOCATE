@@ -33,7 +33,7 @@ func (this *Routine) addElement(elem Element) {
 // Properties
 // ========================================================
 
-func (this *Routine) sort() {
+func (this *Routine) Sort() {
 	sort.Sort(sortByTSort(this.elems))
 }
 

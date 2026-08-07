@@ -84,6 +84,7 @@ type ElementBase struct {
 }
 
 func (this *Trace) newElementBase(routine int) ElementBase {
+	this.minTraceID++
 	return ElementBase{id: this.minTraceID, routine: routine, index: this.NumberElemInRoutine(routine), init: !this.hasPassedMain}
 }
 

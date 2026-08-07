@@ -378,7 +378,7 @@ func (this *ElementControllFlow) Copy(mapping map[int]Element, keep bool) Elemen
 		chosenCase:  this.chosenCase,
 		op:          this.op,
 		pos:         this.pos.copy(),
-		function:    this.function.Copy(mapping, keep).(*ElementFunc),
+		function:    this.function.CopyFunc(mapping, keep),
 	}
 }
 

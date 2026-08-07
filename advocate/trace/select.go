@@ -163,7 +163,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 		}
 
 		elemCase := &ElementChannel{
-			ElementBase: elem.ElementBase,
+			ElementBase: this.newElementBase(routine),
 			tReq:        tReqInt,
 			tCom:        cTPost,
 			objId:       cID,
@@ -588,7 +588,7 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 			chosenDefault:   this.chosenDefault,
 			pos:             this.pos.copy(),
 			ci:              newConcInfo(),
-			function:        this.function.Copy(mapping, keep).(*ElementFunc),
+			function:        this.function.CopyFunc(mapping, keep),
 		}
 
 		mapping[id] = elem
@@ -619,7 +619,7 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 		chosenDefault:   this.chosenDefault,
 		pos:             this.pos.copy(),
 		ci:              this.ci.copy(),
-		function:        this.function.Copy(mapping, keep).(*ElementFunc),
+		function:        this.function.CopyFunc(mapping, keep),
 	}
 
 	mapping[id] = elem

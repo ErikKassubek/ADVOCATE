@@ -212,7 +212,7 @@ func (this *ElementReturn) Copy(mapping map[int]Element, keep bool) Element {
 	return &ElementReturn{
 		ElementBase: this.ElementBase.Copy(),
 		t:           this.t,
-		function:    this.function.Copy(mapping, keep).(*ElementFunc),
+		function:    this.function.CopyFunc(mapping, keep),
 	}
 }
 

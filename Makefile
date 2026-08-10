@@ -1,11 +1,10 @@
-.PHONY: all build-patch patch clean-cache advocate
+.PHONY: all build-patch patch clean-cache build-gocct build-bench
+
+PROJECT_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 all: build
 
-advocate: 
-	cd advocate && go build
-
-build: patch advocate
+build: patch build-gocct build-bench
 
 patch: clean-dir build-patch clean-cache
 
@@ -18,8 +17,23 @@ clean-dir:
 clean-cache:
 	./goPatch/bin/go clean -cache
 
-adv: advocate
-	cd advocate && ./advocate analysis -path /home/erik/Arbeit/examples/blocking/main.go -main -output -panic
+build-gocct: 
+	cd goCCT && go build
 
-mkbuiltin:
-	cd ./goPatch/src/cmd/compile/internal/typecheck && go run mkbuiltin.go
+build-bench:
+	cd benchmark/runner/ && go build
+
+benchmark:
+	cd benchmark/runner/ && ./runner
+
+benchmark-gfuzz:
+	cd benchmark/runnter/ && ./runner -mode gfuzz
+
+benchmark-gopie:
+	cd benchmark/runnter/ && ./runner -mode gopie
+
+paper-gfuzz:
+	cd goCCT && ./gocct fuzzing -path $(PROJECT_ROOT)/benchmark/paper/ -mode GFuzz -exec TestBlkBug
+
+paper-gopie:
+	cd goCCT && ./gocct fuzzing -path $(PROJECT_ROOT)/benchmark/paper/ -mode GoPie -exec TestPanicBug

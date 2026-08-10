@@ -367,9 +367,9 @@ type sudog struct {
 	waittail *sudog // semaRoot
 	c        *hchan // channel
 
-	// ADVOCATE-START
+	// GOCCT-START
 	replayEnabled bool
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 type libcall struct {
@@ -514,12 +514,12 @@ type g struct {
 	// built with the "valgrind" build tag, otherwise it is unused.
 	valgrindStackID uintptr
 
-	// ADVOCATE-START
-	// For each routine a g is automaticcaly created. In this g the advocateRoutineInfo
+	// GOCCT-START
+	// For each routine a g is automaticcaly created. In this g the gocctRoutineInfo
 	// element is added to store the information about the routine.
 	// This includes the Id and the trace of the routine.
-	advocateRoutineInfo *AdvocateRoutine
-	// ADVOCATE-END
+	gocctRoutineInfo *GoCCTRoutine
+	// GOCCT-END
 }
 
 // gTrackingPeriod is the number of transitions out of _Grunning between

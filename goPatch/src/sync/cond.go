@@ -8,26 +8,26 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	// ADVOCATE-START
+	// GOCCT-START
 	"runtime"
-	// ADVOCATE-END
+	// GOCCT-END
 )
 
-// ADVOCATE-START
+// GOCCT-START
 //
-//go:linkname AdvocateAllocCondVar runtime.AdvocateAllocCondVar
-func AdvocateAllocCondVar(ptr unsafe.Pointer) {
-	if runtime.AdvocateTracingDisabled {
+//go:linkname GoCCTAllocCondVar runtime.GoCCTAllocCondVar
+func GoCCTAllocCondVar(ptr unsafe.Pointer) {
+	if runtime.GoCCTTracingDisabled {
 		return
 	}
 	c := (*Cond)(ptr)
 	if c.id != 0 {
 		return
 	}
-	c.id = runtime.AdvocateAlloc("D", 0)
+	c.id = runtime.GoCCTAlloc("D", 0)
 }
 
-// ADVOCATE-END
+// GOCCT-END
 
 // Cond implements a condition variable, a rendezvous point
 // for goroutines waiting for or announcing the occurrence
@@ -63,9 +63,9 @@ type Cond struct {
 	notify  notifyList
 	checker copyChecker
 
-	// ADVOCATE-START
+	// GOCCT-START
 	id uint64
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 // NewCond returns a new Cond with Locker l.
@@ -89,7 +89,7 @@ func NewCond(l Locker) *Cond {
 //	... make use of condition ...
 //	c.L.Unlock()
 func (c *Cond) Wait() {
-	// ADVOCATE-START
+	// GOCCT-START
 
 	// replay
 	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationCondWait, runtime.CallerSkipCond, false)
@@ -98,9 +98,9 @@ func (c *Cond) Wait() {
 	}
 
 	//record
-	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondWait)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	gocctIndex := runtime.GoCCTCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondWait)
+	defer runtime.GoCCTCondPost(gocctIndex)
+	// GOCCT-END
 
 	c.checker.check()
 	t := runtime_notifyListAdd(&c.notify)
@@ -117,7 +117,7 @@ func (c *Cond) Wait() {
 // Signal() does not affect goroutine scheduling priority; if other goroutines
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
-	// ADVOCATE-START
+	// GOCCT-START
 
 	// replay
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondSignal, runtime.CallerSkipCond, true)
@@ -127,9 +127,9 @@ func (c *Cond) Signal() {
 	}
 
 	// recording
-	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondSignal)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	gocctIndex := runtime.GoCCTCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondSignal)
+	defer runtime.GoCCTCondPost(gocctIndex)
+	// GOCCT-END
 
 	c.checker.check()
 	runtime_notifyListNotifyOne(&c.notify)
@@ -140,7 +140,7 @@ func (c *Cond) Signal() {
 // It is allowed but not required for the caller to hold c.L
 // during the call.
 func (c *Cond) Broadcast() {
-	// ADVOCATE-START
+	// GOCCT-START
 
 	// replay
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondBroadcast, runtime.CallerSkipCond, true)
@@ -150,9 +150,9 @@ func (c *Cond) Broadcast() {
 	}
 
 	//recording
-	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondBroadcast)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	gocctIndex := runtime.GoCCTCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondBroadcast)
+	defer runtime.GoCCTCondPost(gocctIndex)
+	// GOCCT-END
 
 	c.checker.check()
 	runtime_notifyListNotifyAll(&c.notify)

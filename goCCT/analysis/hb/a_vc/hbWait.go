@@ -1,0 +1,73 @@
+// Copyright (c) 2025 Erik Kassubek
+//
+// File: hbAtomic.go
+// Brief: Update the vc for wait group
+//
+// Author: Erik Kassubek
+//
+// License: BSD-3-Clause
+
+package a_vc
+
+import (
+	"gocct/analysis/a_base"
+	"gocct/analysis/hb/a_clock"
+	"gocct/trace"
+	"gocct/utils/log"
+)
+
+// UpdateHBWait update the vector clocks for a wait group operation
+// Parameter:
+//   - wa *trace.TraceElementWait: the wait group operation
+func UpdateHBWait(wa *trace.ElementWait) {
+	routine := wa.Routine()
+	wa.Vc(a_clock.Strong, CurrentVC[routine])
+	wa.Vc(a_clock.Weak, CurrentWVC[routine])
+
+	switch wa.Type(true) {
+	case trace.WaitAdd, trace.WaitDone:
+		Change(wa)
+	case trace.WaitWait:
+		Wait(wa)
+	default:
+		err := "Unknown operation on wait group: " + wa.String()
+		log.Error(err)
+	}
+}
+
+// Change calculate the new vector clock for a add or done operation and update cv
+//
+// Parameter:
+//   - wa *TraceElementWait: The trace element
+func Change(wa *trace.ElementWait) {
+	id := wa.ObjID()
+	routine := wa.Routine()
+
+	lw := a_base.LastChangeWG[id]
+	if lw != nil {
+		wa.GetVC(a_clock.Strong).Sync(lw.GetVC(a_clock.Strong))
+	}
+	a_base.LastChangeWG[id] = wa
+
+	CurrentVC[routine].Inc(routine)
+	CurrentWVC[routine].Inc(routine)
+}
+
+// Wait calculates the new vector clock for a wait operation and update cv
+//
+// Parameter:
+//   - wa *TraceElementWait: The trace element
+func Wait(wa *trace.ElementWait) {
+	id := wa.ObjID()
+	routine := wa.Routine()
+
+	if wa.Committed() {
+		lc := a_base.LastChangeWG[id]
+		if lc != nil {
+			CurrentVC[routine].Sync(lc.GetVC(a_clock.Strong))
+		}
+	}
+
+	CurrentVC[routine].Inc(routine)
+	CurrentWVC[routine].Inc(routine)
+}

@@ -8,9 +8,9 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	// ADVOCATE-START
+	// GOCCT-START
 	"runtime"
-	// ADVOCATE-END
+	// GOCCT-END
 )
 
 // Once is an object that will perform exactly one action.
@@ -33,10 +33,10 @@ type Once struct {
 	done atomic.Bool
 	m    Mutex
 
-	// ADVOCATE-START
+	// GOCCT-START
 	id     uint64 // id of the once
 	memAdr uintptr
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 // Do calls the function f if and only if Do is being called for the
@@ -74,13 +74,13 @@ func (o *Once) Do(f func()) {
 	// This is why the slow path falls back to a mutex, and why
 	// the o.done.Store must be delayed until after f returns.
 
-	// ADVOCATE-START
+	// GOCCT-START
 	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationOnceDo, runtime.CallerSkipOne, false)
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
 			o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
-			_ = runtime.AdvocateOncePre(unsafe.Pointer(o), o.id)
+			_ = runtime.GoCCTOncePre(unsafe.Pointer(o), o.id)
 			runtime.BlockForever()
 		}
 	}
@@ -88,22 +88,22 @@ func (o *Once) Do(f func()) {
 	runtime.FuzzingFlowWait(2)
 
 	o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
-	index := runtime.AdvocateOncePre(unsafe.Pointer(o), o.id)
+	index := runtime.GoCCTOncePre(unsafe.Pointer(o), o.id)
 	res := false
-	// ADVOCATE-END
+	// GOCCT-END
 
 	if !o.done.Load() {
 		// Outlined slow-path to allow inlining of the fast-path.
-		// ADVOCATE-START
+		// GOCCT-START
 		res = o.doSlow(f)
-		// ADVOCATE-END
+		// GOCCT-END
 	}
-	// ADVOCATE-START
-	runtime.AdvocateOncePost(index, res)
-	// ADVOCATE-END
+	// GOCCT-START
+	runtime.GoCCTOncePost(index, res)
+	// GOCCT-END
 }
 
-// ADVOCATE-START
+// GOCCT-START
 func (o *Once) doSlow(f func()) bool {
 	o.m.Lock()
 	defer o.m.Unlock()
@@ -115,4 +115,4 @@ func (o *Once) doSlow(f func()) bool {
 	return false
 }
 
-// ADVOCATE-END
+// GOCCT-END

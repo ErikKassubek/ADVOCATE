@@ -1,0 +1,5 @@
+M,4,4,0,-,L,t,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#36
+W,8,8,0,W,0,0,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#39
+M,12,12,0,-,L,t,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#36
+M,16,16,0,-,U,t,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#50
+W,9223372036854775807,9223372036854775807,0,W,0,0,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#47

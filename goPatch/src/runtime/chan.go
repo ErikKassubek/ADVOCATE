@@ -53,12 +53,12 @@ type hchan struct {
 	// with stack shrinking.
 	lock mutex
 
-	// ADVOCATE-START
-	id             uint64 // id of the channel
-	numberSend     uint64 // number of completed send operations
-	numberRecv     uint64 // number of completed recv operations
-	advocateIgnore bool   // if true, the channel is ignored by tracing and replay
-	// ADVOCATE-END
+	// GOCCT-START
+	id          uint64 // id of the channel
+	numberSend  uint64 // number of completed send operations
+	numberRecv  uint64 // number of completed recv operations
+	gocctIgnore bool   // if true, the channel is ignored by tracing and replay
+	// GOCCT-END
 }
 
 type waitq struct {
@@ -124,10 +124,10 @@ func makechan(t *chantype, size int) *hchan {
 		c.bubble = b
 	}
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// get and save a new id for the channel
-	c.id = AdvocateAlloc("C", int(c.dataqsiz))
-	// ADVOCATE-END
+	c.id = GoCCTAlloc("C", int(c.dataqsiz))
+	// GOCCT-END
 
 	lockInit(&c.lock, lockRankHchan)
 
@@ -137,12 +137,12 @@ func makechan(t *chantype, size int) *hchan {
 	return c
 }
 
-// ADVOCATE-START
-func (c *hchan) SetAdvocateIgnore() {
-	c.advocateIgnore = true
+// GOCCT-START
+func (c *hchan) SetGoCCTIgnore() {
+	c.gocctIgnore = true
 }
 
-// ADVOCATE-END
+// GOCCT-END
 
 // chanbuf(c, i) is pointer to the i'th slot in the buffer.
 //
@@ -178,9 +178,9 @@ func full(c *hchan) bool {
 //
 //go:nosplit
 func chansend1(c *hchan, elem unsafe.Pointer) {
-	// ADVOCATE-START
+	// GOCCT-START
 	chansend(c, elem, true, sys.GetCallerPC(), false)
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 /*
@@ -195,10 +195,10 @@ func chansend1(c *hchan, elem unsafe.Pointer) {
  * been closed.  it is easiest to loop and re-run
  * the operation; we'll see that it's now closed.
  */
-// ADVOCATE-START
+// GOCCT-START
 // set ignored to true, if it is used in a one case + default select. In this case, it is recorded and replayed in the select
 func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored bool) bool {
-	// ADVOCATE-END
+	// GOCCT-END
 	if c == nil {
 		if !block {
 			return false
@@ -219,16 +219,16 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		panic(plainError("send on synctest channel from outside bubble"))
 	}
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
-	if !ignored && !c.advocateIgnore {
+	if !ignored && !c.gocctIgnore {
 		wait, ch, _, _ := WaitForReplay(OperationChannelSend, CallerSkipChanSendRecv, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateChanPre(c, OperationChannelSend, false)
+				_ = GoCCTChanPre(c, OperationChannelSend, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -236,7 +236,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	FuzzingFlowWait(3)
-	// ADVOCATE-END
+	// GOCCT-END
 
 	// Fast path: check for failed non-blocking operation without acquiring the lock.
 	//
@@ -265,30 +265,30 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 
 	lock(&c.lock)
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// this block is called if a send is made on a channel
 	// it increases the number of sends on the channel, which is used to
-	// identify the communication partner in the advocate analysis
+	// identify the communication partner in the gocct analysis
 	// After that a channel send event is created in the trace to show,
 	// that the channel tried to send.
 	// The current function 'chansend' only returns, if the send was successful,
 	// meaning the channel either directly communicated with a receive or wrote
 	// into the channel buffer. Therefor, the send event is modified to include
-	// the post information by AdvocateChanPost, if 'chansend' returns.
-	// advocateIndex is used to connect the post event to the correct
+	// the post information by GoCCTChanPost, if 'chansend' returns.
+	// gocctIndex is used to connect the post event to the correct
 	// pre envent in the trace.
-	var advocateIndex int
-	if !ignored && !c.advocateIgnore {
-		advocateIndex = AdvocateChanPre(c, OperationChannelSend, false)
+	var gocctIndex int
+	if !ignored && !c.gocctIgnore {
+		gocctIndex = GoCCTChanPre(c, OperationChannelSend, false)
 	}
-	// ADVOCATE-END
+	// GOCCT-END
 
 	if c.closed != 0 {
-		// ADVOCATE-START
-		if !ignored && !c.advocateIgnore {
-			AdvocateChanPostCausedByClose(advocateIndex)
+		// GOCCT-START
+		if !ignored && !c.gocctIgnore {
+			GoCCTChanPostCausedByClose(gocctIndex)
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 		unlock(&c.lock)
 		panic(plainError("send on closed channel"))
 	}
@@ -296,14 +296,14 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if sg := c.recvq.dequeue(); sg != nil {
 		// Found a waiting receiver. We pass the value we want to send
 		// directly to the receiver, bypassing the channel buffer (if any).
-		// ADVOCATE-START
+		// GOCCT-START
 		send(c, sg, ep, func() {
-			if !ignored && !c.advocateIgnore {
-				AdvocateChanPost(advocateIndex, c, OperationChannelSend)
+			if !ignored && !c.gocctIgnore {
+				GoCCTChanPost(gocctIndex, c, OperationChannelSend)
 			}
 			unlock(&c.lock)
 		}, 3)
-		// ADVOCATE-END
+		// GOCCT-END
 		return true
 	}
 
@@ -320,22 +320,22 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		}
 		c.qcount++
 
-		// ADVOCATE-START
-		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c, OperationChannelSend)
+		// GOCCT-START
+		if !ignored && !c.gocctIgnore {
+			GoCCTChanPost(gocctIndex, c, OperationChannelSend)
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 
 		unlock(&c.lock)
 		return true
 	}
 
 	if !block {
-		// ADVOCATE-START
-		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c, OperationChannelSend)
+		// GOCCT-START
+		if !ignored && !c.gocctIgnore {
+			GoCCTChanPost(gocctIndex, c, OperationChannelSend)
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 		unlock(&c.lock)
 		return false
 	}
@@ -380,13 +380,13 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		throw("G waiting list is corrupted")
 	}
 
-	// ADVOCATE-START
+	// GOCCT-START
 	lock(&c.lock)
-	if !ignored && !c.advocateIgnore {
-		AdvocateChanPost(advocateIndex, c, OperationChannelSend)
+	if !ignored && !c.gocctIgnore {
+		GoCCTChanPost(gocctIndex, c, OperationChannelSend)
 	}
 	unlock(&c.lock)
-	// ADVOCATE-END
+	// GOCCT-END
 
 	gp.waiting = nil
 	gp.activeStackChans = false
@@ -398,11 +398,11 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	mysg.c = nil
 	releaseSudog(mysg)
 	if closed {
-		// ADVOCATE-START
-		if !ignored && !c.advocateIgnore {
-			AdvocateChanPostCausedByClose(advocateIndex)
+		// GOCCT-START
+		if !ignored && !c.gocctIgnore {
+			GoCCTChanPostCausedByClose(gocctIndex)
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 		if c.closed == 0 {
 			throw("chansend: spurious wakeup")
 		}
@@ -521,18 +521,18 @@ func closechan(c *hchan) {
 		panic(plainError("close of synctest channel from outside bubble"))
 	}
 
-	// ADVOCATE-START
-	// AdvocateChanClose is called when a channel is closed. It creates a close event
+	// GOCCT-START
+	// GoCCTChanClose is called when a channel is closed. It creates a close event
 	// in the trace.
-	if !c.advocateIgnore {
+	if !c.gocctIgnore {
 		wait, chWait, chAck, _ := WaitForReplay(OperationChannelClose, CallerSkipChanClose, true)
 		if wait {
 			defer func() { chAck <- struct{}{} }()
 			<-chWait
 		}
-		AdvocateChanClose(c)
+		GoCCTChanClose(c)
 	}
-	// ADVOCATE-END
+	// GOCCT-END
 
 	lock(&c.lock)
 	if c.closed != 0 {
@@ -621,16 +621,16 @@ func empty(c *hchan) bool {
 //
 //go:nosplit
 func chanrecv1(c *hchan, elem unsafe.Pointer) {
-	// ADVOCATE-START
+	// GOCCT-START
 	chanrecv(c, elem, true, false)
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 //go:nosplit
 func chanrecv2(c *hchan, elem unsafe.Pointer) (received bool) {
-	// ADVOCATE-START
+	// GOCCT-START
 	_, received = chanrecv(c, elem, true, false)
-	// ADVOCATE-END
+	// GOCCT-END
 	return
 }
 
@@ -640,9 +640,9 @@ func chanrecv2(c *hchan, elem unsafe.Pointer) (received bool) {
 // Otherwise, if c is closed, zeros *ep and returns (true, false).
 // Otherwise, fills in *ep with an element and returns (true, true).
 // A non-nil ep must point to the heap or the caller's stack.
-// ADVOCATE-START
+// GOCCT-START
 func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, received bool) {
-	// ADVOCATE-END
+	// GOCCT-END
 	// raceenabled: don't need to check ep, as it is always on the stack
 	// or is new memory allocated by reflect.
 
@@ -666,16 +666,16 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		c.timer.maybeRunChan(c)
 	}
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
-	if !ignored && !c.advocateIgnore {
+	if !ignored && !c.gocctIgnore {
 		wait, ch, _, _ := WaitForReplay(OperationChannelRecv, CallerSkipChanSendRecv, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateChanPre(c, OperationChannelRecv, false)
+				_ = GoCCTChanPre(c, OperationChannelRecv, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -683,7 +683,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	}
 
 	FuzzingFlowWait(2)
-	// ADVOCATE-END
+	// GOCCT-END
 
 	// Fast path: check for failed non-blocking operation without acquiring the lock.
 	if !block && empty(c) {
@@ -725,23 +725,23 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 
 	lock(&c.lock)
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// this block is called if a receive is made on a channel.
 	// It increases the number of receives on the channel, which is used to
-	// identify the communication partner in the advocate analysis.
+	// identify the communication partner in the gocct analysis.
 	// After that a channel receive event is created in the trace to show,
 	// that the channel tried to receive.
 	// The current function 'chanrecv' only returns, if the receive was successful,
 	// meaning the channel either communicated with a send or read from the
 	// channel buffer. Therefor, the recive event is modified to include the
-	// post information by AdvocateChanPost, if 'chansend' returns.
-	// advocateIndex is used to connect the post event to the correct
+	// post information by GoCCTChanPost, if 'chansend' returns.
+	// gocctIndex is used to connect the post event to the correct
 	// pre envent in the trace.
-	var advocateIndex int
-	if !ignored && !c.advocateIgnore {
-		advocateIndex = AdvocateChanPre(c, OperationChannelRecv, false)
+	var gocctIndex int
+	if !ignored && !c.gocctIgnore {
+		gocctIndex = GoCCTChanPre(c, OperationChannelRecv, false)
 	}
-	// ADVOCATE-END
+	// GOCCT-END
 
 	if c.closed != 0 {
 		if c.qcount == 0 {
@@ -749,11 +749,11 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 				raceacquire(c.raceaddr())
 			}
 
-			// ADVOCATE-START
-			if !ignored && !c.advocateIgnore {
-				AdvocateChanPostCausedByClose(advocateIndex)
+			// GOCCT-START
+			if !ignored && !c.gocctIgnore {
+				GoCCTChanPostCausedByClose(gocctIndex)
 			}
-			// ADVOCATE-END
+			// GOCCT-END
 
 			unlock(&c.lock)
 			if ep != nil {
@@ -769,14 +769,14 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			// directly from sender. Otherwise, receive from head of queue
 			// and add sender's value to the tail of the queue (both map to
 			// the same buffer slot because the queue is full).
-			// ADVOCATE-START
+			// GOCCT-START
 			recv(c, sg, ep, func() {
-				if !ignored && !c.advocateIgnore {
-					AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
+				if !ignored && !c.gocctIgnore {
+					GoCCTChanPost(gocctIndex, c, OperationChannelRecv)
 				}
 				unlock(&c.lock)
 			}, 3)
-			// ADVOCATE-END
+			// GOCCT-END
 			return true, true
 		}
 	}
@@ -797,22 +797,22 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		}
 		c.qcount--
 
-		// ADVOCATE-START
-		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
+		// GOCCT-START
+		if !ignored && !c.gocctIgnore {
+			GoCCTChanPost(gocctIndex, c, OperationChannelRecv)
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 
 		unlock(&c.lock)
 		return true, true
 	}
 
 	if !block {
-		// ADVOCATE-START
-		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
+		// GOCCT-START
+		if !ignored && !c.gocctIgnore {
+			GoCCTChanPost(gocctIndex, c, OperationChannelRecv)
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 		unlock(&c.lock)
 		return false, false
 	}
@@ -864,17 +864,17 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	}
 	success := mysg.success
 
-	// ADVOCATE-START
+	// GOCCT-START
 	lock(&c.lock)
-	if !ignored && !c.advocateIgnore {
+	if !ignored && !c.gocctIgnore {
 		if success {
-			AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
+			GoCCTChanPost(gocctIndex, c, OperationChannelRecv)
 		} else {
-			AdvocateChanPostCausedByClose(advocateIndex)
+			GoCCTChanPostCausedByClose(gocctIndex)
 		}
 	}
 	unlock(&c.lock)
-	// ADVOCATE-END
+	// GOCCT-END
 
 	gp.param = nil
 	mysg.c = nil
@@ -979,31 +979,31 @@ func chanparkcommit(gp *g, chanLock unsafe.Pointer) bool {
 //		... bar
 //	}
 func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
-	// ADVOCATE-START
+	// GOCCT-START
 	var replayElem ReplayElement
 	var wait bool
 	var ch chan ReplayElement
-	if c != nil && !c.advocateIgnore {
+	if c != nil && !c.gocctIgnore {
 		wait, ch, _, _ = WaitForReplay(OperationSelect, CallerSkipSelectOneDef, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateSelectPreOneNonDef(c, true)
+				_ = GoCCTSelectPreOneNonDef(c, true)
 				unlock(&c.lock)
 				BlockForever()
 			}
 		}
 	}
 
-	advocateIndex := -1
-	if c != nil && !c.advocateIgnore {
+	gocctIndex := -1
+	if c != nil && !c.gocctIgnore {
 		lock(&c.lock)
-		advocateIndex = AdvocateSelectPreOneNonDef(c, true)
+		gocctIndex = GoCCTSelectPreOneNonDef(c, true)
 		unlock(&c.lock)
 	}
 
-	fuzzingEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex := GoCCTFuzzingGetPreferredCase(2)
 
 	if wait {
 		fuzzingIndex = min(fuzzingIndex, replayElem.Index)
@@ -1024,14 +1024,14 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 		}
 	}
 
-	if c != nil && !c.advocateIgnore {
+	if c != nil && !c.gocctIgnore {
 		lock(&c.lock)
-		AdvocateSelectPostOneNonDef(advocateIndex, res, c)
+		GoCCTSelectPostOneNonDef(gocctIndex, res, c)
 		unlock(&c.lock)
 	}
 
 	return res
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 // compiler implements
@@ -1051,32 +1051,32 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 //		... bar
 //	}
 func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
-	// ADVOCATE-START
+	// GOCCT-START
 	// see selectnbsend
 	var replayElem ReplayElement
 	var wait bool
 	var ch chan ReplayElement
-	if c != nil && !c.advocateIgnore {
+	if c != nil && !c.gocctIgnore {
 		wait, ch, _, _ = WaitForReplay(OperationSelect, CallerSkipSelectOneDef, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateSelectPreOneNonDef(c, false)
+				_ = GoCCTSelectPreOneNonDef(c, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
 		}
 	}
 
-	advocateIndex := -1
-	if c != nil && !c.advocateIgnore {
+	gocctIndex := -1
+	if c != nil && !c.gocctIgnore {
 		lock(&c.lock)
-		advocateIndex = AdvocateSelectPreOneNonDef(c, false)
+		gocctIndex = GoCCTSelectPreOneNonDef(c, false)
 		unlock(&c.lock)
 	}
 
-	fuzzingEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex := GoCCTFuzzingGetPreferredCase(2)
 
 	if wait {
 		fuzzingIndex = min(fuzzingIndex, replayElem.Index)
@@ -1098,28 +1098,28 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 		}
 	}
 
-	if c != nil && !c.advocateIgnore {
+	if c != nil && !c.gocctIgnore {
 		lock(&c.lock)
-		AdvocateSelectPostOneNonDef(advocateIndex, res, c)
+		GoCCTSelectPostOneNonDef(gocctIndex, res, c)
 		unlock(&c.lock)
 	}
 	return res, recv
 
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 //go:linkname reflect_chansend reflect.chansend0
 func reflect_chansend(c *hchan, elem unsafe.Pointer, nb bool) (selected bool) {
-	// ADVOCATE-START
+	// GOCCT-START
 	return chansend(c, elem, !nb, sys.GetCallerPC(), false)
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 //go:linkname reflect_chanrecv reflect.chanrecv
 func reflect_chanrecv(c *hchan, nb bool, elem unsafe.Pointer) (selected bool, received bool) {
-	// ADVOCATE-START
+	// GOCCT-START
 	return chanrecv(c, elem, !nb, false)
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 func chanlen(c *hchan) int {

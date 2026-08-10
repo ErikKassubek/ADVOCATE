@@ -1,0 +1,12 @@
+F,1214,gobench/cockroach/1055.TestCockroach1055,/home/erik/Arbeit/Advocate/goPatch/src/testing/testing.go#1935,/home/erik/Arbeit/Advocate/goPatch/src/testing/testing.go#1935
+F,1216,gobench/cockroach/1055.NewStopper,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#71,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#71
+R,1220
+F,1222,gobench/cockroach/1055.NewStopper,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#71,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#71
+R,1226
+F,1228,gobench/cockroach/1055.NewStopper,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#71,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#71
+R,1232
+F,1234,gobench/cockroach/1055.(*Stopper).AddWorker,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#76,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#76
+W,1238,1242,0,A,1,1,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#19
+R,1244
+G,1246,3,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#77
+F,1254,gobench/cockroach/1055.(*Stopper).AddWorker,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#76,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#76

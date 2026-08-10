@@ -119,13 +119,13 @@ func block() {
 // ordinal position of its respective select{recv,send,default} call.
 // Also, if the chosen scase was a receive operation, it reports whether
 // a value was received.
-// ADVOCATE-START
+// GOCCT-START
 func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool) (int, bool) {
 
 	var replayElem ReplayElement
 	wait, ch, _, _ := WaitForReplay(OperationSelect, CallerSkipSelectRepl, false)
 
-	gFuzzEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
+	gFuzzEnabled, fuzzingIndex := GoCCTFuzzingGetPreferredCase(2)
 
 	ai := -1
 
@@ -282,17 +282,17 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 // 	// lock all the channels involved in the select
 // 	sellock(scases, lockorder)
 
-// 	// ADVOCATE-START
+// 	// GOCCT-START
 // 	// This block is called, if the code runs a select statement.
-// 	// AdvocateSelectPre records the state of the select case, meaning which
+// 	// GoCCTSelectPre records the state of the select case, meaning which
 // 	// cases exists (channel / direction) and weather a default statement is present.
 // 	// Here the first lock order is set. This is only needed if the select
 // 	// is never executed.
-// 	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block)
-// 	// ADVOCATE-END
+// 	gocctIndex := GoCCTSelectPre(&scases, nsends, ncases, block)
+// 	// GOCCT-END
 
 // 	if block && preferredIndex == -1 {
-// 		return true, -1, false, advocateIndex
+// 		return true, -1, false, gocctIndex
 // 	}
 
 // 	var (
@@ -462,16 +462,16 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// lock all the channels involved in the select
 	sellock(scases, lockorder)
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// This block is called, if the code runs a select statement.
-	// AdvocateSelectPre records the state of the select case, meaning which
+	// GoCCTSelectPre records the state of the select case, meaning which
 	// cases exists (channel / direction) and weather a default statement is present.
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
-	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block)
-	advocateRClose := false // case was chosen, because channel was closed
+	gocctIndex := GoCCTSelectPre(&scases, nsends, ncases, block)
+	gocctRClose := false // case was chosen, because channel was closed
 	wasTimeout := false
-	// ADVOCATE-END
+	// GOCCT-END
 
 	var (
 		sg     *sudog
@@ -494,12 +494,12 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		cas = &scases[casi]
 		c = cas.c
 
-		// ADVOCATE-START
+		// GOCCT-START
 		// Only check for the preferred case
 		if casi != preferredIndex {
 			continue
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 
 		if casi >= nsends {
 			sg = c.sendq.dequeue()
@@ -560,7 +560,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		*nextp = sg
 		nextp = &sg.waitlink
 
-		// ADVOCATE-START
+		// GOCCT-START
 		if casi == preferredIndex {
 			if casi < nsends {
 				c.sendq.enqueue(sg)
@@ -568,7 +568,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 				c.recvq.enqueue(sg)
 			}
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 
 		if c.timer != nil {
 			blockTimerChan(c)
@@ -582,13 +582,12 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	// ADVOCATE-START
-	gp.advocateRoutineInfo.wokenNoTimeout = false
+	// GOCCT-START
+	gp.gocctRoutineInfo.wokenNoTimeout = false
 	goparkWithTimeout(selparkcommit, nil, waitReason, traceBlockSelect, 1, preferredTimeout)
-	wasTimeout = gp.advocateRoutineInfo.wokenButTimeout
-	println("TO: ", wasTimeout)
-	// ADVOCATE-END
-	gp.advocateRoutineInfo.wokenButTimeout = false
+	wasTimeout = gp.gocctRoutineInfo.wokenButTimeout
+	// GOCCT-END
+	gp.gocctRoutineInfo.wokenButTimeout = false
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)
@@ -619,7 +618,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 			unblockTimerChan(k.c)
 		}
 
-		// ADVOCATE-START
+		// GOCCT-START
 		casi = int(casei)
 
 		// Only dequeue for the preferred case
@@ -641,7 +640,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 				}
 			}
 		}
-		// ADVOCATE-END
+		// GOCCT-END
 
 		sgnext = sglist.waitlink
 		sglist.waitlink = nil
@@ -649,12 +648,12 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		sglist = sgnext
 	}
 
-	// ADVOCATe-STRAT
+	// GOCCT-STRAT
 	if wasTimeout {
 		selunlock(scases, lockorder)
-		return false, 0, false, advocateIndex
+		return false, 0, false, gocctIndex
 	}
-	// ADVOCATE-END
+	// GOCCT-END
 
 	if cas == nil {
 		throw("selectgo: bad wakeup")
@@ -696,14 +695,14 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		}
 	}
 
-	// ADVOCATE-START
+	// GOCCT-START
 	if wasTimeout {
-		return true, 0, false, advocateIndex
+		return true, 0, false, gocctIndex
 	}
 
-	advocateRClose = !caseSuccess
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	gocctRClose = !caseSuccess
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -734,9 +733,9 @@ bufrecv:
 	}
 	c.qcount--
 
-	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -760,9 +759,9 @@ bufsend:
 	}
 	c.qcount++
 
-	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -775,19 +774,19 @@ recv:
 	}
 	recvOK = true
 
-	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	goto retc
 
 rclose:
 	// read at end of closed channel
 
-	// ADVOCATE-START
-	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	gocctRClose = true
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	recvOK = false
@@ -812,9 +811,9 @@ send:
 	}
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 
-	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
@@ -825,26 +824,26 @@ retc:
 	if caseReleaseTime > 0 {
 		blockevent(caseReleaseTime-t0, 1)
 	}
-	// ADVOCATE-START
-	return true, casi, recvOK, advocateIndex
-	// ADVOCATE-END
+	// GOCCT-START
+	return true, casi, recvOK, gocctIndex
+	// GOCCT-END
 
 sclose:
 	// send on closed channel
-	// ADVOCATE-START
-	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	gocctRClose = true
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	panic(plainError("send on closed channel"))
 }
 
-// ADVOCATE-END
+// GOCCT-END
 
-// ADVOCATE-START
-func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, advocateIndex int) (int, bool) {
-	// ADVOCATE-END
+// GOCCT-START
+func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, gocctIndex int) (int, bool) {
+	// GOCCT-END
 	gp := getg()
 	if debugSelect {
 		print("select: cas0=", cas0, "\n")
@@ -976,17 +975,17 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// lock all the channels involved in the select
 	sellock(scases, lockorder)
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// This block is called, if the code runs a select statement.
-	// AdvocateSelectPre records the state of the select case, meaning which
+	// GoCCTSelectPre records the state of the select case, meaning which
 	// cases exists (channel / direction) and weather a default statement is present.
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
-	if advocateIndex == -1 {
-		advocateIndex = AdvocateSelectPre(&scases, nsends, ncases, block)
+	if gocctIndex == -1 {
+		gocctIndex = GoCCTSelectPre(&scases, nsends, ncases, block)
 	}
-	advocateRClose := false // case was chosen, because channel was closed
-	// ADVOCATE-END
+	gocctRClose := false // case was chosen, because channel was closed
+	// GOCCT-END
 
 	var (
 		sg     *sudog
@@ -1086,7 +1085,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
 	gopark(selparkcommit, nil, waitReason, traceBlockSelect, 1)
-	gp.advocateRoutineInfo.wokenButTimeout = false
+	gp.gocctRoutineInfo.wokenButTimeout = false
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)
@@ -1178,10 +1177,10 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		}
 	}
 
-	// ADVOCATE-START
-	advocateRClose = !caseSuccess
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	gocctRClose = !caseSuccess
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -1212,9 +1211,9 @@ bufrecv:
 	}
 	c.qcount--
 
-	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -1238,9 +1237,9 @@ bufsend:
 	}
 	c.qcount++
 
-	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -1253,19 +1252,19 @@ recv:
 	}
 	recvOK = true
 
-	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	goto retc
 
 rclose:
 	// read at end of closed channel
 
-	// ADVOCATE-START
-	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	gocctRClose = true
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	recvOK = false
@@ -1290,9 +1289,9 @@ send:
 	}
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 
-	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
@@ -1307,10 +1306,10 @@ retc:
 
 sclose:
 	// send on closed channel
-	// ADVOCATE-START
-	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
-	// ADVOCATE-END
+	// GOCCT-START
+	gocctRClose = true
+	GoCCTSelectPost(gocctIndex, c, casi, gocctRClose)
+	// GOCCT-END
 
 	selunlock(scases, lockorder)
 	panic(plainError("send on closed channel"))

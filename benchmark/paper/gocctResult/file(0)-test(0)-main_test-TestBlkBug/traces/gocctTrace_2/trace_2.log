@@ -1,0 +1,13 @@
+F,984,paper.TestBlkBug,/home/erik/Arbeit/GoCCT/benchmark/paper/main_test.go#10,/home/erik/Arbeit/GoCCT/goPatch/src/testing/testing.go#1935
+N,986,2000000001,C,0,/home/erik/Arbeit/GoCCT/benchmark/paper/main_test.go#11
+G,988,3,/home/erik/Arbeit/GoCCT/benchmark/paper/main_test.go#12
+S,1022,1044,2000000004,C.2000000002.R.f.0.1.18446744073709551615~C.2000000001.R.f.0.0.0,0,/home/erik/Arbeit/GoCCT/benchmark/paper/main_test.go#16
+R,1086
+I,1114,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#551
+M,1116,1120,0,f,L,t,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#554
+I,1140,I,2,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#562
+M,1152,1156,0,f,U,t,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#572
+I,1158,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#574
+I,1160,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#384
+I,1162,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#405
+E,1522

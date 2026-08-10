@@ -128,14 +128,14 @@ type CmdFlags struct {
 	PgoProfile         string       "help:\"read profile or pre-process profile from `file`\""
 	ErrorURL           bool         "help:\"print explanatory URL with error message if applicable\""
 
-	// ADVOCATE-START
-	AdvocateTrace   bool   "help:\"record the program using the advocate recorder\""
-	AdvocateReplay  bool   "help:\"replay a trace using the advocate replayer\""
-	AdvocateFuzzing bool   "help:\"run fuzzing using the advocate mechanism\""
-	AdvocatePath    string "help:\"set the advocate replay path\""
-	AdvocateTimeout int    "help:\"set the advocate tinmeout in s\""
-	AdvocateAtomics bool   "help:\"set if advocate should use atomics\""
-	// ADVOCATE-END
+	// GOCCT-START
+	GoCCTTrace   bool   "help:\"record the program using the gocct recorder\""
+	GoCCTReplay  bool   "help:\"replay a trace using the gocct replayer\""
+	GoCCTFuzzing bool   "help:\"run fuzzing using the gocct mechanism\""
+	GoCCTPath    string "help:\"set the gocct replay path\""
+	GoCCTTimeout int    "help:\"set the gocct tinmeout in s\""
+	GoCCTAtomics bool   "help:\"set if gocct should use atomics\""
+	// GOCCT-END
 
 	// Configuration derived from flags; not a flag itself.
 	Cfg struct {

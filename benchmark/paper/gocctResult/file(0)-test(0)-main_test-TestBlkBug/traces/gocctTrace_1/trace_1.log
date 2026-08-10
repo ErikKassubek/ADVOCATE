@@ -1,0 +1,13 @@
+F,2,main.init.0,_testmain.go#39,/home/erik/Arbeit/GoCCT/goPatch/src/runtime/proc.go#7774
+R,4
+F,8,main.main,_testmain.go#44,/home/erik/Arbeit/GoCCT/goPatch/src/runtime/proc.go#285
+I,182,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#477
+I,804,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#477
+I,1570,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#551
+M,1572,1576,0,f,L,t,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#554
+I,1596,I,2,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#562
+M,1608,1612,0,f,U,t,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#572
+I,1614,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#574
+I,1616,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#384
+I,1618,I,1,0,/home/erik/Arbeit/GoCCT/goPatch/src/context/context.go#405
+E,1866

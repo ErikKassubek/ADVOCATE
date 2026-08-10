@@ -1,0 +1,6 @@
+F,938,paper.TestBlkBug.func1,/home/erik/Arbeit/GoCCT/benchmark/paper/main_test.go#12,/home/erik/Arbeit/GoCCT/benchmark/paper/main_test.go#12
+F,940,paper.calc,/home/erik/Arbeit/GoCCT/benchmark/paper/main.go#13,/home/erik/Arbeit/GoCCT/benchmark/paper/main_test.go#13
+R,942
+C,944,946,2000000001,S,f,1,0,0,/home/erik/Arbeit/GoCCT/benchmark/paper/main_test.go#13
+R,948
+E,950

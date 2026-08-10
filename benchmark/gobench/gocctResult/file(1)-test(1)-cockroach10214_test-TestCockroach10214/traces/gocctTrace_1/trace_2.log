@@ -1,0 +1,12 @@
+F,1260,gobench/cockroach/10214.TestCockroach10214,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/10214/cockroach10214_test.go#93,/home/erik/Arbeit/Advocate/goPatch/src/testing/testing.go#1935
+G,1262,3,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/10214/cockroach10214_test.go#108
+G,1264,4,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/10214/cockroach10214_test.go#112
+R,1596
+I,1624,I,1,0,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#551
+M,1626,1630,0,f,L,t,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#554
+I,1650,I,2,0,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#562
+M,1662,1666,0,f,U,t,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#572
+I,1668,I,1,0,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#574
+I,1670,I,1,0,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#384
+I,1672,I,1,0,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#405
+E,2056

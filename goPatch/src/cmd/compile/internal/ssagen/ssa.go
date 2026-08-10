@@ -591,40 +591,40 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 	s.zeroResults()
 	s.paramsToHeap()
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// MARK: function calls
-	// isAdvocate := base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing
-	// if isAdvocate && isUserMain(fn) {
-	// 	if base.Flag.AdvocateTrace {
+	// isGoCCT := base.Flag.GoCCTTrace || base.Flag.GoCCTReplay || base.Flag.GoCCTFuzzing
+	// if isGoCCT && isUserMain(fn) {
+	// 	if base.Flag.GoCCTTrace {
 	// 		s.rtcall(
-	// 			typecheck.LookupRuntimeFunc("AdvocateInitTracing"),
+	// 			typecheck.LookupRuntimeFunc("GoCCTInitTracing"),
 	// 			true,
 	// 			nil,
 
 	// 		)
-	// 	} else if base.Flag.AdvocateReplay {
+	// 	} else if base.Flag.GoCCTReplay {
 	// 		s.rtcall(
-	// 			typecheck.LookupRuntimeFunc("AdvocateInitReplay"),
+	// 			typecheck.LookupRuntimeFunc("GoCCTInitReplay"),
 	// 			true,
 	// 			nil,
 	// 		)
-	// 	} else if base.Flag.AdvocateFuzzing {
+	// 	} else if base.Flag.GoCCTFuzzing {
 	// 		s.rtcall(
-	// 			typecheck.LookupRuntimeFunc("AdvocateInitFuzzing"),
+	// 			typecheck.LookupRuntimeFunc("GoCCTInitFuzzing"),
 	// 			true,
 	// 			nil,
 	// 		)
 	// 	}
 	// }
 
-	if shouldAdvocate(fn) {
+	if shouldGoCCT(fn) {
 		s.rtcall(
-			typecheck.LookupRuntimeFunc("advocateFunctionCall"),
+			typecheck.LookupRuntimeFunc("gocctFunctionCall"),
 			true,
 			nil,
 		)
 	}
-	// ADVOCATE-END
+	// GOCCT-END
 
 	s.stmtList(fn.Body)
 
@@ -2315,9 +2315,9 @@ func (s *state) stmt(n ir.Node) {
 const shareDeferExits = false
 
 // ADOVCATE-START
-// MARK: shouldAdvocate
-func shouldAdvocate(fn *ir.Func) bool {
-	if !(base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing) {
+// MARK: shouldGoCCT
+func shouldGoCCT(fn *ir.Func) bool {
+	if !(base.Flag.GoCCTTrace || base.Flag.GoCCTReplay || base.Flag.GoCCTFuzzing) {
 		return false
 	}
 
@@ -2348,7 +2348,7 @@ func shouldAdvocate(fn *ir.Func) bool {
 
 	name := fn.Sym().Name
 
-	if name == "advocateFunctionCall" || name == "advocateFunctionReturn" {
+	if name == "gocctFunctionCall" || name == "gocctFunctionReturn" {
 		return false
 	}
 
@@ -2356,20 +2356,20 @@ func shouldAdvocate(fn *ir.Func) bool {
 }
 
 // MARK: exit
-func (s *state) advocateExitCall(fn *ir.Func) {
-	if !shouldAdvocate(fn) {
+func (s *state) gocctExitCall(fn *ir.Func) {
+	if !shouldGoCCT(fn) {
 		return
 	}
 
-	s.rtcall(typecheck.LookupRuntimeFunc("advocateFunctionReturn"), true, nil)
+	s.rtcall(typecheck.LookupRuntimeFunc("gocctFunctionReturn"), true, nil)
 
 	if isUserMain(fn) {
-		if base.Flag.AdvocateTrace {
-			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishTracing"), true, nil)
-		} else if base.Flag.AdvocateReplay {
-			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishReplay"), true, nil)
-		} else if base.Flag.AdvocateFuzzing {
-			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishFuzzing"), true, nil)
+		if base.Flag.GoCCTTrace {
+			s.rtcall(typecheck.LookupRuntimeFunc("GoCCTFinishTracing"), true, nil)
+		} else if base.Flag.GoCCTReplay {
+			s.rtcall(typecheck.LookupRuntimeFunc("GoCCTFinishReplay"), true, nil)
+		} else if base.Flag.GoCCTFuzzing {
+			s.rtcall(typecheck.LookupRuntimeFunc("GoCCTFinishFuzzing"), true, nil)
 		}
 	}
 }
@@ -2392,7 +2392,7 @@ func isUserMain(fn *ir.Func) bool {
 	return pkg.Name == "main" && pkg.Path == "main"
 }
 
-// ADVOCATE-END
+// GOCCT-END
 
 // exit processes any code that needs to be generated just before returning.
 // It returns a BlockRet block that ends the control flow. Its control value
@@ -2404,9 +2404,9 @@ func (s *state) exit() *ssa.Block {
 				if s.curBlock.Kind != ssa.BlockPlain {
 					panic("Block for an exit should be BlockPlain")
 				}
-				// ADVOCATE-START
-				s.advocateExitCall(s.curfn)
-				// ADVOCATE-END
+				// GOCCT-START
+				s.gocctExitCall(s.curfn)
+				// GOCCT-END
 				s.curBlock.AddEdgeTo(s.lastDeferExit)
 				s.endBlock()
 				return s.lastDeferFinalBlock
@@ -2463,9 +2463,9 @@ func (s *state) exit() *ssa.Block {
 		s.rtcall(ir.Syms.Racefuncexit, true, nil)
 	}
 
-	// ADVOCATE-START
-	s.advocateExitCall(s.curfn)
-	// ADVOCATE-END
+	// GOCCT-START
+	s.gocctExitCall(s.curfn)
+	// GOCCT-END
 
 	results[len(results)-1] = s.mem()
 	m := s.newValue0(ssa.OpMakeResult, s.f.OwnAux.LateExpansionResultType())

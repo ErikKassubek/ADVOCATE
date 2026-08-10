@@ -10,26 +10,26 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	// ADVOCATE-START
+	// GOCCT-START
 	"runtime"
-	// ADVOCATE-END
+	// GOCCT-END
 )
 
-// ADVOCATE-START
+// GOCCT-START
 //
-//go:linkname AdvocateAllocWG runtime.AdvocateAllocWG
-func AdvocateAllocWG(ptr unsafe.Pointer) {
-	if runtime.AdvocateTracingDisabled {
+//go:linkname GoCCTAllocWG runtime.GoCCTAllocWG
+func GoCCTAllocWG(ptr unsafe.Pointer) {
+	if runtime.GoCCTTracingDisabled {
 		return
 	}
 	w := (*WaitGroup)(ptr)
 	if w.id != 0 {
 		return
 	}
-	w.id = runtime.AdvocateAlloc("W", 0)
+	w.id = runtime.GoCCTAlloc("W", 0)
 }
 
-// ADVOCATE-END
+// GOCCT-END
 
 // A WaitGroup is a counting semaphore typically used to wait
 // for a group of goroutines or tasks to finish.
@@ -75,9 +75,9 @@ type WaitGroup struct {
 	state atomic.Uint64
 	sema  uint32
 
-	// ADVOCATE-START
+	// GOCCT-START
 	id uint64 // id for the waitgroup
-	// ADVOCATE-END
+	// GOCCT-END
 }
 
 // waitGroupBubbleFlag indicates that a WaitGroup is associated with a synctest bubble.
@@ -99,7 +99,7 @@ const waitGroupBubbleFlag = 0x8000_0000
 // new Add calls must happen after all previous Wait calls have returned.
 // See the WaitGroup example.
 func (wg *WaitGroup) Add(delta int) {
-	// ADVOCATE-START
+	// GOCCT-START
 	skip := runtime.CallerSkipWaitGroupDone
 	if delta > 0 {
 		skip = runtime.CallerSkipWaitGroupAddWait
@@ -109,7 +109,7 @@ func (wg *WaitGroup) Add(delta int) {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
-	// ADVOCATE-END
+	// GOCCT-END
 
 	if race.Enabled {
 		if delta < 0 {
@@ -145,15 +145,15 @@ func (wg *WaitGroup) Add(delta int) {
 	v := int32(state >> 32)
 	w := uint32(state & 0x7fffffff)
 
-	// ADVOCATE-START
+	// GOCCT-START
 	// Record the add or done of a wait group in the routine's trace.
 	// If delta > 0, it is an add, if it's -1, it's a done.
 	// The add or done cannot fait without crashing the program. Add and done
 	// do not block the program. Therefore it is not possible, that it is
 	// called but not finished (except if it panics). Therefore it is not
 	// necessary to record a post event.
-	index := runtime.AdvocateWaitGroupAdd(unsafe.Pointer(wg), wg.id, delta, v)
-	// ADVOCATE-END
+	index := runtime.GoCCTWaitGroupAdd(unsafe.Pointer(wg), wg.id, delta, v)
+	// GOCCT-END
 
 	if race.Enabled && delta > 0 && v == int32(delta) {
 		// The first increment must be synchronized with Wait.
@@ -168,9 +168,9 @@ func (wg *WaitGroup) Add(delta int) {
 		panic("sync: WaitGroup misuse: Add called concurrently with Wait")
 	}
 	if v > 0 || w == 0 {
-		// ADVOCATE-START
-		runtime.AdvocateWaitGroupPost(index)
-		// ADVOCATE-END
+		// GOCCT-START
+		runtime.GoCCTWaitGroupPost(index)
+		// GOCCT-END
 		return
 	}
 	// This goroutine has set counter to 0 when waiters > 0.
@@ -192,9 +192,9 @@ func (wg *WaitGroup) Add(delta int) {
 		runtime_Semrelease(&wg.sema, false, 0)
 	}
 
-	// ADVOCATE-START
-	runtime.AdvocateWaitGroupPost(index)
-	// ADVOCATE-END
+	// GOCCT-START
+	runtime.GoCCTWaitGroupPost(index)
+	// GOCCT-END
 }
 
 // Done decrements the [WaitGroup] task counter by one.
@@ -207,19 +207,19 @@ func (wg *WaitGroup) Add(delta int) {
 //
 // [the Go memory model]: https://go.dev/ref/mem
 func (wg *WaitGroup) Done() {
-	// ADVOCATE-NOTE: is recorded in wg.Adds
+	// GOCCT-NOTE: is recorded in wg.Adds
 	wg.Add(-1)
 }
 
 // Wait blocks until the [WaitGroup] task counter is zero.
 func (wg *WaitGroup) Wait() {
-	// ADVOCATE-START
+	// GOCCT-START
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			_ = runtime.AdvocateWaitGroupWait(unsafe.Pointer(wg), wg.id)
+			_ = runtime.GoCCTWaitGroupWait(unsafe.Pointer(wg), wg.id)
 			runtime.BlockForever()
 		}
 	}
@@ -228,8 +228,8 @@ func (wg *WaitGroup) Wait() {
 	// The wait will run until the waitgroup counte is zero. Therefor it
 	// blocks the routine and it is nessesary to record the successful
 	// finish of the wait with a post.
-	advocateIndex := runtime.AdvocateWaitGroupWait(unsafe.Pointer(wg), wg.id)
-	// ADVOCATE-END
+	gocctIndex := runtime.GoCCTWaitGroupWait(unsafe.Pointer(wg), wg.id)
+	// GOCCT-END
 
 	if race.Enabled {
 		race.Disable()
@@ -253,9 +253,9 @@ func (wg *WaitGroup) Wait() {
 				}
 			}
 
-			// ADVOCATE-START
-			runtime.AdvocateWaitGroupPost(advocateIndex)
-			//ADVOCATE-END
+			// GOCCT-START
+			runtime.GoCCTWaitGroupPost(gocctIndex)
+			//GOCCT-END
 
 			return
 		}
@@ -291,9 +291,9 @@ func (wg *WaitGroup) Wait() {
 				race.Acquire(unsafe.Pointer(wg))
 			}
 
-			// ADVOCATE-START
-			runtime.AdvocateWaitGroupPost(advocateIndex)
-			//ADVOCATE-END
+			// GOCCT-START
+			runtime.GoCCTWaitGroupPost(gocctIndex)
+			//GOCCT-END
 
 			return
 		}

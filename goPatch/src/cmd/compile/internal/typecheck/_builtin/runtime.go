@@ -298,19 +298,19 @@ var riscv64HasZbb bool
 
 func asanregisterglobals(unsafe.Pointer, uintptr)
 
-// ADVOCATE-START
-func advocateFunctionCall()
-func advocateFunctionReturn()
-func AdvocateAllocMutex(unsafe.Pointer)
-func AdvocateAllocCondVar(unsafe.Pointer)
-func AdvocateAllocWG(unsafe.Pointer)
-func advocateControllFlow(string, int, int)
+// GOCCT-START
+func gocctFunctionCall()
+func gocctFunctionReturn()
+func GoCCTAllocMutex(unsafe.Pointer)
+func GoCCTAllocCondVar(unsafe.Pointer)
+func GoCCTAllocWG(unsafe.Pointer)
+func gocctControllFlow(string, int, int)
 
-func AdvocateInitTracing(int, bool)
-func AdvocateFinishTracing()
-func AdvocateInitReplay(string, int, bool, bool)
-func AdvocateFinishReplay()
-func AdvocateInitFuzzing(string, int, bool)
-func AdvocateFinishFuzzing()
+func GoCCTInitTracing(int, bool)
+func GoCCTFinishTracing()
+func GoCCTInitReplay(string, int, bool, bool)
+func GoCCTFinishReplay()
+func GoCCTInitFuzzing(string, int, bool)
+func GoCCTFinishFuzzing()
 
-// ADVOCATE-END
+// GOCCT-END

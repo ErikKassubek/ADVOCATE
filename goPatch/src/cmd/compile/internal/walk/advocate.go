@@ -1,8 +1,8 @@
-// ADVOCATE-FILE-START
+// GOCCT-FILE-START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate.go
+// File: gocct.go
 // Brief: Insert recording for mutex, cond var and wait group creation
 //
 // Author: Erik Kassubek
@@ -27,8 +27,8 @@ import (
 // ==================================================
 
 func instrumentBody(fn *ir.Func) {
-	isAdvocate := base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing
-	if !isAdvocate {
+	isGoCCT := base.Flag.GoCCTTrace || base.Flag.GoCCTReplay || base.Flag.GoCCTFuzzing
+	if !isGoCCT {
 		return
 	}
 
@@ -36,7 +36,7 @@ func instrumentBody(fn *ir.Func) {
 		fn.Body = addInit(fn.Body, fn.Pos())
 	}
 
-	if !shouldAdvocate(fn) {
+	if !shouldGoCCT(fn) {
 		return
 	}
 
@@ -48,38 +48,38 @@ func instrumentBody(fn *ir.Func) {
 func addInit(body ir.Nodes, pos src.XPos) ir.Nodes {
 	out := make(ir.Nodes, 0)
 
-	if base.Flag.AdvocateTrace {
-		fn := typecheck.LookupRuntime("AdvocateInitTracing")
+	if base.Flag.GoCCTTrace {
+		fn := typecheck.LookupRuntime("GoCCTInitTracing")
 		out.Append(typecheck.Call(
 			pos,
 			fn,
 			[]ir.Node{
-				ir.NewInt(pos, int64(base.Flag.AdvocateTimeout)),
+				ir.NewInt(pos, int64(base.Flag.GoCCTTimeout)),
 				ir.NewBool(pos, false),
 			},
 			false,
 		))
-	} else if base.Flag.AdvocateReplay {
-		fn := typecheck.LookupRuntime("AdvocateInitReplay")
+	} else if base.Flag.GoCCTReplay {
+		fn := typecheck.LookupRuntime("GoCCTInitReplay")
 		out.Append(typecheck.Call(
 			pos,
 			fn,
 			[]ir.Node{
-				ir.NewString(pos, base.Flag.AdvocatePath),
-				ir.NewInt(pos, int64(base.Flag.AdvocateTimeout)),
-				ir.NewBool(pos, base.Flag.AdvocateAtomics),
+				ir.NewString(pos, base.Flag.GoCCTPath),
+				ir.NewInt(pos, int64(base.Flag.GoCCTTimeout)),
+				ir.NewBool(pos, base.Flag.GoCCTAtomics),
 				ir.NewBool(pos, true),
 			},
 			false,
 		))
-	} else if base.Flag.AdvocateFuzzing {
-		fn := typecheck.LookupRuntime("AdvocateInitFuzzing")
+	} else if base.Flag.GoCCTFuzzing {
+		fn := typecheck.LookupRuntime("GoCCTInitFuzzing")
 		out.Append(typecheck.Call(
 			pos,
 			fn,
 			[]ir.Node{
-				ir.NewString(pos, base.Flag.AdvocatePath),
-				ir.NewInt(pos, int64(base.Flag.AdvocateTimeout)),
+				ir.NewString(pos, base.Flag.GoCCTPath),
+				ir.NewInt(pos, int64(base.Flag.GoCCTTimeout)),
 				ir.NewBool(pos, false),
 			},
 			false,
@@ -212,13 +212,13 @@ func addAlloc(n ir.Node) ir.Node {
 
 	switch {
 	case isSyncType(t, "Mutex") || isSyncType(t, "RWMutex"):
-		runtimeName = "AdvocateAllocMutex"
+		runtimeName = "GoCCTAllocMutex"
 
 	case isSyncType(t, "Cond"):
-		runtimeName = "AdvocateAllocCondVar"
+		runtimeName = "GoCCTAllocCondVar"
 
 	case isSyncType(t, "WaitGroup"):
-		runtimeName = "AdvocateAllocWG"
+		runtimeName = "GoCCTAllocWG"
 
 	default:
 		return nil
@@ -428,13 +428,13 @@ func instrumentParameterCopy(fn *ir.Func) {
 
 		switch {
 		case isSyncType(n.Type(), "Mutex") || isSyncType(n.Type(), "RWMutex"):
-			runtimeName = "AdvocateAllocMutex"
+			runtimeName = "GoCCTAllocMutex"
 
 		case isSyncType(n.Type(), "Cond"):
-			runtimeName = "AdvocateAllocCondVar"
+			runtimeName = "GoCCTAllocCondVar"
 
 		case isSyncType(n.Type(), "WaitGroup"):
-			runtimeName = "AdvocateAllocWG"
+			runtimeName = "GoCCTAllocWG"
 		default:
 			continue
 		}
@@ -462,15 +462,15 @@ func instrumentParameterCopy(fn *ir.Func) {
 }
 
 // ==================================================
-// MARK: shouldAdvocate
+// MARK: shouldGoCCT
 // ==================================================
 
-func shouldAdvocate(n ir.Node) bool {
+func shouldGoCCT(n ir.Node) bool {
 	if n == nil {
 		return false
 	}
 
-	if !(base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing) {
+	if !(base.Flag.GoCCTTrace || base.Flag.GoCCTReplay || base.Flag.GoCCTFuzzing) {
 		return false
 	}
 
@@ -484,10 +484,10 @@ func shouldAdvocate(n ir.Node) bool {
 		return false
 	}
 
-	return !isAdvocateCall(n)
+	return !isGoCCTCall(n)
 }
 
-func isAdvocateCall(n ir.Node) bool {
+func isGoCCTCall(n ir.Node) bool {
 	call, ok := n.(*ir.CallExpr)
 	if !ok {
 		return false
@@ -503,10 +503,10 @@ func isAdvocateCall(n ir.Node) bool {
 	}
 
 	return name.Sym() != nil &&
-		(fmt.Sprint(name.Sym()) == "AdvocateAllocMutex" ||
-			fmt.Sprint(name.Sym()) == "AdvocateAllocCondVar" ||
-			fmt.Sprint(name.Sym()) == "AdvocateAllocWG" ||
-			fmt.Sprint(name.Sym()) == "advocateTraceControllFlow")
+		(fmt.Sprint(name.Sym()) == "GoCCTAllocMutex" ||
+			fmt.Sprint(name.Sym()) == "GoCCTAllocCondVar" ||
+			fmt.Sprint(name.Sym()) == "GoCCTAllocWG" ||
+			fmt.Sprint(name.Sym()) == "gocctTraceControllFlow")
 }
 
 // ==================================================
@@ -519,7 +519,7 @@ func printFunc(fn *ir.Func) {
 }
 
 func addControllRec(body ir.Nodes, pos src.XPos, numCases, caseNum int, t string) ir.Nodes {
-	fn := typecheck.LookupRuntime("advocateControllFlow")
+	fn := typecheck.LookupRuntime("gocctControllFlow")
 
 	call := typecheck.Call(
 		pos,

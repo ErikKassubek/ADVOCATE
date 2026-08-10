@@ -1,0 +1,5 @@
+F,2,main.init.0,_testmain.go#37,/home/erik/Arbeit/Advocate/goPatch/src/runtime/proc.go#7765
+R,4
+F,10,main.main,_testmain.go#42,/home/erik/Arbeit/Advocate/goPatch/src/runtime/proc.go#285
+I,182,I,1,0,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#477
+I,1120,I,1,0,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#477

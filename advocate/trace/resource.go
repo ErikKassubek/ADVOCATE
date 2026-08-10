@@ -18,8 +18,8 @@ type Resource struct {
 	alloc *ElementAlloc
 }
 
-func NewResource(id int, alloc *ElementAlloc) *Resource {
-	return &Resource{id: id, alloc: alloc}
+func NewResource(id int, alloc *ElementAlloc) Resource {
+	return Resource{id: id, alloc: alloc}
 }
 
 func (this *Resource) Id() int {

@@ -406,6 +406,23 @@ func (this *ElementSelect) Type(operation bool) OperationType {
 	return SelectOp
 }
 
+// Type returns the object type of the cases
+//
+// Parameter:
+//   - operations bool: if true, the operation id contains the operations, otherwise just that it is select
+//
+// Returns:
+//   - the object type
+func (this *ElementSelect) Types() []OperationType {
+	res := make([]OperationType, 0)
+
+	for _, c := range this.cases {
+		res = append(res, c.Type(true))
+	}
+
+	return res
+}
+
 // ========================================================
 // MARK: Equal
 // ========================================================

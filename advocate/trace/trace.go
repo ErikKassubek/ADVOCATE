@@ -50,7 +50,7 @@ type Trace struct {
 	blocked               map[int]Element
 	forks                 map[int]*ElementFork
 	allocs                map[int]*ElementAlloc
-	resources             map[int]*Resource
+	resources             map[int]Resource
 	callTree              CallTree
 }
 
@@ -67,7 +67,7 @@ func NewTrace() Trace {
 		blocked:               make(map[int]Element),
 		forks:                 make(map[int]*ElementFork),
 		allocs:                make(map[int]*ElementAlloc),
-		resources:             make(map[int]*Resource),
+		resources:             make(map[int]Resource),
 		callTree:              *newCallGraph(),
 	}
 }
@@ -81,7 +81,7 @@ func (this *Trace) Clear() {
 	this.blocked = make(map[int]Element)
 	this.forks = make(map[int]*ElementFork)
 	this.allocs = make(map[int]*ElementAlloc)
-	this.resources = make(map[int]*Resource)
+	this.resources = make(map[int]Resource)
 	this.callTree = *newCallGraph()
 }
 
@@ -981,12 +981,12 @@ func (this *Iterator) IncreaseIndex(routine int) {
 // MARK: Resources
 // ========================================================
 
-func (this *Trace) GetResourcesPerRout(routID int) []*Resource {
+func (this *Trace) GetResourcesPerRout(routID int) []Resource {
 	return this.routines[routID].Resources()
 }
 
-func (this *Trace) GetResourcesRout() map[int][]*Resource {
-	res := make(map[int][]*Resource)
+func (this *Trace) GetResourcesRout() map[int][]Resource {
+	res := make(map[int][]Resource)
 
 	for id, rout := range this.routines {
 		res[id] = rout.Resources()
@@ -995,7 +995,7 @@ func (this *Trace) GetResourcesRout() map[int][]*Resource {
 	return res
 }
 
-func (this *Trace) Resources() map[int]*Resource {
+func (this *Trace) Resources() map[int]Resource {
 	return this.resources
 }
 
@@ -1003,22 +1003,22 @@ func (this *Trace) Resources() map[int]*Resource {
 // For an alloc the element is returned.
 // For elements without alloc, nil is returned
 // Elem must not be select
-func (this *Trace) GetResources(elem Element) []*Resource {
-	res := make([]*Resource, 0)
+func (this *Trace) GetResources(elem Element) []Resource {
+	res := make([]Resource, 0)
 
 	switch elem := elem.(type) {
 	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay:
 	case *ElementSelect:
 		for _, c := range elem.GetCases() {
 			r, ok := this.resources[c.ObjID()]
-			if !ok || r == nil {
+			if !ok || r.id == 0 {
 				panic("Invalid Resource")
 			}
 			res = append(res, r)
 		}
 	default:
 		r, ok := this.resources[elem.ObjID()]
-		if !ok || r == nil {
+		if !ok || r.id == 0 {
 			panic("Invalid Resource")
 		}
 		res = append(res, r)

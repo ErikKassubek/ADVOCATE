@@ -20,25 +20,18 @@ import (
 //
 // Returns:
 //   - map[int]trace.Resource: blocked object id to blocked resource.
-func getBlockedResources() map[int]*trace.Resource {
-	res := make(map[int]*trace.Resource)
+func getBlockedResources() map[trace.Element][]trace.Resource {
+	res := make(map[trace.Element][]trace.Resource)
 
 	for _, e := range a_base.MainTrace.GetBlocked() {
 		log.Debug("Blocked: ", e)
+		// TODO: handle select
 		resources := a_base.MainTrace.GetResources(e)
+
 		for _, r := range resources {
-			res[r.Alloc().ObjID()] = r
+			res[e] = append(res[e], r)
 		}
 	}
-
-	log.Debug("CURRENTLY ALL ELEMENTS ARE TRACKED. REMOVE THE FOLLOWING BLOCK TO ONLY TRACK BLOCKED RESOURCES")
-	res = make(map[int]*trace.Resource)
-
-	resources := a_base.MainTrace.Resources()
-	for _, r := range resources {
-		res[r.Alloc().ObjID()] = r
-	}
-	// END BLOCK
 
 	return res
 }

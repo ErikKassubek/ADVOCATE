@@ -74,7 +74,7 @@ func Blocked() error {
 }
 
 // check for cyclic dependencies
-func checkCyclic(b map[int]struct{}, res map[int][]*trace.Resource) map[int]struct{} {
+func checkCyclic(b map[int]struct{}, res map[int][]trace.Resource) map[int]struct{} {
 	graph := map[int][]int{}
 	selfLoop := map[int]bool{}
 

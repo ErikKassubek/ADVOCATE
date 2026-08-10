@@ -121,13 +121,13 @@ func printInstr(inst s_ssa.Instruction, elem trace.Element, info *instructionWit
 				if len(res) == 0 {
 					infoStr += "<NIL>"
 				}
-				for r := range res {
-					infoStr += fmt.Sprint(r.Alloc().ObjID())
+				for id := range res {
+					infoStr += fmt.Sprint(id)
 				}
 			}
 		} else {
-			for r := range info.Resource[0] {
-				infoStr += fmt.Sprint(r.Alloc().ObjID())
+			for id := range info.Resource[0] {
+				infoStr += fmt.Sprint(id)
 			}
 		}
 

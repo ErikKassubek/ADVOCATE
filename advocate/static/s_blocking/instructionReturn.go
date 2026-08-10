@@ -17,7 +17,7 @@ import (
 func instInfoReturn(inst *s_ssa.InstructionReturn, rout int, _ trace.Element) *instructionWithInfo {
 	retSSAVar := inst.Instruction().Results
 
-	retInfo := make([]map[*trace.Resource]struct{}, len(retSSAVar))
+	retInfo := make([]map[int]trace.Resource, len(retSSAVar))
 	for i, v := range retSSAVar {
 		ret := getDecOfSSAVar(rout, v.Name()).Resource
 		if len(ret) != 0 {

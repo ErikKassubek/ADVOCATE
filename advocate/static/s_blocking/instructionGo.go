@@ -38,16 +38,23 @@ func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Ins
 
 	f := s_ssa.GetSSAFuncFromName(data.Ssa(), fName)
 
+	newRoutId := blocking.maxRoutId + 1
+	if elem != nil {
+		newRoutId = elem.ObjID()
+	}
+
 	firstInFunc := s_ssa.NewSsaPosFunc(f)
 
-	blocking.jumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.Instruction]()
+	blocking.jumpBackPos[newRoutId] = types.NewStack[s_ssa.Instruction]()
 
-	blocking.NewPathPerRoutine(elem.ObjID())
+	blocking.NewPathPerRoutine(newRoutId)
 
 	// we skip the func call in this case. For this case, perform it here
-	parseCallParameter(inst.Instruction(), nil, rout, elem.ObjID(), f, "")
+	parseCallParameter(inst.Instruction(), nil, rout, newRoutId, f, "")
 
-	blocking.nextPerRout[elem.ObjID()] = skipNonRelevant(firstInFunc, elem.ObjID())
+	blocking.nextPerRout[newRoutId] = skipNonRelevant(firstInFunc, newRoutId)
+
+	blocking.maxRoutId = max(blocking.maxRoutId, newRoutId)
 
 	return inst.Next(), info
 }

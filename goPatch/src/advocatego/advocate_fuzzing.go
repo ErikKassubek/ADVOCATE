@@ -23,7 +23,7 @@ import (
 var isFuzzing = false
 var finishFuzzingStarted = false
 
-var initRun bool
+var initFuzzing bool
 
 // Initialize fuzzing
 //
@@ -35,10 +35,10 @@ var initRun bool
 //
 //go:linkname InitFuzzing runtime.AdvocateInitFuzzing
 func InitFuzzing(tracePath string, timeout int, init bool) {
-	if initRun { // called by main but alredy run by init
+	if initFuzzing { // called by main but alredy run by init
 		return
 	}
-	initRun = true
+	initFuzzing = true
 
 	FinishFunc = FinishFuzzing
 
@@ -111,7 +111,7 @@ func readFuzzingSelectFile(pathSelect string) (map[string][]int, map[string][]in
 			continue
 		}
 
-		if line == "#" {
+		if line == "@" {
 			mode = 2
 			continue
 		}

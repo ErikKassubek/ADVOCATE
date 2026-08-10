@@ -85,7 +85,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 
 	muta := Mutation{MutType: MutPiType, MutPie: NumberWrittenMutations}
 
-	AddMutToQueue(muta, false, false)
+	AddMutToQueue(muta, false)
 
 	return false, nil
 }
@@ -118,7 +118,7 @@ func WriteMutationToFile(pathToFolder string, mut Mutation) error {
 	// write for mut and mut type, for goPie it is already written
 	if mut.MutType == MutSelType || mut.MutType == MutFlowType {
 		fileName := filepath.Join(pathToFolder, paths.NameFuzzingData)
-		sep := "#"
+		sep := "@"
 
 		file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 		if err != nil {

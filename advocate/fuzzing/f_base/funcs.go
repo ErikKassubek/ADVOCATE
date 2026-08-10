@@ -18,18 +18,13 @@ import (
 //
 // Parameter:
 //   - mut mutation: the mutation to add
-//   - front bool: if true, add as next mutation, otherwise as last in queue
 //   - force bool: if true, the mutation is always added, otherwise only if it does not exceed the max number of runs
 //
 // Returns:
 //   - bool: true, if the mutation was added, false otherwise
-func AddMutToQueue(mut Mutation, front, force bool) bool {
-	if force || MaxNumberRuns == -1 || NumberFuzzingRuns+len(MutationQueue) <= MaxNumberRuns {
-		if front {
-			MutationQueue = append([]Mutation{mut}, MutationQueue...)
-		} else {
-			MutationQueue = append(MutationQueue, mut)
-		}
+func AddMutToQueue(mut Mutation, force bool) bool {
+	if force || MaxNumberRuns == -1 || NumberFuzzingRuns+MutationQueue.Size() <= MaxNumberRuns {
+		MutationQueue.Push(mut)
 		return true
 	}
 	return false

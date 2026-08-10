@@ -593,27 +593,29 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 
 	// ADVOCATE-START
 	// MARK: function calls
-	if isUserMain(fn) {
-		if base.Flag.AdvocateTrace {
-			s.rtcall(
-				typecheck.LookupRuntimeFunc("AdvocateInitTracing"),
-				true,
-				nil,
-			)
-		} else if base.Flag.AdvocateReplay {
-			s.rtcall(
-				typecheck.LookupRuntimeFunc("AdvocateInitReplay"),
-				true,
-				nil,
-			)
-		} else if base.Flag.AdvocateFuzzing {
-			s.rtcall(
-				typecheck.LookupRuntimeFunc("AdvocateInitFuzzing"),
-				true,
-				nil,
-			)
-		}
-	}
+	// isAdvocate := base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing
+	// if isAdvocate && isUserMain(fn) {
+	// 	if base.Flag.AdvocateTrace {
+	// 		s.rtcall(
+	// 			typecheck.LookupRuntimeFunc("AdvocateInitTracing"),
+	// 			true,
+	// 			nil,
+
+	// 		)
+	// 	} else if base.Flag.AdvocateReplay {
+	// 		s.rtcall(
+	// 			typecheck.LookupRuntimeFunc("AdvocateInitReplay"),
+	// 			true,
+	// 			nil,
+	// 		)
+	// 	} else if base.Flag.AdvocateFuzzing {
+	// 		s.rtcall(
+	// 			typecheck.LookupRuntimeFunc("AdvocateInitFuzzing"),
+	// 			true,
+	// 			nil,
+	// 		)
+	// 	}
+	// }
 
 	if shouldAdvocate(fn) {
 		s.rtcall(
@@ -2365,9 +2367,9 @@ func (s *state) advocateExitCall(fn *ir.Func) {
 		if base.Flag.AdvocateTrace {
 			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishTracing"), true, nil)
 		} else if base.Flag.AdvocateReplay {
-			s.rtcall(typecheck.LookupRuntimeFunc("advocateFinishReplay"), true, nil)
+			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishReplay"), true, nil)
 		} else if base.Flag.AdvocateFuzzing {
-			s.rtcall(typecheck.LookupRuntimeFunc("advocateFinishFuzzing"), true, nil)
+			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishFuzzing"), true, nil)
 		}
 	}
 }

@@ -31,6 +31,8 @@ const (
 var timeout = false
 var tracePathRewritten = ""
 
+var initReplay bool
+
 // InitReplay reads the trace from the trace folder.
 // The function reads all files in the trace folder and adds the trace to the runtime.
 // The trace is added to the runtime by calling the AddReplayTrace function.
@@ -43,10 +45,10 @@ var tracePathRewritten = ""
 //
 //go:linkname InitReplay runtime.AdvocateInitReplay
 func InitReplay(tracePath string, timeout int, atomic bool, init bool) {
-	if initRun { // called by main but alredy run by init
+	if initReplay { // called by main but alredy run by init
 		return
 	}
-	initRun = true
+	initReplay = true
 
 	FinishFunc = FinishReplay
 
@@ -277,6 +279,7 @@ func readTraceFile(fileName string,
 				(*spawns)[routineID] = make([]int, 0)
 			}
 			(*spawns)[routineID] = append((*spawns)[routineID], index)
+			println("ADD SPAWN ", routineID, " ", index)
 		case "C":
 			switch fields[4] {
 			case "S":
@@ -428,13 +431,8 @@ func readTraceFile(fileName string,
 				file = pos[0]
 				line, _ = strconv.Atoi(pos[1])
 			}
-		case "N": // new object
-			continue
-		case "E": // end of routine
-			continue
-
 		default:
-			panic("Unknown operation " + fields[0] + " in line " + elem + " in file " + fileName + ".")
+			continue
 		}
 		if blocked || time == 0 {
 			time = math.MaxInt
@@ -474,7 +472,6 @@ func FinishReplay() {
 		println("Replay failed.")
 	}
 
-	println("FinishReplay")
 	runtime.WaitForReplayFinish()
 
 	// DetectBlockingGC()

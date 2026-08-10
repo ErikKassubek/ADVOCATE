@@ -195,6 +195,10 @@ func reportLeak(l []int) {
 
 		last := rout.Last()
 
+		if last == nil {
+			continue
+		}
+
 		objRes := results.TraceElementResult{
 			RoutineID: routID,
 			ObjID:     last.ObjID(),

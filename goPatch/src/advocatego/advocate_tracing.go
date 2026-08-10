@@ -32,17 +32,19 @@ var duration time.Duration
 
 var startWriting = false
 
+var initTracing bool
+
 // InitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
 //
 //go:linkname InitTracing runtime.AdvocateInitTracing
 func InitTracing(timeout int, init bool) {
-	if initRun { // called by main but alredy run by init
+	if initTracing { // called by main but alredy run by init
 		return
 	}
-	initRun = true
+	initTracing = true
 
-	FinishFunc = FinishReplay
+	FinishFunc = FinishTracing
 
 	startTime = time.Now()
 	timerStarted = true

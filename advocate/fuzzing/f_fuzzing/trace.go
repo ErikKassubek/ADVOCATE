@@ -16,7 +16,6 @@ import (
 	"advocate/fuzzing/f_gopie"
 	"advocate/trace"
 	"advocate/utils/control"
-	"advocate/utils/log"
 )
 
 var currentTrace *trace.Trace
@@ -109,12 +108,6 @@ func ParseTrace(tr *trace.Trace) {
 // For now only channels are considered
 // Add the corresponding info into FuzzingChannel
 func parseNew(elem *trace.ElementAlloc) {
-	// only process channels
-	if elem.Type(true) != trace.NewChannel {
-		log.Important("Unexpected new on: ", elem.Type(true))
-		return
-	}
-
 	if f_base.FuzzingModeGFuzz {
 		fuzzingElem := f_gfuzz.FuzzingChannel{
 			GlobalID:  elem.Pos().String(),

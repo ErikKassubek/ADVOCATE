@@ -493,6 +493,7 @@ func (this *Trace) Copy(keep bool) (Trace, error) {
 	newTrace := NewTrace()
 
 	for _, rout := range this.routines {
+		newTrace.AddRoutine(rout.id)
 		for _, elem := range rout.elems {
 			newTrace.AddElement(elem.Copy(mapping, keep))
 			if control.WasCanceled() {

@@ -48,6 +48,9 @@ func AddActiveTrace(startTime int, activeMap map[string][]int, numActive int) {
 	startTimeActive = startTime
 	if printDebug {
 		println("Add active with start time ", startTimeActive, " and ", len(active), " active elements")
+		for key := range activeMap {
+			println(key)
+		}
 	}
 	if startTime == 0 {
 		PartialReplay = true

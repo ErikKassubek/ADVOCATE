@@ -554,7 +554,7 @@ func (this *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - string: The replay id of the element
 func (this *ElementSelect) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s#%d", this.routine, this.pos.file, this.pos.line)
 }
 
 // ========================================================

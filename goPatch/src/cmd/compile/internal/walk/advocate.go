@@ -27,6 +27,15 @@ import (
 // ==================================================
 
 func instrumentBody(fn *ir.Func) {
+	isAdvocate := base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing
+	if !isAdvocate {
+		return
+	}
+
+	if isUserMain(fn) {
+		fn.Body = addInit(fn.Body, fn.Pos())
+	}
+
 	if !shouldAdvocate(fn) {
 		return
 	}
@@ -34,6 +43,54 @@ func instrumentBody(fn *ir.Func) {
 	instrumentParameterCopy(fn)
 
 	fn.Body = instrumentStmtList(fn.Body)
+}
+
+func addInit(body ir.Nodes, pos src.XPos) ir.Nodes {
+	out := make(ir.Nodes, 0)
+
+	if base.Flag.AdvocateTrace {
+		fn := typecheck.LookupRuntime("AdvocateInitTracing")
+		out.Append(typecheck.Call(
+			pos,
+			fn,
+			[]ir.Node{
+				ir.NewInt(pos, int64(base.Flag.AdvocateTimeout)),
+				ir.NewBool(pos, false),
+			},
+			false,
+		))
+	} else if base.Flag.AdvocateReplay {
+		fn := typecheck.LookupRuntime("AdvocateInitReplay")
+		out.Append(typecheck.Call(
+			pos,
+			fn,
+			[]ir.Node{
+				ir.NewString(pos, base.Flag.AdvocatePath),
+				ir.NewInt(pos, int64(base.Flag.AdvocateTimeout)),
+				ir.NewBool(pos, base.Flag.AdvocateAtomics),
+				ir.NewBool(pos, true),
+			},
+			false,
+		))
+	} else if base.Flag.AdvocateFuzzing {
+		fn := typecheck.LookupRuntime("AdvocateInitFuzzing")
+		out.Append(typecheck.Call(
+			pos,
+			fn,
+			[]ir.Node{
+				ir.NewString(pos, base.Flag.AdvocatePath),
+				ir.NewInt(pos, int64(base.Flag.AdvocateTimeout)),
+				ir.NewBool(pos, false),
+			},
+			false,
+		))
+	} else {
+		return body
+	}
+
+	out.Append(body...)
+
+	return out
 }
 
 func instrumentStmtList(body ir.Nodes) ir.Nodes {
@@ -480,4 +537,23 @@ func addControllRec(body ir.Nodes, pos src.XPos, numCases, caseNum int, t string
 	out.Append(body...)
 
 	return out
+}
+
+func isUserMain(fn *ir.Func) bool {
+	if fn == nil {
+		return false
+	}
+
+	sym := fn.Sym()
+
+	if sym.Name != "main" {
+		return false
+	}
+
+	pkg := sym.Pkg
+	if pkg == nil {
+		return false
+	}
+
+	return pkg.Name == "main" && pkg.Path == "main"
 }

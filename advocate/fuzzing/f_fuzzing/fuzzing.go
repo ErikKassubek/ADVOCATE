@@ -173,7 +173,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 
 	// while there are available mutations, run them
 	startTime := time.Now()
-	for f_base.NumberFuzzingRuns == 0 || len(f_base.MutationQueue) != 0 {
+	for f_base.NumberFuzzingRuns == 0 || f_base.MutationQueue.Size() != 0 {
 
 		// clean up
 		clearDataRun()
@@ -202,6 +202,8 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 				}
 			}
 		}
+
+		log.Debug(fuzzingPath)
 
 		firstRun = firstRun && (f_base.NumberFuzzingRuns == 0)
 
@@ -246,16 +248,15 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			if f_base.FuzzingModeGuided {
 				f_roc.CreateMutations()
 			}
-
 			// Add mutation based on GFuzz
 			if f_base.FuzzingModeGFuzz {
 				f_gfuzz.CreateMutations(false)
 			}
 
 			// add new mutations based on flow path expansion
-			if f_base.FuzzingModeFlow {
-				f_flow.CreateMutations()
-			}
+			// if f_base.FuzzingModeFlow {
+			// 	f_flow.CreateMutations()
+			// }
 
 			// add mutations based on GoPie
 			if f_base.FuzzingModeGoPie {
@@ -266,7 +267,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 				stats.CreateStats(flags.ExecName, traceID, f_base.NumberFuzzingRuns-1)
 			}
 
-			log.Infof("Current fuzzing queue size: %d", len(f_base.MutationQueue))
+			log.Infof("Current fuzzing queue size: %d", f_base.MutationQueue.Size())
 
 			if f_base.FuzzingModeGFuzz {
 				f_gfuzz.MergeTraceInfoIntoFileInfo()
@@ -315,15 +316,14 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 // Returns:
 //   - the first mutation from the mutation queue
 func popMutation() f_base.Mutation {
-	var mut f_base.Mutation
-	mut, f_base.MutationQueue = f_base.MutationQueue[0], f_base.MutationQueue[1:]
-	return mut
+	return f_base.MutationQueue.Pop()
 }
 
 // Reset fuzzing
 func ResetFuzzing() {
+	log.Debug("RESET1")
 	f_base.NumberFuzzingRuns = 0
-	f_base.MutationQueue = make([]f_base.Mutation, 0)
+	f_base.MutationQueue = types.NewQueue[f_base.Mutation]()
 	// count how often a specific mutation has been in the queue
 	f_base.AllMutations = make(map[string]int)
 	f_base.ChainFiles = make(map[int]f_base.Constraint)

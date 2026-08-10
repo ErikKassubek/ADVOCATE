@@ -11,7 +11,7 @@
 package runtime
 
 const (
-	selectPreferredTimeoutSec int64   = 1
+	selectPreferredTimeoutSec int64   = 2
 	flowSleepTimeSec          float64 = 3
 )
 
@@ -50,6 +50,7 @@ func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int,
 
 	advocateFuzzingEnabled = true
 	advocateFuzzingDelayEnabled = true
+
 }
 
 // InitFuzzingReplay initializes fuzzing based on full replay
@@ -90,6 +91,12 @@ func AdvocateFuzzingGetPreferredCase(skip int) (bool, int) {
 		return false, 0
 	}
 	key := BuildReplayKey(routine, file, line)
+
+	println("SelectKEy: ", key)
+
+	for k := range fuzzingSelectData {
+		println("FS: ", k)
+	}
 
 	if val, ok := fuzzingSelectData[key]; ok {
 		index := fuzzingSelectDataIndex[key]

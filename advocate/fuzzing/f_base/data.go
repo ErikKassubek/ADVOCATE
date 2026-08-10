@@ -10,7 +10,9 @@
 package f_base
 
 import (
+	"advocate/utils/log"
 	"advocate/utils/results/results"
+	"advocate/utils/types"
 
 	"time"
 )
@@ -23,7 +25,7 @@ var (
 	MaxTime           = 7 * time.Minute
 	MaxTimeSet        = false
 	NumberFuzzingRuns = 0
-	MutationQueue     = make([]Mutation, 0)
+	MutationQueue     = types.NewQueue[Mutation]()
 
 	// count how often a specific mutation has been in the queue
 	AllMutations          = make(map[string]int)
@@ -49,7 +51,8 @@ var (
 )
 
 func Clear() {
-	MutationQueue = make([]Mutation, 0)
+	log.Debug("RESET2")
+	MutationQueue = types.NewQueue[Mutation]()
 	AllMutations = make(map[string]int)
 	ChainFiles = make(map[int]Constraint)
 }

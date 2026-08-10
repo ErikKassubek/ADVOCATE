@@ -46,6 +46,7 @@ type AdvocateRoutine struct {
 	parkForeverReplay    bool
 	hasReturned          bool
 	wokenButTimeout      bool
+	wokenNoTimeout       bool
 	startedWritingToFile bool
 }
 

@@ -503,10 +503,16 @@ func goparkWithTimeout(
 	releasem(mp)
 
 	mcall(park_m)
+
+	gp.advocateRoutineInfo.wokenNoTimeout = true
 }
 
 func goroutineReadyWithTimeout(arg any, _ uintptr, _ int64) {
 	gp := arg.(*g)
+
+	if gp.advocateRoutineInfo.wokenNoTimeout {
+		return
+	}
 
 	gp.advocateRoutineInfo.wokenButTimeout = true
 

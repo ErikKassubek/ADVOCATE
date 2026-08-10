@@ -92,12 +92,6 @@ func AdvocateFuzzingGetPreferredCase(skip int) (bool, int) {
 	}
 	key := BuildReplayKey(routine, file, line)
 
-	println("SelectKEy: ", key)
-
-	for k := range fuzzingSelectData {
-		println("FS: ", k)
-	}
-
 	if val, ok := fuzzingSelectData[key]; ok {
 		index := fuzzingSelectDataIndex[key]
 		if index >= len(val) {

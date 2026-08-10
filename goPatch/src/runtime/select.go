@@ -586,7 +586,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	gp.advocateRoutineInfo.wokenNoTimeout = false
 	goparkWithTimeout(selparkcommit, nil, waitReason, traceBlockSelect, 1, preferredTimeout)
 	wasTimeout = gp.advocateRoutineInfo.wokenButTimeout
-	println("TO: ", wasTimeout)
 	// ADVOCATE-END
 	gp.advocateRoutineInfo.wokenButTimeout = false
 	gp.activeStackChans = false

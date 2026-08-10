@@ -61,8 +61,10 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 			}
 			defer file.Close()
 
-			// write rout
 			rout := traceToWrite.GetRoutineTrace(i)
+			// if rout == nil {
+			// 	return
+			// }
 
 			// sort trace by tPre
 			rout.Sort()

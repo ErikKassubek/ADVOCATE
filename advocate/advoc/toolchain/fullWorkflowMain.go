@@ -123,14 +123,14 @@ func runWorkflowMain(
 		}
 
 		// build the program
-		log.Info("Build program for recording")
+		log.Info("Build program for execution")
 		if err := command.RunCommand(origStdout, origStderr, command.NoTimeout, paths.Go, "build", buildFlags); err != nil {
 			log.Error("Error in building program, removing header and stopping workflow")
 			importRemoveMain()
 			return 0, 0, err
 		}
 		// run the recording
-		log.Info("Run program for recording")
+		log.Info("Run program for execution")
 		timer.Start(timer.Recording)
 		execPath := paths.MakePathLocal(flags.ExecName)
 		if err := command.RunCommand(origStdout, origStderr, command.NoTimeout, execPath); err != nil {

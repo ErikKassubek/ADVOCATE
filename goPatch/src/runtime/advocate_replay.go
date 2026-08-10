@@ -204,9 +204,10 @@ func EnableReplay() {
 		println("\n\n")
 	}
 
+	replayEnabled = true
+
 	go ReplayManager()
 
-	replayEnabled = true
 }
 
 /*

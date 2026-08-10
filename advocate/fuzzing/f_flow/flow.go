@@ -66,7 +66,7 @@ func CreateMutations() {
 			// if one mut per change, comment this in
 			if oneMutPerDelay {
 				mut := f_base.Mutation{MutType: f_base.MutFlowType, MutFlow: mutFlow}
-				f_base.AddMutToQueue(mut, false, false)
+				f_base.AddMutToQueue(mut, false)
 				numberMutAdded++
 			}
 		}
@@ -74,7 +74,7 @@ func CreateMutations() {
 
 	if oneMutPerDelay && len(mutFlow) != 0 {
 		mut := f_base.Mutation{MutFlow: mutFlow}
-		f_base.AddMutToQueue(mut, false, false)
+		f_base.AddMutToQueue(mut, false)
 		numberMutAdded++
 	}
 

@@ -12,7 +12,6 @@ package toolchain
 
 import (
 	"advocate/analysis/a_base"
-	"advocate/fuzzing/f_base"
 	"advocate/utils/command"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -128,7 +127,7 @@ func runWorkflowUnit(runRecord, runAnalysis, runReplay bool,
 			}
 
 			a_base.Clear()
-			f_base.Clear()
+			// f_base.Clear()
 
 			if !isFuzzing {
 				timer.ResetTest()

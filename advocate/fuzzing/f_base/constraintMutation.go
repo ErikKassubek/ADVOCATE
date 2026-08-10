@@ -314,7 +314,7 @@ func CanBeAddedToConstraint(elem trace.Element) bool {
 	t := elem.Type(false)
 	if flags.FuzzingMode == GoPie {
 		// for standard GoPie, only mutex, channel and select operations are considered
-		return t == trace.Mutex || t == trace.Channel || t == trace.Select
+		return (t == trace.Mutex || t == trace.Channel || t == trace.Select) && !IgnoreFuzzing(elem, true)
 	}
 
 	return !IgnoreFuzzing(elem, true)

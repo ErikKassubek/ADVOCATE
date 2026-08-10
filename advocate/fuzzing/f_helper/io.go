@@ -35,7 +35,7 @@ func WriteMutationToFile(pathToFolder string, mut f_base.Mutation) error {
 	// write for mut and mut type, for goPie it is already written
 	if mut.MutType == f_base.MutSelType || mut.MutType == f_base.MutFlowType {
 		fileName := filepath.Join(pathToFolder, paths.NameFuzzingData)
-		sep := "#"
+		sep := "@"
 
 		file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 		if err != nil {

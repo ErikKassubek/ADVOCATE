@@ -1,3 +1,0 @@
-TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
-TestCockroach10790,66,6,0,2,4,10,0,0,0
-TestCockroach10790,66,6,0,2,4,10,0,0,0

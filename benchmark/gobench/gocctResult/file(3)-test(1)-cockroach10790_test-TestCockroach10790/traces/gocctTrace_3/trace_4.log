@@ -1,6 +1,0 @@
-F,1448,gobench/cockroach/10790.(*Replica).beginCmds,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/10790/cockroach10790_test.go#55,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/10790/cockroach10790_test.go#108
-I,1510,I,1,0,/home/erik/Arbeit/Advocate/goPatch/src/context/context.go#450
-S,1520,1530,4000000001,C.3000000001.R.f.0.0.0~C.2000000002.R.f.0.0.18446744073709551615,1,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/10790/cockroach10790_test.go#58
-S,1532,1802,4000000002,C.3000000001.R.f.0.0.0~C.2000000003.R.f.0.0.0,1,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/10790/cockroach10790_test.go#58
-R,1812
-E,1818

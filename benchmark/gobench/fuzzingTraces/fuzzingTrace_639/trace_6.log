@@ -1,7 +1,0 @@
-F,1282,gobench/cockroach/1055.TestCockroach1055.func2,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#85,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#85
-F,1284,gobench/cockroach/1055.(*Stopper).Quiesce,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#87,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#87
-M,1286,1290,0,-,L,t,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#36
-W,1292,1296,0,W,0,0,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#39
-M,1304,1304,0,-,U,t,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#41
-M,1314,1314,0,-,L,t,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#36
-W,1318,1318,0,W,0,0,/home/erik/Arbeit/Advocate/benchmark/gobench/cockroach/1055/cockroach1055_test.go#49

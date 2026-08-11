@@ -12,7 +12,7 @@ It also implements an analysis and fuzzing mode based on the record and replay f
 
 ## Modes
 
-Advocate provides 4 different modes:
+GoCDR provides 4 different modes:
 
 - record: record the execution of a program or test into a trace
 - replay: given a trace file, execute a program in such a way, that it follows the trace

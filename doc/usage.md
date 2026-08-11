@@ -14,7 +14,7 @@ git config core.autocrlf false
 ```
 
 
-## Local
+## Build
 
 Before Gocdr can be used, it must first be build.
 
@@ -62,35 +62,6 @@ go build
 command. This will create an `gocdr` executable, which will be used to
 run all recordings, replays, analysis and fuzzing.
 
-
-## Docker
-
-We also provide a docker file to create the environment.
-
-To build the docker file, run
-
-```shell
-docker build -t gocdr-app .
-```
-
-To run the analysis or fuzzing on a program, you can call the following:
-
-```shell
-docker run --rm -it \
-  -v <pathToProg>:/prog \
-  gocdr-app [mode] -path /prog [args]
-```
-
-e.g.
-
-```shell
-docker run --rm -it \
-  -v /home/erik/progToTest:/prog \
-  gocdr-app fuzzing -path /prog
-```
-
-For the modes and args, see [usage](#usage).
-Note that the -path argument has already been set and does not need to be set again.
 
 ## Usage
 

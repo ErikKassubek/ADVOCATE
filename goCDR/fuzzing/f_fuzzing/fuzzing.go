@@ -201,8 +201,6 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			}
 		}
 
-		log.Debug(fuzzingPath)
-
 		firstRun = firstRun && (f_base.NumberFuzzingRuns == 0)
 
 		// Run the test/mutation

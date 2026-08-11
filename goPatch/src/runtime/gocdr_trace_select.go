@@ -12,13 +12,15 @@
 
 package runtime
 
+import "unsafe"
+
 // Struct to store a spawn
 //
 // Fields
-//   - tPre int64: time when the operation started
-//   - tPost int64: time when the operation finished
+//   - tReq int64: time when the operation started
+//   - tCom int64: time when the operation finished
 //   - id uint64: id of the select
-//   - cases []GocdrTraceChannel: the operation for each of the non default cases
+//   - cases []GoCDRTraceChannel: the operation for each of the non default cases
 //     The elements are sorted the same as the internal sorting in the select,
 //     first all send, then all recv
 //   - selIndex int: The index of the operation in cases that was executed,
@@ -26,18 +28,18 @@ package runtime
 //   - hasDef bool: true if the select has a default case, false otherwise
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type GocdrTraceSelect struct {
-	tPre     int64
-	tPost    int64
+type GoCDRTraceSelect struct {
+	tReq     int64
+	tCom     int64
 	id       uint64
-	cases    []GocdrTraceChannel
+	cases    []GoCDRTraceChannel
 	selIndex int
 	hasDef   bool
 	file     string
 	line     int
 }
 
-// GocdrSelectPre adds a select to the trace
+// GoCDRSelectPre adds a select to the trace
 //
 // Parameter:
 //   - cases: cases of the select
@@ -47,20 +49,20 @@ type GocdrTraceSelect struct {
 //
 // Returns:
 //   - index of the operation in the trace
-func GocdrSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
-	if gocdrTracingDisabled || cases == nil {
+func GoCDRSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
+	if GoCDRTracingDisabled || cases == nil {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(CallerSkipSelect)
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return -1
 	}
 
-	id := GetGocdrObjectID()
-	caseElements := make([]GocdrTraceChannel, ncases)
+	id := GetGoCDRObjectID()
+	caseElements := make([]GoCDRTraceChannel, ncases)
 
 	for casi := 0; casi < ncases; casi++ {
 		cas := (*cases)[casi]
@@ -72,23 +74,24 @@ func GocdrSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
 		}
 
 		if c == nil { // ignore nil cases
-			caseElements[casi] = GocdrTraceChannel{
-				tPre:  timer,
+			caseElements[casi] = GoCDRTraceChannel{
+				tReq:  timer,
 				op:    chanOp,
 				isNil: true,
 			}
 		} else {
-			caseElements[casi] = GocdrTraceChannel{
-				tPre:  timer,
+			res := GoCDRTraceResource{id: c.id, addr: unsafe.Pointer(c)}
+			caseElements[casi] = GoCDRTraceChannel{
+				tReq:  timer,
+				res:   res,
 				op:    chanOp,
-				id:    c.id,
 				qSize: c.dataqsiz,
 			}
 		}
 	}
 
-	elem := GocdrTraceSelect{
-		tPre:  timer,
+	elem := GoCDRTraceSelect{
+		tReq:  timer,
 		id:    id,
 		cases: caseElements,
 		file:  file,
@@ -102,15 +105,15 @@ func GocdrSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
 	return insertIntoTrace(elem)
 }
 
-// GocdrSelectPost adds a post event for select in case of an non-default case
+// GoCDRSelectPost adds a post event for select in case of an non-default case
 //
 // Parameter:
 //   - index: index of the operation in the trace
 //   - c: channel of the chosen case
 //   - selIndex: index of the chosen case in the select
 //   - rClosed: true if the channel was closed at another routine
-func GocdrSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
-	if gocdrTracingDisabled {
+func GoCDRSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
+	if GoCDRTracingDisabled {
 		return
 	}
 
@@ -120,14 +123,14 @@ func GocdrSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(GocdrTraceSelect)
-	elem.tPost = timer
+	elem := currentGoRoutineInfo().getElement(index).(GoCDRTraceSelect)
+	elem.tCom = timer
 	elem.selIndex = selIndex
 
 	if selIndex != -1 { // not default case
 		// set tpost and cl of chosen case
 		chosenCase := elem.cases[selIndex]
-		chosenCase.tPost = timer
+		chosenCase.tCom = timer
 		if rClosed {
 			chosenCase.cl = true
 		}
@@ -148,7 +151,7 @@ func GocdrSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 	currentGoRoutineInfo().updateElement(index, elem)
 }
 
-// GocdrSelectPreOneNonDef adds a new select element to the trace if the
+// GoCDRSelectPreOneNonDef adds a new select element to the trace if the
 // select has exactly one non-default case and a default case
 //
 // Parameter:
@@ -157,49 +160,47 @@ func GocdrSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 //
 // Returns:
 //   - index of the operation in the trace
-func GocdrSelectPreOneNonDef(c *hchan, send bool) int {
-	if gocdrTracingDisabled {
+func GoCDRSelectPreOneNonDef(c *hchan, send bool) int {
+	if GoCDRTracingDisabled {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
 
-	id := GetGocdrObjectID()
+	id := GetGoCDRObjectID()
 
 	opChan := OperationChannelRecv
 	if send {
 		opChan = OperationChannelSend
 	}
 
-	var caseElem GocdrTraceChannel
+	var caseElem GoCDRTraceChannel
 
 	if c != nil {
-		if c.id == 0 {
-			c.id = GocdrChanMake(int(c.dataqsiz))
-		}
-		caseElem = GocdrTraceChannel{
-			tPre:  timer,
-			id:    c.id,
+		res := GoCDRTraceResource{id: c.id, addr: unsafe.Pointer(c)}
+		caseElem = GoCDRTraceChannel{
+			tReq:  timer,
+			res:   res,
 			op:    opChan,
 			qSize: c.dataqsiz,
 		}
 	} else {
-		caseElem = GocdrTraceChannel{
-			tPre: timer,
+		caseElem = GoCDRTraceChannel{
+			tReq: timer,
 			op:   opChan,
 		}
 	}
 
 	_, file, line, _ := Caller(CallerSkipSelectOneDef)
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return -1
 	}
 
-	cases := make([]GocdrTraceChannel, 1)
+	cases := make([]GoCDRTraceChannel, 1)
 	cases[0] = caseElem
 
-	elem := GocdrTraceSelect{
-		tPre:   timer,
+	elem := GoCDRTraceSelect{
+		tReq:   timer,
 		id:     id,
 		cases:  cases,
 		hasDef: true,
@@ -210,15 +211,15 @@ func GocdrSelectPreOneNonDef(c *hchan, send bool) int {
 	return insertIntoTrace(elem)
 }
 
-// GocdrSelectPostOneNonDef adds the selected case for a select with one
+// GoCDRSelectPostOneNonDef adds the selected case for a select with one
 // non-default and one default case
 //
 // Parameter:
 //   - index: index of the operation in the trace
 //   - res: true for channel, false for default
 //   - c *hchan: the channel in the select cases
-func GocdrSelectPostOneNonDef(index int, res bool, c *hchan) {
-	if gocdrTracingDisabled {
+func GoCDRSelectPostOneNonDef(index int, res bool, c *hchan) {
+	if GoCDRTracingDisabled {
 		return
 	}
 
@@ -228,13 +229,13 @@ func GocdrSelectPostOneNonDef(index int, res bool, c *hchan) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(GocdrTraceSelect)
+	elem := currentGoRoutineInfo().getElement(index).(GoCDRTraceSelect)
 
-	elem.tPost = timer
+	elem.tCom = timer
 
 	if res { // channel case
 		ca := elem.cases[0]
-		ca.tPost = timer
+		ca.tCom = timer
 		if ca.op == OperationChannelSend {
 			c.numberSend++
 		} else {
@@ -257,22 +258,22 @@ func GocdrSelectPostOneNonDef(index int, res bool, c *hchan) {
 //     [S],[tPre],[tPost],[id],[cases],[selIndex],[file],[line]
 //     where cases consists of the form [case]~[case]~..., followed by a d
 //     if the select has a default that was not executed, or D if it was executed.
-//     The [case] is build using GocdrTraceChannel.toStringForSelect()
-func (elem GocdrTraceSelect) toString() string {
-	p1 := buildTraceElemString("S", elem.tPre, elem.tPost, elem.id)
-	p2 := buildTraceElemString(elem.selIndex, posToString(elem.file, elem.line))
+//     The [case] is build using GoCDRTraceChannel.toStringForSelect()
+func (self GoCDRTraceSelect) toString() string {
+	p1 := buildTraceElemString("S", self.tReq, self.tCom, self.id)
+	p2 := buildTraceElemString(self.selIndex, posToString(self.file, self.line))
 	cases := ""
-	for i, c := range elem.cases {
+	for i, c := range self.cases {
 		if i != 0 {
 			cases += "~"
 		}
 		cases += c.toStringForSelect()
 	}
-	if elem.hasDef {
+	if self.hasDef {
 		if cases != "" {
 			cases += "~"
 		}
-		if elem.selIndex == -1 {
+		if self.selIndex == -1 {
 			cases += "D"
 		} else {
 			cases += "d"
@@ -286,9 +287,33 @@ func (elem GocdrTraceSelect) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem GocdrTraceSelect) getOperation() Operation {
-	if elem.selIndex == -1 {
+func (self GoCDRTraceSelect) getOperation() Operation {
+	if self.selIndex == -1 {
 		return OperationSelectDefault
 	}
 	return OperationSelectCase
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self GoCDRTraceSelect) hasCommit() bool {
+	return self.tCom != 0
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []GoCDRTraceResource: recources
+func (self GoCDRTraceSelect) resource() []GoCDRTraceResource {
+	res := make(map[GoCDRTraceResource]struct{})
+
+	for _, c := range self.cases {
+		for _, r := range c.resource() {
+			res[r] = struct{}{}
+		}
+	}
+
+	return mapToSlice(res)
 }

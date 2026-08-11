@@ -20,49 +20,43 @@ If we want to use this runtime directly, we need to change the
 export GOROOT=/home/.../goPatch
 ```
 
-If the controller is used, this is done automatically.
+If the toolchain is used, this is done automatically.
 
 The only change required in the analyzed program is to add
 a header at the main or test function as described in the [recording](recording.md)
 and [replay](replay.md).\
-If the controller is used, this is done automatically.
+If the toolchain is used, this is done automatically.
 
 ## Changed files
 
 The following is a list of all files in the runtime that have been added or modified.\
-All modifications have been annotated with GOCDR-START and GOCDR-END.
+All modifications have been annotated with ADVOCATE-START and ADVOCATE-END.
 
 ### Added files
 
-- [src/gocdr/gocdr_fuzzing.go](../goPatch/src/gocdr/gocdr_fuzzing.go)
-- [src/gocdr/gocdr_replay.go](../goPatch/src/gocdr/gocdr_replay.go)
-- [src/gocdr/gocdr_tracing.go](../goPatch/src/gocdr/gocdr_tracing.go)
-- [src/runtime/gocdr_exit.go](../goPatch/src/runtime/gocdr_exit.go)
-- [src/runtime/gocdr_fuzzing.go](../goPatch/src/runtime/gocdr_fuzzing.go)
-- [src/runtime/gocdr_ids.go](../goPatch/src/runtime/gocdr_ids.go)
-- [src/runtime/gocdr__replay_element.go](../goPatch/src/runtime/gocdr_element.go)
-- [src/runtime/gocdr__replay_exit.go](../goPatch/src/runtime/gocdr_exit.go)
-- [src/runtime/gocdr__replay_manager.go](../goPatch/src/runtime/gocdr_manager.go)
-- [src/runtime/gocdr__replay_partial.go](../goPatch/src/runtime/gocdr_partial.go)
-- [src/runtime/gocdr__replay_stuck.go](../goPatch/src/runtime/gocdr_stuck.go)
-- [src/runtime/gocdr__replay_trace.go](../goPatch/src/runtime/gocdr_trace.go)
-- [src/runtime/gocdr__replay_wait.go](../goPatch/src/runtime/gocdr_wait.go)
-- [src/runtime/gocdr_replay.go](../goPatch/src/runtime/gocdr_replay.go)
-- [src/runtime/gocdr_routine.go](../goPatch/src/runtime/gocdr_routine.go)
-- [src/runtime/gocdr_time.go](../goPatch/src/runtime/gocdr_time.go)
-- [src/runtime/gocdr_trace.go](../goPatch/src/runtime/gocdr_trace.go)
-- [src/runtime/gocdr_trace_atomic.go](../goPatch/src/runtime/gocdr_trace_atomic.go)
-- [src/runtime/gocdr_trace_channel.go](../goPatch/src/runtime/gocdr_trace_channel.go)
-- [src/runtime/gocdr_trace_cond.go](../goPatch/src/runtime/gocdr_trace_cond.go)
-- [src/runtime/gocdr_trace_mutex.go](../goPatch/src/runtime/gocdr_trace_mutex.go)
-- [src/runtime/gocdr_new_elem.go](../goPatch/src/runtime/gocdr_trace_new_elem.go)
-- [src/runtime/gocdr_trace_once.go](../goPatch/src/runtime/gocdr_trace_once.go)
-- [src/runtime/gocdr_trace_routine.go](../goPatch/src/runtime/gocdr_trace_routine.go)
-- [src/runtime/gocdr_trace_select.go](../goPatch/src/runtime/gocdr_trace_select.go)
-- [src/runtime/gocdr_trace_waitgroup.go](../goPatch/src/runtime/gocdr_trace_waitgroup.go)
-- [src/runtime/gocdr_tracing.go](../goPatch/src/runtime/gocdr_tracing.go)
-- [src/runtime/gocdr_util.go](../goPatch/src/runtime/gocdr_util.go)
-- [src/runtime/gocdr_wait.go](../goPatch/src/runtime/gocdr_wait.go)
+- [src/advocate/advocate_fuzzing.go](../goPatch/src/advocate/advocate_fuzzing.go)
+- [src/advocate/advocate_replay.go](../goPatch/src/advocate/advocate_replay.go)
+- [src/advocate/advocate_tracing.go](../goPatch/src/advocate/advocate_tracing.go)
+- [src/runtime/advocate_exit.go](../goPatch/src/runtime/advocate_exit.go)
+- [src/runtime/advocate_fuzzing.go](../goPatch/src/runtime/advocate_fuzzing.go)
+- [src/runtime/advocate_ids.go](../goPatch/src/runtime/advocate_ids.go)
+- [src/runtime/advocate_replay.go](../goPatch/src/runtime/advocate_replay.go)
+- [src/runtime/advocate_routine.go](../goPatch/src/runtime/advocate_routine.go)
+- [src/runtime/advocate_time.go](../goPatch/src/runtime/advocate_time.go)
+- [src/runtime/advocate_trace.go](../goPatch/src/runtime/advocate_trace.go)
+- [src/runtime/advocate_trace_atomic.go](../goPatch/src/runtime/advocate_trace_atomic.go)
+- [src/runtime/advocate_trace_channel.go](../goPatch/src/runtime/advocate_trace_channel.go)
+- [src/runtime/advocate_trace_cond.go](../goPatch/src/runtime/advocate_trace_cond.go)
+- [src/runtime/advocate_trace_mutex.go](../goPatch/src/runtime/advocate_trace_mutex.go)
+- [src/runtime/advocate_new_elem.go](../goPatch/src/runtime/advocate_trace_new_elem.go)
+- [src/runtime/advocate_trace_once.go](../goPatch/src/runtime/advocate_trace_once.go)
+- [src/runtime/advocate_trace_routine.go](../goPatch/src/runtime/advocate_trace_routine.go)
+- [src/runtime/advocate_trace_select.go](../goPatch/src/runtime/advocate_trace_select.go)
+- [src/runtime/advocate_trace_waitgroup.go](../goPatch/src/runtime/advocate_trace_waitgroup.go)
+- [src/runtime/advocate_tracing.go](../goPatch/src/runtime/advocate_tracing.go)
+- [src/runtime/advocate_util.go](../goPatch/src/runtime/advocate_util.go)
+- [src/runtime/advocate_wait.go](../goPatch/src/runtime/advocate_wait.go)
+- [src/cmd/compile/internal/walk/advocate.go](../goPatch/src/cmd/compile/internal/ssawalken/advocate.go)
 
 ### Modified files
 
@@ -77,7 +71,6 @@ Modifications in files are marked with
 - [src/runtime/proc.go](../goPatch/src/runtime/proc.go)
 - [src/runtime/runtime2.go](../goPatch/src/runtime/runtime2.go)
 - [src/runtime/chan.go](../goPatch/src/runtime/chan.go)
-- [src/runtime/malloc.go](../goPatch/src/runtime/malloc.go)
 - [src/runtime/select.go](../goPatch/src/runtime/select.go)
 - [src/runtime/panic.go](../goPatch/src/runtime/panic.go)
 - [src/sync/cond.go](../goPatch/src/sync/cond.go)
@@ -90,6 +83,11 @@ Modifications in files are marked with
 - [src/sync/atomic/doc_64.go](../goPatch/src/sync/atomic/doc_64.go)
 - [src/sync/atomic/doc.go](../goPatch/src/sync/atomic/doc.go)
 - [src/sync/atomic/type.go](../goPatch/src/sync/atomic/type.go)
+- [src/testing/testing.go](../goPatch/src/testing/testing.go)
 - [src/cmd/compile/internal/ssagen/intrinsics.go](../goPatch/src/cmd/compile/internal/ssagen/intrinsics.go)
-- [src/cmd/link/internal/loader/loader.go](../goPatch/src/cmd/link/internal/loader/loader.go)
-/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/malloc.go
+- [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go)
+- [src/cmd/compile/internal/walk/walk.go](../goPatch/src/cmd/compile/internal/walk/walk.go)
+- [src/cmd/compile/internal/typecheck/_builtin/runtime.go](./goPatch/src/cmd/compile/internal/typecheck/_builtin/runtime.go)
+- [src/cmd/compile/internal/typecheck/builtin.go](../goPatch/src/cmd/compile/internal/typecheck/builtin.go) (indirect via running `go run mkbuiltin.go` in src/cmd/compile/internal/typecheck)
+- [src/cmd/compile/internal/base/flag.go](../goPatch/src/cmd/compile/internal/base/flag.go)
+- [src/cmd/compile/internal/pkginit/init.go](../goPatch/src/cmd/compile/internal/pkginit/init.go)

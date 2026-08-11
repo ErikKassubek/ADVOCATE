@@ -68,7 +68,7 @@ func ReplayManager() {
 		// 	DisableReplay()
 		// }
 
-		if GocdrIgnoreReplay(replayElem.Op, replayElem.File) {
+		if GoCDRIgnoreReplay(replayElem.Op, replayElem.File) {
 			foundReplayElement()
 			continue
 		}
@@ -136,13 +136,6 @@ func replayEndFound(replayElem ReplayElement) {
 
 	// time.Sleep(100 * time.Millisecond)
 	sleep(0.1)
-
-	if detectBlockingGC != nil {
-		res := detectBlockingGC()
-		if res > 0 {
-			ExitReplayWithCode(res, "GC")
-		}
-	}
 
 	// foundReplayElement()
 	// sleep(0.1)

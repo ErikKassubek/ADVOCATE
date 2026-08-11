@@ -16,7 +16,7 @@ import "internal/runtime/atomic"
 
 var gocdrGlobalCounter atomic.Int64
 
-// GetGocdrCounter will update the timer and return the new value
+// GetGoCDRCounter will update the timer and return the new value
 // Return:
 //   - new time value
 func GetNextTimeStep() int64 {

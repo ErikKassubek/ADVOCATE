@@ -454,6 +454,7 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 
 	s.startBlock(s.f.Entry)
 	s.vars[memVar] = s.startmem
+
 	if s.hasOpenDefers {
 		// Create the deferBits variable and stack slot.  deferBits is a
 		// bitmask showing which of the open-coded defers in this function
@@ -586,8 +587,45 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 	if s.instrumentEnterExit {
 		s.rtcall(ir.Syms.Racefuncenter, true, nil, s.newValue0(ssa.OpGetCallerPC, types.Types[types.TUINTPTR]))
 	}
+
 	s.zeroResults()
 	s.paramsToHeap()
+
+	// GOCDR-START
+	// MARK: function calls
+	// isGoCDR := base.Flag.GoCDRTrace || base.Flag.GoCDRReplay || base.Flag.GoCDRFuzzing
+	// if isGoCDR && isUserMain(fn) {
+	// 	if base.Flag.GoCDRTrace {
+	// 		s.rtcall(
+	// 			typecheck.LookupRuntimeFunc("GoCDRInitTracing"),
+	// 			true,
+	// 			nil,
+
+	// 		)
+	// 	} else if base.Flag.GoCDRReplay {
+	// 		s.rtcall(
+	// 			typecheck.LookupRuntimeFunc("GoCDRInitReplay"),
+	// 			true,
+	// 			nil,
+	// 		)
+	// 	} else if base.Flag.GoCDRFuzzing {
+	// 		s.rtcall(
+	// 			typecheck.LookupRuntimeFunc("GoCDRInitFuzzing"),
+	// 			true,
+	// 			nil,
+	// 		)
+	// 	}
+	// }
+
+	if shouldGoCDR(fn) {
+		s.rtcall(
+			typecheck.LookupRuntimeFunc("gocdrFunctionCall"),
+			true,
+			nil,
+		)
+	}
+	// GOCDR-END
+
 	s.stmtList(fn.Body)
 
 	// fallthrough to exit
@@ -2276,6 +2314,86 @@ func (s *state) stmt(n ir.Node) {
 // worse line-number information)
 const shareDeferExits = false
 
+// ADOVCATE-START
+// MARK: shouldGoCDR
+func shouldGoCDR(fn *ir.Func) bool {
+	if !(base.Flag.GoCDRTrace || base.Flag.GoCDRReplay || base.Flag.GoCDRFuzzing) {
+		return false
+	}
+
+	if fn == nil || fn.Sym() == nil || fn.Sym().Pkg == nil {
+		return false
+	}
+
+	pkg := fn.Sym().Pkg.Path
+
+	if fn.Pos().IsKnown() {
+		file := base.Ctxt.PosTable.Pos(fn.Pos()).Filename()
+		if strings.Contains(file, "/goPatch/") {
+			return false
+		}
+	}
+
+	if pkg == "runtime" ||
+		pkg == "syscall" ||
+		pkg == "os" ||
+		pkg == "internal/syscall" {
+
+		return false
+	}
+
+	if fn.Pragma&ir.Nosplit != 0 || fn.Wrapper() {
+		return false
+	}
+
+	name := fn.Sym().Name
+
+	if name == "gocdrFunctionCall" || name == "gocdrFunctionReturn" {
+		return false
+	}
+
+	return true
+}
+
+// MARK: exit
+func (s *state) gocdrExitCall(fn *ir.Func) {
+	if !shouldGoCDR(fn) {
+		return
+	}
+
+	s.rtcall(typecheck.LookupRuntimeFunc("gocdrFunctionReturn"), true, nil)
+
+	if isUserMain(fn) {
+		if base.Flag.GoCDRTrace {
+			s.rtcall(typecheck.LookupRuntimeFunc("GoCDRFinishTracing"), true, nil)
+		} else if base.Flag.GoCDRReplay {
+			s.rtcall(typecheck.LookupRuntimeFunc("GoCDRFinishReplay"), true, nil)
+		} else if base.Flag.GoCDRFuzzing {
+			s.rtcall(typecheck.LookupRuntimeFunc("GoCDRFinishFuzzing"), true, nil)
+		}
+	}
+}
+
+func isUserMain(fn *ir.Func) bool {
+	if fn == nil {
+		return false
+	}
+
+	sym := fn.Sym()
+	if sym.Name != "main" {
+		return false
+	}
+
+	pkg := sym.Pkg
+	if pkg == nil {
+		return false
+	}
+
+	return pkg.Name == "main" && pkg.Path == "main"
+}
+
+// GOCDR-END
+
 // exit processes any code that needs to be generated just before returning.
 // It returns a BlockRet block that ends the control flow. Its control value
 // will be set to the final memory state.
@@ -2286,6 +2404,9 @@ func (s *state) exit() *ssa.Block {
 				if s.curBlock.Kind != ssa.BlockPlain {
 					panic("Block for an exit should be BlockPlain")
 				}
+				// GOCDR-START
+				s.gocdrExitCall(s.curfn)
+				// GOCDR-END
 				s.curBlock.AddEdgeTo(s.lastDeferExit)
 				s.endBlock()
 				return s.lastDeferFinalBlock
@@ -2341,6 +2462,10 @@ func (s *state) exit() *ssa.Block {
 	if s.instrumentEnterExit {
 		s.rtcall(ir.Syms.Racefuncexit, true, nil)
 	}
+
+	// GOCDR-START
+	s.gocdrExitCall(s.curfn)
+	// GOCDR-END
 
 	results[len(results)-1] = s.mem()
 	m := s.newValue0(ssa.OpMakeResult, s.f.OwnAux.LateExpansionResultType())
@@ -7626,7 +7751,7 @@ func (e *ssafn) SplitSlot(parent *ssa.LocalSlot, suffix string, offset int64, t 
 // Logf logs a message from the compiler.
 func (e *ssafn) Logf(msg string, args ...interface{}) {
 	if e.log {
-		fmt.Printf(msg, args...)
+		// fmt.Printf(msg, args...)
 	}
 }
 

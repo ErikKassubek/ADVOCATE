@@ -11,7 +11,7 @@
 package runtime
 
 const (
-	selectPreferredTimeoutSec int64   = 1
+	selectPreferredTimeoutSec int64   = 2
 	flowSleepTimeSec          float64 = 3
 )
 
@@ -50,6 +50,7 @@ func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int,
 
 	gocdrFuzzingEnabled = true
 	gocdrFuzzingDelayEnabled = true
+
 }
 
 // InitFuzzingReplay initializes fuzzing based on full replay
@@ -66,7 +67,7 @@ func InitFuzzingReplay(finishFuzzing func()) {
 //
 // Returns:
 //   - bool: true if fuzzing is enabled, false otherwise
-func IsGocdrFuzzingEnabled() bool {
+func IsGoCDRFuzzingEnabled() bool {
 	return gocdrFuzzingEnabled
 }
 
@@ -78,7 +79,7 @@ func IsGocdrFuzzingEnabled() bool {
 // Returns:
 //   - bool: true if a preferred case exists, false otherwise
 //   - int: preferred case, -1 for default
-func GocdrFuzzingGetPreferredCase(skip int) (bool, int) {
+func GoCDRFuzzingGetPreferredCase(skip int) (bool, int) {
 	if !gocdrFuzzingEnabled {
 		return false, 0
 	}
@@ -86,7 +87,7 @@ func GocdrFuzzingGetPreferredCase(skip int) (bool, int) {
 	routine := GetReplayRoutineID()
 
 	_, file, line, _ := Caller(skip)
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return false, 0
 	}
 	key := BuildReplayKey(routine, file, line)
@@ -117,7 +118,7 @@ func FuzzingFlowWait(skip int) {
 	routine := GetReplayRoutineID()
 
 	_, file, line, _ := Caller(skip)
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return
 	}
 

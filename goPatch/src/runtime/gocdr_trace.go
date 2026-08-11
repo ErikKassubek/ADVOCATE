@@ -55,13 +55,19 @@ const (
 	OperationAtomicAnd            Operation = "atomicAnd"
 	OperationAtomicOr             Operation = "atomicOr"
 
-	OperationNewChan Operation = "newChan"
+	OperationAllocChan  Operation = "allocChan"
+	OperationAllocMutex Operation = "allocMutex"
+	OperationAllocCond  Operation = "allocCond"
+	OperationAllocWg    Operation = "allocWg"
 
 	OperationFunctionCall   Operation = "funcCall"
 	OperationFunctionReturn Operation = "funcReturn"
 
 	OperationReplayNever Operation = "replayNever"
 	OperationReplayEnd   Operation = "replayEnd"
+
+	OperationControllIf     Operation = "controllIf"
+	OperationControllSwitch Operation = "controllSwitch"
 )
 
 const posSep = "#"
@@ -73,7 +79,7 @@ const (
 	none
 )
 
-var gocdrTracingDisabled = true
+var GoCDRTracingDisabled = true
 
 // var gocdrTraceWritingDisabled = false
 
@@ -108,6 +114,8 @@ func getOperationObjectString(op Operation) string {
 		return "Atomic"
 	case OperationReplayEnd:
 		return "Replay"
+	case OperationControllIf, OperationControllSwitch:
+		return "Controll"
 	}
 	return "Unknown"
 }
@@ -116,6 +124,8 @@ func getOperationObjectString(op Operation) string {
 type traceElem interface {
 	toString() string
 	getOperation() Operation
+	hasCommit() bool
+	resource() []GoCDRTraceResource
 }
 
 // Return a string representation of the trace of the current go routine
@@ -134,28 +144,6 @@ func CurrentTraceToString() string {
 	return res
 }
 
-// Return a string representation of a given routine local trace
-//
-// Parameter:
-//   - trace: trace to convert to string
-//
-// Returns:
-//   - string: string representation of the trace
-func traceToString(trace *[]traceElem) string {
-	res := ""
-
-	// if atomic recording is disabled
-	println("START TTS: ", len(*trace))
-	for i, elem := range *trace {
-		if i != 0 {
-			res += "\n"
-		}
-		res += elem.toString()
-	}
-	println("END TTS")
-	return res
-}
-
 // Add an operation to the trace
 //
 // Parameter:
@@ -164,6 +152,9 @@ func traceToString(trace *[]traceElem) string {
 // Returns:
 //   - index of the element in the trace
 func insertIntoTrace(elem traceElem) int {
+	if currentGoRoutineInfo().hasReturned {
+		return -1
+	}
 	return currentGoRoutineInfo().addToTrace(elem)
 }
 
@@ -179,15 +170,49 @@ func PrintTrace() {
 //   - id: id of the routine
 //
 // Returns:
-//   - string representation of the trace of the routine
-//   - bool: true if the routine exists, false otherwise
-func TraceToStringByID(id uint64) (string, bool) {
-	lock(&GocdrRoutinesLock)
-	defer unlock(&GocdrRoutinesLock)
-	if routine, ok := GocdrRoutines[id]; ok {
-		return traceToString(&routine.Trace), true
+//   - chan: the channel the trace is send over
+func TraceToChanByID(id uint64) chan string {
+	lock(&GoCDRRoutinesLock)
+
+	c := make(chan string, 20)
+	if routine, ok := GoCDRRoutines[id]; ok {
+		unlock(&GoCDRRoutinesLock)
+		go func() {
+			res := ""
+			blockSize := 1000
+			// if atomic recording is disabled
+			for i, elem := range routine.Trace {
+				res += elem.toString() + "\n"
+
+				if i%blockSize == 0 {
+					c <- res
+					res = ""
+				}
+			}
+
+			if !routine.hasReturned && len(routine.oat) != 0 {
+				oatElems := "OAT,"
+				for i, obj := range routine.oat {
+					if i != 0 {
+						oatElems += "-"
+					}
+					oatElems += uint64ToString(obj)
+				}
+
+				res += oatElems + "\n"
+			}
+
+			if res != "" {
+				c <- res
+			}
+
+			close(c)
+		}()
+	} else {
+		unlock(&GoCDRRoutinesLock)
 	}
-	return "", false
+
+	return c
 }
 
 // Return whether the trace of a routine' is empty
@@ -198,65 +223,12 @@ func TraceToStringByID(id uint64) (string, bool) {
 // Returns:
 //   - true if the trace is empty, false otherwise
 func TraceIsEmptyByRoutine(routine int) bool {
-	lock(&GocdrRoutinesLock)
-	defer unlock(&GocdrRoutinesLock)
-	if routine, ok := GocdrRoutines[uint64(routine)]; ok {
+	lock(&GoCDRRoutinesLock)
+	defer unlock(&GoCDRRoutinesLock)
+	if routine, ok := GoCDRRoutines[uint64(routine)]; ok {
 		return len(routine.Trace) == 0
 	}
 	return true
-}
-
-// Get the trace of the routine with id 'id'.
-// To minimized the needed ram the trace is sent to the channel 'c' in chunks
-// of 1000 elements.
-//
-// Parameter:
-//   - id: id of the routine
-//   - c: channel to send the trace to
-//   - atomic: it true, the atomic trace is returned
-func TraceToStringByIDChannel(id int, c chan<- string) {
-	lock(&GocdrRoutinesLock)
-
-	if routine, ok := GocdrRoutines[uint64(id)]; ok {
-		unlock(&GocdrRoutinesLock)
-		res := ""
-
-		for i, elem := range routine.Trace {
-			if i != 0 {
-				res += "\n"
-			}
-			res += elem.toString()
-
-			if i%1000 == 0 {
-				c <- res
-				res = ""
-			}
-		}
-		c <- res
-	} else {
-		unlock(&GocdrRoutinesLock)
-	}
-}
-
-// Return a string representation of all routine
-// Return:
-//   - string representation of the trace of all routines
-func AllTracesToString() string {
-	// write warning if projectPath is empty
-	res := ""
-	lock(&GocdrRoutinesLock)
-	defer unlock(&GocdrRoutinesLock)
-
-	for i := 1; i <= len(GocdrRoutines); i++ {
-		res += ""
-		routine := GocdrRoutines[uint64(i)]
-		if routine == nil {
-			panic("Trace is nil")
-		}
-		res += traceToString(&routine.Trace) + "\n"
-
-	}
-	return res
 }
 
 // Given a list of element, return a string representation of the elements
@@ -292,29 +264,24 @@ func buildTraceElemStringSep(sep string, values ...any) string {
 	return res
 }
 
-// PrintAllTraces prints all traces
-func PrintAllTraces() {
-	print(AllTracesToString())
-}
-
 // GetNumberOfRoutines returns the number of routines in the trace
 //
 // Returns:
 //   - number of routines in the trace
 func GetNumberOfRoutines() int {
-	lock(&GocdrRoutinesLock)
-	defer unlock(&GocdrRoutinesLock)
-	return len(GocdrRoutines)
+	lock(&GoCDRRoutinesLock)
+	defer unlock(&GoCDRRoutinesLock)
+	return len(GoCDRRoutines)
 }
 
 // DeleteTrace removes all trace elements from the trace
 // It does not remove the routine objects them self
 // Make sure to call BlockTrace(), before calling this function
 func DeleteTrace() {
-	lock(&GocdrRoutinesLock)
-	defer unlock(&GocdrRoutinesLock)
-	for i := range GocdrRoutines {
-		GocdrRoutines[i].Trace = GocdrRoutines[i].Trace[:0]
+	lock(&GoCDRRoutinesLock)
+	defer unlock(&GoCDRRoutinesLock)
+	for i := range GoCDRRoutines {
+		GoCDRRoutines[i].Trace = GoCDRRoutines[i].Trace[:0]
 	}
 }
 
@@ -329,10 +296,66 @@ func DeleteTrace() {
 //
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
-func GocdrIgnore(file string) bool {
+func GoCDRIgnore(file string) bool {
 	return (containsStr(file, "goPatch/src/") || containsStr(file, "go/pkg/mod")) &&
 		!containsStr(file, "goPatch/src/time/tick.go") &&
 		!containsStr(file, "goPatch/src/context/context.go")
+}
+
+func RemoveActive(id uint64) {
+	lock(&GoCDRRoutinesLock)
+	defer unlock(&GoCDRRoutinesLock)
+
+	delete(GoCDRRoutines, uint64(id))
+}
+
+// IsActive returns if a routine of the given id has been created/started but not yet been written to file, and if it exists, if the writing of the trace has started
+//
+// Parameter:
+//   - id int: routine id
+//
+// Returns:
+//   - bool: true if not started or written to file
+func IsActive(id int) (bool, bool) {
+	lock(&GoCDRRoutinesLock)
+	defer unlock(&GoCDRRoutinesLock)
+
+	if g, ok := GoCDRRoutines[uint64(id)]; ok {
+		return ok, g.startedWritingToFile
+	}
+
+	return false, false
+}
+
+// Write the trace of the current routine to file. After writing, remove from active
+//
+// Parameter:
+//   - id int: routine id
+//
+// Returns:
+//   - bool: true if not started or written to file
+func GoCDRWriteTraceToFile() {
+	if GoCDRTracingDisabled {
+		return
+	}
+
+	g := currentGoRoutineInfo()
+
+	if g == nil {
+		return
+	}
+
+	if GoCDRIgnore(g.forkFile) {
+		return
+	}
+
+	g.startedWritingToFile = true
+	ok := writeTraceToFileFunc(int(g.id), true)
+	if !ok { // writing from finishTracing has already started
+		return
+	}
+
+	RemoveActive(g.id)
 }
 
 // GOCDR-FILE-END

@@ -12,39 +12,42 @@
 
 package runtime
 
+import "unsafe"
+
 // Struct to store an operation on a mutex
 //
 // Fields
-//   - tPre int64: time when the operation started
-//   - tPost int64: time when the operation finished
-//   - id uint64: id of the mutex
+//   - tReq int64: time when the operation started
+//   - tCom int64: time when the operation finished
+//   - res GoCDRTraceResource: the resource the op is applied to
 //   - op Operation: operation type
 //   - suc bool: false if a trymutex did not manage to lock the mutex, true otherwise
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type GocdrTraceMutex struct {
-	tPre  int64
-	tPost int64
-	id    uint64
-	op    Operation
-	suc   bool
-	file  string
-	line  int
+type GoCDRTraceMutex struct {
+	tReq int64
+	tCom int64
+	res  GoCDRTraceResource
+	op   Operation
+	suc  bool
+	file string
+	line int
 }
 
-var lastRWOp = make(map[uint64]int64) // routine -> tPost
+var lastRWOp = make(map[uint64]int64) // routine -> tCom
 var lastRWOpLock mutex
 
-// GocdrMutexPre adds a mutex lock to the trace
+// GoCDRMutexPre adds a mutex lock to the trace
 //
 // Parameter:
+//   - mem unsafe.Pointer: memory address
 //   - id uint64: id of the mutex
 //   - op Operation: type of operation
 //
 // Returns:
 //   - index of the operation in the trace
-func GocdrMutexPre(id uint64, op Operation) int {
-	if gocdrTracingDisabled {
+func GoCDRMutexPre(mem unsafe.Pointer, id uint64, op Operation) int {
+	if GoCDRTracingDisabled {
 		return -1
 	}
 
@@ -52,13 +55,15 @@ func GocdrMutexPre(id uint64, op Operation) int {
 
 	_, file, line, _ := Caller(CallerSkipMutex)
 
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return -1
 	}
 
-	elem := GocdrTraceMutex{
-		tPre: timer,
-		id:   id,
+	res := GoCDRTraceResource{id: id, addr: mem}
+
+	elem := GoCDRTraceMutex{
+		tReq: timer,
+		res:  res,
 		op:   op,
 		suc:  true,
 		file: file,
@@ -68,14 +73,14 @@ func GocdrMutexPre(id uint64, op Operation) int {
 	return insertIntoTrace(elem)
 }
 
-// GocdrMutexPost adds the end counter to an operation of the trace.
-// For try use GocdrMutexTryPost.
+// GoCDRMutexPost adds the end counter to an operation of the trace.
+// For try use GoCDRMutexTryPost.
 //
 // Parameters:
 //   - index: index of the operation in the trace
 //   - suc: wether the lock was successfull for try, otherwise true
-func GocdrMutexPost(index int, suc bool) {
-	if gocdrTracingDisabled {
+func GoCDRMutexPost(index int, suc bool) {
+	if GoCDRTracingDisabled {
 		return
 	}
 
@@ -92,15 +97,15 @@ func GocdrMutexPost(index int, suc bool) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(GocdrTraceMutex)
+	elem := currentGoRoutineInfo().getElement(index).(GoCDRTraceMutex)
 	routine := currentGoRoutineInfo().id
 
 	lock(&lastRWOpLock)
 	if elem.isRw() && lastRWOp[routine] != 0 {
-		elem.tPost = lastRWOp[routine] - 1
+		elem.tCom = lastRWOp[routine] - 1
 		lastRWOp[routine] = 0
 	} else {
-		elem.tPost = timer
+		elem.tCom = timer
 	}
 
 	if hasSuffix(elem.file, "sync/rwmutex.go") {
@@ -117,8 +122,8 @@ func GocdrMutexPost(index int, suc bool) {
 //
 // Returns:
 //   - bool: true if it is a rwMutex, false otherwise
-func (elem GocdrTraceMutex) isRw() bool {
-	if elem.op == OperationMutexLock || elem.op == OperationMutexUnlock || elem.op == OperationMutexTryLock {
+func (self GoCDRTraceMutex) isRw() bool {
+	if self.op == OperationMutexLock || self.op == OperationMutexUnlock || self.op == OperationMutexTryLock {
 		return false
 	}
 	return true
@@ -128,10 +133,10 @@ func (elem GocdrTraceMutex) isRw() bool {
 //
 // Returns:
 //   - string: the string representation
-func (elem GocdrTraceMutex) toString() string {
-	opStr, rw := elem.opRwToString()
+func (self GoCDRTraceMutex) toString() string {
+	opStr, rw := self.opRwToString()
 
-	return buildTraceElemString("M", elem.tPre, elem.tPost, elem.id, rw, opStr, elem.suc, posToString(elem.file, elem.line))
+	return buildTraceElemString("M", self.tReq, self.tCom, self.res.id, rw, opStr, self.suc, posToString(self.file, self.line))
 }
 
 // Get the string representations for the operation and rw fields
@@ -139,10 +144,10 @@ func (elem GocdrTraceMutex) toString() string {
 // Returns:
 //   - string: the operation string representation
 //   - string: the rw string representation
-func (elem GocdrTraceMutex) opRwToString() (string, string) {
+func (self GoCDRTraceMutex) opRwToString() (string, string) {
 	opStr := ""
 	rw := "f"
-	switch elem.op {
+	switch self.op {
 	case OperationMutexLock:
 		opStr = "L"
 	case OperationMutexUnlock:
@@ -176,6 +181,22 @@ func (elem GocdrTraceMutex) opRwToString() (string, string) {
 //
 // Returns:
 //   - Operation: the operation
-func (elem GocdrTraceMutex) getOperation() Operation {
-	return elem.op
+func (self GoCDRTraceMutex) getOperation() Operation {
+	return self.op
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self GoCDRTraceMutex) hasCommit() bool {
+	return self.tCom != 0
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []GoCDRTraceResource: recources
+func (self GoCDRTraceMutex) resource() []GoCDRTraceResource {
+	return []GoCDRTraceResource{self.res}
 }

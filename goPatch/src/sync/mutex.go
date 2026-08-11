@@ -12,11 +12,28 @@ package sync
 
 import (
 	isync "internal/sync"
+	"unsafe"
 
 	// GOCDR-START
 	"runtime"
 	// GOCDR-END
 )
+
+// GOCDR-START
+//
+//go:linkname GoCDRAllocMutex runtime.GoCDRAllocMutex
+func GoCDRAllocMutex(ptr unsafe.Pointer) {
+	if runtime.GoCDRTracingDisabled {
+		return
+	}
+	m := (*Mutex)(ptr)
+	// if m.id != 0 {
+	// 	return
+	// }
+	m.id = runtime.GoCDRAlloc("M", 0)
+}
+
+// GOCDR-END
 
 // A Mutex is a mutual exclusion lock.
 // The zero value for a Mutex is an unlocked mutex.
@@ -56,37 +73,26 @@ func (m *Mutex) Lock() {
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
-		if m.id == 0 {
-			m.id = runtime.GetGocdrObjectID()
-		}
 		if replayElem.Blocked {
-			_ = runtime.GocdrMutexPre(m.id, runtime.OperationMutexLock)
+			_ = runtime.GoCDRMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
-	// Mutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a mutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id.
-	if m.id == 0 {
-		m.id = runtime.GetGocdrObjectID()
-	}
-
-	// GocdrMutexPre records, that a routine tries to lock a mutex.
-	// GocdrPost is called, if the mutex was locked successfully.
+	// GoCDRMutexPre records, that a routine tries to lock a mutex.
+	// GoCDRPost is called, if the mutex was locked successfully.
 	// In this case, the Lock event in the trace is updated to include
-	// this information. gocdrIndex is used for GocdrPost to find the
+	// this information. gocdrIndex is used for GoCDRPost to find the
 	// pre event.
-	gocdrIndex := runtime.GocdrMutexPre(m.id, runtime.OperationMutexLock)
+	gocdrIndex := runtime.GoCDRMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
 	// GOCDR-END
 
 	m.mu.Lock()
 
 	// GOCDR-START
-	runtime.GocdrMutexPost(gocdrIndex, true)
+	runtime.GoCDRMutexPost(gocdrIndex, true)
 	//GOCDR-END
 }
 
@@ -102,32 +108,21 @@ func (m *Mutex) TryLock() bool {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			if m.id == 0 {
-				m.id = runtime.GetGocdrObjectID()
-			}
-			_ = runtime.GocdrMutexPre(m.id, runtime.OperationMutexTryLock)
+			_ = runtime.GoCDRMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
-	// Mutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a mutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id
-	if m.id == 0 {
-		m.id = runtime.GetGocdrObjectID()
-	}
-
-	// GocdrMutexPre records, that a routine tries to lock a mutex.
-	// gocdrIndex is used for GocdrMutexPost to find the pre event.
-	gocdrIndex := runtime.GocdrMutexPre(m.id, runtime.OperationMutexTryLock)
+	// GoCDRMutexPre records, that a routine tries to lock a mutex.
+	// gocdrIndex is used for GoCDRMutexPost to find the pre event.
+	gocdrIndex := runtime.GoCDRMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
 	// GOCDR-END
 
 	res := m.mu.TryLock()
 
-	runtime.GocdrMutexPost(gocdrIndex, res)
+	runtime.GoCDRMutexPost(gocdrIndex, res)
 
 	return res
 	// GOCDR-END
@@ -146,15 +141,12 @@ func (m *Mutex) Unlock() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			if m.id == 0 {
-				m.id = runtime.GetGocdrObjectID()
-			}
-			_ = runtime.GocdrMutexPre(m.id, runtime.OperationMutexUnlock)
+			_ = runtime.GoCDRMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
 			runtime.BlockForever()
 		}
 	}
-	// GocdrMutexPre is used to record the unlocking of a mutex.
-	// GocdrPost records the successful unlocking of a mutex.
+	// GoCDRMutexPre is used to record the unlocking of a mutex.
+	// GoCDRPost records the successful unlocking of a mutex.
 	// For non rw mutexe, the unlock cannot fail. Therefore it is not
 	// strictly necessary to record the post for the unlocking of a mutex.
 	// For rw mutexes, the unlock can fail (e.g. unlock after rlock). Therefore
@@ -162,12 +154,12 @@ func (m *Mutex) Unlock() {
 	// rw mutex.
 	// Here the post is seperatly recorded to easy the implementation for
 	// the rw mutexes.
-	gocdrIndex := runtime.GocdrMutexPre(m.id, runtime.OperationMutexUnlock)
+	gocdrIndex := runtime.GoCDRMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
 	// GOCDR-END
 
 	m.mu.Unlock()
 
 	// GOCDR-START
-	runtime.GocdrMutexPost(gocdrIndex, true)
+	runtime.GoCDRMutexPost(gocdrIndex, true)
 	// GOCDR-END
 }

@@ -244,10 +244,22 @@ var runtimeDecls = [...]struct {
 	{"loong64HasLSX", varTag, 6},
 	{"riscv64HasZbb", varTag, 6},
 	{"asanregisterglobals", funcTag, 130},
+	{"gocdrFunctionCall", funcTag, 9},
+	{"gocdrFunctionReturn", funcTag, 9},
+	{"GoCDRAllocMutex", funcTag, 161},
+	{"GoCDRAllocCondVar", funcTag, 161},
+	{"GoCDRAllocWG", funcTag, 161},
+	{"gocdrControllFlow", funcTag, 162},
+	{"GoCDRInitTracing", funcTag, 163},
+	{"GoCDRFinishTracing", funcTag, 9},
+	{"GoCDRInitReplay", funcTag, 164},
+	{"GoCDRFinishReplay", funcTag, 9},
+	{"GoCDRInitFuzzing", funcTag, 165},
+	{"GoCDRFinishFuzzing", funcTag, 9},
 }
 
 func runtimeTypes() []*types.Type {
-	var typs [161]*types.Type
+	var typs [166]*types.Type
 	typs[0] = types.ByteType
 	typs[1] = types.NewPtr(typs[0])
 	typs[2] = types.Types[types.TANY]
@@ -409,6 +421,11 @@ func runtimeTypes() []*types.Type {
 	typs[158] = newSig(params(typs[28], typs[28], typs[17]), nil)
 	typs[159] = types.NewArray(typs[0], 16)
 	typs[160] = newSig(params(typs[7], typs[65], typs[159], typs[28], typs[15], typs[69], typs[69]), params(typs[65]))
+	typs[161] = newSig(params(typs[7]), nil)
+	typs[162] = newSig(params(typs[28], typs[15], typs[15]), nil)
+	typs[163] = newSig(params(typs[15], typs[6]), nil)
+	typs[164] = newSig(params(typs[28], typs[15], typs[6], typs[6]), nil)
+	typs[165] = newSig(params(typs[28], typs[15], typs[6]), nil)
 	return typs[:]
 }
 

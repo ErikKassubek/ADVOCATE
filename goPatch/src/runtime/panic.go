@@ -733,7 +733,7 @@ var panicnil = &godebugInc{name: "panicnil"}
 func gopanic(e any) {
 	// GOCDR-START
 	if IsTracingEnabled() || replayEnabled {
-		GocdrPanic(e)
+		GoCDRPanic(e)
 	}
 	// GOCDR-END
 	if e == nil {

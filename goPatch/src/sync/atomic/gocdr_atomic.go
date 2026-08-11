@@ -23,8 +23,8 @@ func SwapInt32(addr *int32, new int32) (old int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
-	return SwapInt32Gocdr(addr, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	return SwapInt32GoCDR(addr, new)
 }
 
 // SwapInt64 atomically stores new into *addr and returns the previous *addr value.
@@ -36,8 +36,8 @@ func SwapInt64(addr *int64, new int64) (old int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
-	return SwapInt64Gocdr(addr, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	return SwapInt64GoCDR(addr, new)
 }
 
 // SwapUint32 atomically stores new into *addr and returns the previous *addr value.
@@ -48,8 +48,8 @@ func SwapUint32(addr *uint32, new uint32) (old uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
-	return SwapUint32Gocdr(addr, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	return SwapUint32GoCDR(addr, new)
 }
 
 // SwapUint64 atomically stores new into *addr and returns the previous *addr value.
@@ -61,8 +61,8 @@ func SwapUint64(addr *uint64, new uint64) (old uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
-	return SwapUint64Gocdr(addr, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	return SwapUint64GoCDR(addr, new)
 }
 
 // SwapUintptr atomically stores new into *addr and returns the previous *addr value.
@@ -73,14 +73,14 @@ func SwapUintptr(addr *uintptr, new uintptr) (old uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
-	return SwapUintptrGocdr(addr, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	return SwapUintptrGoCDR(addr, new)
 }
 
 // SwapPointer atomically stores new into *addr and returns the previous *addr value.
 // Consider using the more ergonomic and less error-prone [Pointer.Swap] instead.
 // func SwapPointer(addr *unsafe.Pointer, new unsafe.Pointer) (old unsafe.Pointer) {
-// 	return SwapPointerGocdr(addr, new)
+// 	return SwapPointerGoCDR(addr, new)
 // }
 
 // CompareAndSwapInt32 executes the compare-and-swap operation for an int32 value.
@@ -91,8 +91,8 @@ func CompareAndSwapInt32(addr *int32, old, new int32) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
-	return CompareAndSwapInt32Gocdr(addr, old, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	return CompareAndSwapInt32GoCDR(addr, old, new)
 }
 
 // CompareAndSwapInt64 executes the compare-and-swap operation for an int64 value.
@@ -104,8 +104,8 @@ func CompareAndSwapInt64(addr *int64, old, new int64) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
-	return CompareAndSwapInt64Gocdr(addr, old, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	return CompareAndSwapInt64GoCDR(addr, old, new)
 }
 
 // CompareAndSwapUint32 executes the compare-and-swap operation for a uint32 value.
@@ -116,8 +116,8 @@ func CompareAndSwapUint32(addr *uint32, old, new uint32) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
-	return CompareAndSwapUint32Gocdr(addr, old, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	return CompareAndSwapUint32GoCDR(addr, old, new)
 }
 
 // CompareAndSwapUint64 executes the compare-and-swap operation for a uint64 value.
@@ -129,8 +129,8 @@ func CompareAndSwapUint64(addr *uint64, old, new uint64) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
-	return CompareAndSwapUint64Gocdr(addr, old, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	return CompareAndSwapUint64GoCDR(addr, old, new)
 }
 
 // CompareAndSwapUintptr executes the compare-and-swap operation for a uintptr value.
@@ -141,14 +141,14 @@ func CompareAndSwapUintptr(addr *uintptr, old, new uintptr) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
-	return CompareAndSwapUintptrGocdr(addr, old, new)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	return CompareAndSwapUintptrGoCDR(addr, old, new)
 }
 
 // // CompareAndSwapPointer executes the compare-and-swap operation for a unsafe.Pointer value.
 // // Consider using the more ergonomic and less error-prone [Pointer.CompareAndSwap] instead.
 // func CompareAndSwapPointer(addr *unsafe.Pointer, old, new unsafe.Pointer) (swapped bool) {
-// 	return CompareAndSwapPointerGocdr(addr, old, new)
+// 	return CompareAndSwapPointerGoCDR(addr, old, new)
 // }
 
 // AddInt32 atomically adds delta to *addr and returns the new value.
@@ -159,8 +159,8 @@ func AddInt32(addr *int32, delta int32) (new int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
-	return AddInt32Gocdr(addr, delta)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	return AddInt32GoCDR(addr, delta)
 }
 
 // AddUint32 atomically adds delta to *addr and returns the new value.
@@ -173,8 +173,8 @@ func AddUint32(addr *uint32, delta uint32) (new uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
-	return AddUint32Gocdr(addr, delta)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	return AddUint32GoCDR(addr, delta)
 }
 
 // AddInt64 atomically adds delta to *addr and returns the new value.
@@ -186,8 +186,8 @@ func AddInt64(addr *int64, delta int64) (new int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
-	return AddInt64Gocdr(addr, delta)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	return AddInt64GoCDR(addr, delta)
 }
 
 // AddUint64 atomically adds delta to *addr and returns the new value.
@@ -201,8 +201,8 @@ func AddUint64(addr *uint64, delta uint64) (new uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
-	return AddUint64Gocdr(addr, delta)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	return AddUint64GoCDR(addr, delta)
 }
 
 // AddUintptr atomically adds delta to *addr and returns the new value.
@@ -213,8 +213,8 @@ func AddUintptr(addr *uintptr, delta uintptr) (new uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
-	return AddUintptrGocdr(addr, delta)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	return AddUintptrGoCDR(addr, delta)
 }
 
 // LoadInt32 atomically loads *addr.
@@ -225,8 +225,8 @@ func LoadInt32(addr *int32) (val int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
-	return LoadInt32Gocdr(addr)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	return LoadInt32GoCDR(addr)
 }
 
 // LoadInt64 atomically loads *addr.
@@ -238,8 +238,8 @@ func LoadInt64(addr *int64) (val int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
-	return LoadInt64Gocdr(addr)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	return LoadInt64GoCDR(addr)
 }
 
 // LoadUint32 atomically loads *addr.
@@ -250,8 +250,8 @@ func LoadUint32(addr *uint32) (val uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
-	return LoadUint32Gocdr(addr)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	return LoadUint32GoCDR(addr)
 }
 
 // LoadUint64 atomically loads *addr.
@@ -263,8 +263,8 @@ func LoadUint64(addr *uint64) (val uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
-	return LoadUint64Gocdr(addr)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	return LoadUint64GoCDR(addr)
 }
 
 // LoadUintptr atomically loads *addr.
@@ -275,8 +275,8 @@ func LoadUintptr(addr *uintptr) (val uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
-	return LoadUintptrGocdr(addr)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	return LoadUintptrGoCDR(addr)
 }
 
 // LoadPointer atomically loads *addr.
@@ -287,8 +287,8 @@ func LoadPointer(addr *unsafe.Pointer) (val unsafe.Pointer) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
-	return LoadPointerGocdr(addr)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	return LoadPointerGoCDR(addr)
 }
 
 // StoreInt32 atomically stores val into *addr.
@@ -299,8 +299,8 @@ func StoreInt32(addr *int32, val int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
-	StoreInt32Gocdr(addr, val)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	StoreInt32GoCDR(addr, val)
 }
 
 // StoreInt64 atomically stores val into *addr.
@@ -312,8 +312,8 @@ func StoreInt64(addr *int64, val int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
-	StoreInt64Gocdr(addr, val)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	StoreInt64GoCDR(addr, val)
 }
 
 // StoreUint32 atomically stores val into *addr.
@@ -324,8 +324,8 @@ func StoreUint32(addr *uint32, val uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
-	StoreUint32Gocdr(addr, val)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	StoreUint32GoCDR(addr, val)
 }
 
 // StoreUint64 atomically stores val into *addr.
@@ -337,8 +337,8 @@ func StoreUint64(addr *uint64, val uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
-	StoreUint64Gocdr(addr, val)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	StoreUint64GoCDR(addr, val)
 }
 
 // StoreUintptr atomically stores val into *addr.
@@ -349,8 +349,8 @@ func StoreUintptr(addr *uintptr, val uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
-	StoreUintptrGocdr(addr, val)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	StoreUintptrGoCDR(addr, val)
 }
 
 // StorePointer atomically stores val into *addr.
@@ -361,8 +361,8 @@ func StoreUintptr(addr *uintptr, val uintptr) {
 // 		defer func() { chAck <- struct{}{} }()
 // 		<-chWait
 // 	}
-// 	runtime.GocdrAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
-// 	StorePointerGocdr(addr, val)
+// 	runtime.GoCDRAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+// 	StorePointerGoCDR(addr, val)
 // }
 
 func AndInt64(addr *int64, mask int64) (old int64) {
@@ -371,8 +371,8 @@ func AndInt64(addr *int64, mask int64) (old int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
-	return AndInt64Gocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	return AndInt64GoCDR(addr, mask)
 }
 
 func AndUint64(addr *uint64, mask uint64) (old uint64) {
@@ -381,8 +381,8 @@ func AndUint64(addr *uint64, mask uint64) (old uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
-	return AndUint64Gocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	return AndUint64GoCDR(addr, mask)
 }
 
 func AndInt32(addr *int32, mask int32) (old int32) {
@@ -391,8 +391,8 @@ func AndInt32(addr *int32, mask int32) (old int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
-	return AndInt32Gocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	return AndInt32GoCDR(addr, mask)
 }
 
 func AndUint32(addr *uint32, mask uint32) (old uint32) {
@@ -401,8 +401,8 @@ func AndUint32(addr *uint32, mask uint32) (old uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
-	return AndUint32Gocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	return AndUint32GoCDR(addr, mask)
 }
 
 func AndUintptr(addr *uintptr, mask uintptr) (old uintptr) {
@@ -411,8 +411,8 @@ func AndUintptr(addr *uintptr, mask uintptr) (old uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
-	return AndUintptrGocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	return AndUintptrGoCDR(addr, mask)
 }
 
 func OrInt64(addr *int64, mask int64) (old int64) {
@@ -421,8 +421,8 @@ func OrInt64(addr *int64, mask int64) (old int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
-	return OrInt64Gocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	return OrInt64GoCDR(addr, mask)
 }
 
 func OrUint64(addr *uint64, mask uint64) (old uint64) {
@@ -431,8 +431,8 @@ func OrUint64(addr *uint64, mask uint64) (old uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
-	return OrUint64Gocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	return OrUint64GoCDR(addr, mask)
 }
 
 func OrInt32(addr *int32, mask int32) (old int32) {
@@ -441,8 +441,8 @@ func OrInt32(addr *int32, mask int32) (old int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
-	return OrInt32Gocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	return OrInt32GoCDR(addr, mask)
 }
 
 func OrUint32(addr *uint32, mask uint32) (old uint32) {
@@ -451,8 +451,8 @@ func OrUint32(addr *uint32, mask uint32) (old uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
-	return OrUint32Gocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	return OrUint32GoCDR(addr, mask)
 }
 
 func OrUintptr(addr *uintptr, mask uintptr) (old uintptr) {
@@ -461,6 +461,6 @@ func OrUintptr(addr *uintptr, mask uintptr) (old uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.GocdrAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
-	return OrUintptrGocdr(addr, mask)
+	runtime.GoCDRAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	return OrUintptrGoCDR(addr, mask)
 }

@@ -73,7 +73,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		return false, nil, nil, false
 	}
 
-	if GocdrIgnoreReplay(op, file) {
+	if GoCDRIgnoreReplay(op, file) {
 		return false, nil, nil, false
 	}
 

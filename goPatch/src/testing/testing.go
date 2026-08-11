@@ -404,6 +404,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"gocdr"
 	"internal/race"
 	"io"
 	"math/rand"
@@ -2232,6 +2233,9 @@ var (
 // of failure. For machine readable test results, parse the output of
 // 'go test -json'.
 func (m *M) Run() (code int) {
+	// GOCDR-START
+	defer gocdr.FinishFunc()
+	// GOCDR-END
 	defer func() {
 		code = m.exitCode
 	}()

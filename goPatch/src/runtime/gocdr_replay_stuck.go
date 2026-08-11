@@ -21,22 +21,22 @@ var alreadyExecutedAsOldest = make(map[string]int)
 func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]WaitReason {
 	stuckRoutines := make(map[uint64]WaitReason)
 
-	lock(&GocdrRoutinesLock)
-	for id, routine := range GocdrRoutines {
+	lock(&GoCDRRoutinesLock)
+	for id, routine := range GoCDRRoutines {
 		stuckRoutines[id] = routine.G.waitreason
 	}
-	unlock(&GocdrRoutinesLock)
+	unlock(&GoCDRRoutinesLock)
 
 	// Repeatedly check if wait reason has changed
 	for i := 0; i < checkStuckIterations; i++ {
 		sleep(checkStuckTime / float64(checkStuckIterations))
-		lock(&GocdrRoutinesLock)
-		for id, routine := range GocdrRoutines {
+		lock(&GoCDRRoutinesLock)
+		for id, routine := range GoCDRRoutines {
 			if _, ok := stuckRoutines[id]; ok && routine.G.waitreason != stuckRoutines[id] {
 				delete(stuckRoutines, id)
 			}
 		}
-		unlock(&GocdrRoutinesLock)
+		unlock(&GoCDRRoutinesLock)
 	}
 	return stuckRoutines
 }

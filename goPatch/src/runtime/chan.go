@@ -126,7 +126,7 @@ func makechan(t *chantype, size int) *hchan {
 
 	// GOCDR-START
 	// get and save a new id for the channel
-	c.id = GocdrChanMake(size)
+	c.id = GoCDRAlloc("C", int(c.dataqsiz))
 	// GOCDR-END
 
 	lockInit(&c.lock, lockRankHchan)
@@ -138,7 +138,7 @@ func makechan(t *chantype, size int) *hchan {
 }
 
 // GOCDR-START
-func (c *hchan) SetGocdrIgnore() {
+func (c *hchan) SetGoCDRIgnore() {
 	c.gocdrIgnore = true
 }
 
@@ -220,10 +220,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	// GOCDR-START
-	if c.id == 0 {
-		c.id = GocdrChanMake(int(c.dataqsiz))
-	}
-
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.gocdrIgnore {
@@ -232,7 +228,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = GocdrChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
+				_ = GoCDRChanPre(c, OperationChannelSend, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -278,19 +274,19 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// The current function 'chansend' only returns, if the send was successful,
 	// meaning the channel either directly communicated with a receive or wrote
 	// into the channel buffer. Therefor, the send event is modified to include
-	// the post information by GocdrChanPost, if 'chansend' returns.
+	// the post information by GoCDRChanPost, if 'chansend' returns.
 	// gocdrIndex is used to connect the post event to the correct
 	// pre envent in the trace.
 	var gocdrIndex int
 	if !ignored && !c.gocdrIgnore {
-		gocdrIndex = GocdrChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
+		gocdrIndex = GoCDRChanPre(c, OperationChannelSend, false)
 	}
 	// GOCDR-END
 
 	if c.closed != 0 {
 		// GOCDR-START
 		if !ignored && !c.gocdrIgnore {
-			GocdrChanPostCausedByClose(gocdrIndex)
+			GoCDRChanPostCausedByClose(gocdrIndex)
 		}
 		// GOCDR-END
 		unlock(&c.lock)
@@ -303,7 +299,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		// GOCDR-START
 		send(c, sg, ep, func() {
 			if !ignored && !c.gocdrIgnore {
-				GocdrChanPost(gocdrIndex, c, OperationChannelSend)
+				GoCDRChanPost(gocdrIndex, c, OperationChannelSend)
 			}
 			unlock(&c.lock)
 		}, 3)
@@ -326,7 +322,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 
 		// GOCDR-START
 		if !ignored && !c.gocdrIgnore {
-			GocdrChanPost(gocdrIndex, c, OperationChannelSend)
+			GoCDRChanPost(gocdrIndex, c, OperationChannelSend)
 		}
 		// GOCDR-END
 
@@ -337,7 +333,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if !block {
 		// GOCDR-START
 		if !ignored && !c.gocdrIgnore {
-			GocdrChanPost(gocdrIndex, c, OperationChannelSend)
+			GoCDRChanPost(gocdrIndex, c, OperationChannelSend)
 		}
 		// GOCDR-END
 		unlock(&c.lock)
@@ -387,7 +383,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// GOCDR-START
 	lock(&c.lock)
 	if !ignored && !c.gocdrIgnore {
-		GocdrChanPost(gocdrIndex, c, OperationChannelSend)
+		GoCDRChanPost(gocdrIndex, c, OperationChannelSend)
 	}
 	unlock(&c.lock)
 	// GOCDR-END
@@ -404,7 +400,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if closed {
 		// GOCDR-START
 		if !ignored && !c.gocdrIgnore {
-			GocdrChanPostCausedByClose(gocdrIndex)
+			GoCDRChanPostCausedByClose(gocdrIndex)
 		}
 		// GOCDR-END
 		if c.closed == 0 {
@@ -526,11 +522,7 @@ func closechan(c *hchan) {
 	}
 
 	// GOCDR-START
-	if c.id == 0 {
-		c.id = GocdrChanMake(int(c.dataqsiz))
-	}
-
-	// GocdrChanClose is called when a channel is closed. It creates a close event
+	// GoCDRChanClose is called when a channel is closed. It creates a close event
 	// in the trace.
 	if !c.gocdrIgnore {
 		wait, chWait, chAck, _ := WaitForReplay(OperationChannelClose, CallerSkipChanClose, true)
@@ -538,7 +530,7 @@ func closechan(c *hchan) {
 			defer func() { chAck <- struct{}{} }()
 			<-chWait
 		}
-		GocdrChanClose(c.id, c.dataqsiz, c.qcount)
+		GoCDRChanClose(c)
 	}
 	// GOCDR-END
 
@@ -675,10 +667,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	}
 
 	// GOCDR-START
-	if c.id == 0 {
-		c.id = GocdrChanMake(int(c.dataqsiz))
-	}
-
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.gocdrIgnore {
@@ -687,7 +675,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = GocdrChanPre(c.id, OperationChannelRecv, c.dataqsiz, false)
+				_ = GoCDRChanPre(c, OperationChannelRecv, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -746,12 +734,12 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// The current function 'chanrecv' only returns, if the receive was successful,
 	// meaning the channel either communicated with a send or read from the
 	// channel buffer. Therefor, the recive event is modified to include the
-	// post information by GocdrChanPost, if 'chansend' returns.
+	// post information by GoCDRChanPost, if 'chansend' returns.
 	// gocdrIndex is used to connect the post event to the correct
 	// pre envent in the trace.
 	var gocdrIndex int
 	if !ignored && !c.gocdrIgnore {
-		gocdrIndex = GocdrChanPre(c.id, OperationChannelRecv, c.dataqsiz, false)
+		gocdrIndex = GoCDRChanPre(c, OperationChannelRecv, false)
 	}
 	// GOCDR-END
 
@@ -763,7 +751,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 
 			// GOCDR-START
 			if !ignored && !c.gocdrIgnore {
-				GocdrChanPostCausedByClose(gocdrIndex)
+				GoCDRChanPostCausedByClose(gocdrIndex)
 			}
 			// GOCDR-END
 
@@ -784,7 +772,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			// GOCDR-START
 			recv(c, sg, ep, func() {
 				if !ignored && !c.gocdrIgnore {
-					GocdrChanPost(gocdrIndex, c, OperationChannelRecv)
+					GoCDRChanPost(gocdrIndex, c, OperationChannelRecv)
 				}
 				unlock(&c.lock)
 			}, 3)
@@ -811,7 +799,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 
 		// GOCDR-START
 		if !ignored && !c.gocdrIgnore {
-			GocdrChanPost(gocdrIndex, c, OperationChannelRecv)
+			GoCDRChanPost(gocdrIndex, c, OperationChannelRecv)
 		}
 		// GOCDR-END
 
@@ -822,7 +810,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	if !block {
 		// GOCDR-START
 		if !ignored && !c.gocdrIgnore {
-			GocdrChanPost(gocdrIndex, c, OperationChannelRecv)
+			GoCDRChanPost(gocdrIndex, c, OperationChannelRecv)
 		}
 		// GOCDR-END
 		unlock(&c.lock)
@@ -880,9 +868,9 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	lock(&c.lock)
 	if !ignored && !c.gocdrIgnore {
 		if success {
-			GocdrChanPost(gocdrIndex, c, OperationChannelRecv)
+			GoCDRChanPost(gocdrIndex, c, OperationChannelRecv)
 		} else {
-			GocdrChanPostCausedByClose(gocdrIndex)
+			GoCDRChanPostCausedByClose(gocdrIndex)
 		}
 	}
 	unlock(&c.lock)
@@ -1001,7 +989,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = GocdrSelectPreOneNonDef(c, true)
+				_ = GoCDRSelectPreOneNonDef(c, true)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -1011,11 +999,11 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 	gocdrIndex := -1
 	if c != nil && !c.gocdrIgnore {
 		lock(&c.lock)
-		gocdrIndex = GocdrSelectPreOneNonDef(c, true)
+		gocdrIndex = GoCDRSelectPreOneNonDef(c, true)
 		unlock(&c.lock)
 	}
 
-	fuzzingEnabled, fuzzingIndex := GocdrFuzzingGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex := GoCDRFuzzingGetPreferredCase(2)
 
 	if wait {
 		fuzzingIndex = min(fuzzingIndex, replayElem.Index)
@@ -1038,7 +1026,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 
 	if c != nil && !c.gocdrIgnore {
 		lock(&c.lock)
-		GocdrSelectPostOneNonDef(gocdrIndex, res, c)
+		GoCDRSelectPostOneNonDef(gocdrIndex, res, c)
 		unlock(&c.lock)
 	}
 
@@ -1074,7 +1062,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = GocdrSelectPreOneNonDef(c, false)
+				_ = GoCDRSelectPreOneNonDef(c, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -1084,11 +1072,11 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 	gocdrIndex := -1
 	if c != nil && !c.gocdrIgnore {
 		lock(&c.lock)
-		gocdrIndex = GocdrSelectPreOneNonDef(c, false)
+		gocdrIndex = GoCDRSelectPreOneNonDef(c, false)
 		unlock(&c.lock)
 	}
 
-	fuzzingEnabled, fuzzingIndex := GocdrFuzzingGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex := GoCDRFuzzingGetPreferredCase(2)
 
 	if wait {
 		fuzzingIndex = min(fuzzingIndex, replayElem.Index)
@@ -1112,7 +1100,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 
 	if c != nil && !c.gocdrIgnore {
 		lock(&c.lock)
-		GocdrSelectPostOneNonDef(gocdrIndex, res, c)
+		GoCDRSelectPostOneNonDef(gocdrIndex, res, c)
 		unlock(&c.lock)
 	}
 	return res, recv

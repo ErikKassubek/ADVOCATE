@@ -916,13 +916,14 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 	// register that gets moved back and forth between the
 	// register and sched.ctxt without a write barrier.
 	if gp.sched.ctxt != nil {
-		scanblock(uintptr(unsafe.Pointer(&gp.sched.ctxt)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.goid)
+		scanblock(uintptr(unsafe.Pointer(&gp.sched.ctxt)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.gocdrRoutineInfo.id)
 	}
 
 	// Scan the stack. Accumulate a list of stack objects.
 	var u unwinder
 	for u.init(gp, 0); u.valid(); u.next() {
-		scanframeworker(&u.frame, &state, gcw, gp.goid)
+		// ADVVOCATE-START
+		scanframeworker(&u.frame, &state, gcw, gp.gocdrRoutineInfo.id)
 	}
 
 	// Find additional pointers that point into the stack from the heap.
@@ -933,18 +934,18 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 		if d.fn != nil {
 			// Scan the func value, which could be a stack allocated closure.
 			// See issue 30453.
-			scanblock(uintptr(unsafe.Pointer(&d.fn)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.goid)
+			scanblock(uintptr(unsafe.Pointer(&d.fn)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.gocdrRoutineInfo.id)
 		}
 		if d.link != nil {
 			// The link field of a stack-allocated defer record might point
 			// to a heap-allocated defer record. Keep that heap record live.
-			scanblock(uintptr(unsafe.Pointer(&d.link)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.goid)
+			scanblock(uintptr(unsafe.Pointer(&d.link)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.gocdrRoutineInfo.id)
 		}
 		// Retain defers records themselves.
 		// Defer records might not be reachable from the G through regular heap
 		// tracing because the defer linked list might weave between the stack and the heap.
 		if d.heap {
-			scanblock(uintptr(unsafe.Pointer(&d)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.goid)
+			scanblock(uintptr(unsafe.Pointer(&d)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.gocdrRoutineInfo.id)
 		}
 	}
 	if gp._panic != nil {
@@ -988,7 +989,7 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 		if conservative {
 			scanConservative(b, ptrBytes, gcData, gcw, &state)
 		} else {
-			scanblock(b, ptrBytes, gcData, gcw, &state, gp.goid)
+			scanblock(b, ptrBytes, gcData, gcw, &state, gp.gocdrRoutineInfo.id)
 		}
 	}
 
@@ -1018,8 +1019,11 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 
 // Scan a stack frame: local variables and function arguments/results.
 //
+// GOCDR-START
+//
 //go:nowritebarrier
 func scanframeworker(frame *stkframe, state *stackScanState, gcw *gcWork, id uint64) {
+	// GOCDR-END
 	if _DebugGC > 1 && frame.continpc != 0 {
 		print("scanframe ", funcname(frame.fn), "\n")
 	}
@@ -1073,12 +1077,16 @@ func scanframeworker(frame *stkframe, state *stackScanState, gcw *gcWork, id uin
 	// Scan local variables if stack frame has been allocated.
 	if locals.n > 0 {
 		size := uintptr(locals.n) * goarch.PtrSize
+		// GOCDR-START
 		scanblock(frame.varp-size, size, locals.bytedata, gcw, state, id)
+		// GOCDR-END
 	}
 
 	// Scan arguments.
 	if args.n > 0 {
+		// GOCDR-START
 		scanblock(frame.argp, uintptr(args.n)*goarch.PtrSize, args.bytedata, gcw, state, id)
+		// GOCDR-END
 	}
 
 	// Add all stack objects to the stack object list.
@@ -1427,6 +1435,15 @@ func scanblock(b0, n0 uintptr, ptrmask *uint8, gcw *gcWork, stk *stackScanState,
 					} else {
 						if !tryDeferToSpanScan(p, gcw) {
 							if obj, span, objIndex := findObject(p, b, i); obj != 0 {
+								// GOCDR-START
+								if CollectPartialDeadlockInfo {
+									for currentSleepingOp := range InfoHaveRef {
+										if currentSleepingOp == obj {
+											InfoHaveRef[currentSleepingOp][id] = true
+										}
+									}
+								}
+								// GOCDR-END
 								greyobject(obj, b, i, span, gcw, objIndex)
 							}
 						}

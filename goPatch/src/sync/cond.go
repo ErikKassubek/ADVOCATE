@@ -13,6 +13,22 @@ import (
 	// GOCDR-END
 )
 
+// GOCDR-START
+//
+//go:linkname GoCDRAllocCondVar runtime.GoCDRAllocCondVar
+func GoCDRAllocCondVar(ptr unsafe.Pointer) {
+	if runtime.GoCDRTracingDisabled {
+		return
+	}
+	c := (*Cond)(ptr)
+	if c.id != 0 {
+		return
+	}
+	c.id = runtime.GoCDRAlloc("D", 0)
+}
+
+// GOCDR-END
+
 // Cond implements a condition variable, a rendezvous point
 // for goroutines waiting for or announcing the occurrence
 // of an event.
@@ -74,9 +90,6 @@ func NewCond(l Locker) *Cond {
 //	c.L.Unlock()
 func (c *Cond) Wait() {
 	// GOCDR-START
-	if c.id == 0 {
-		c.id = runtime.GetGocdrObjectID()
-	}
 
 	// replay
 	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationCondWait, runtime.CallerSkipCond, false)
@@ -85,8 +98,8 @@ func (c *Cond) Wait() {
 	}
 
 	//record
-	gocdrIndex := runtime.GocdrCondPre(c.id, runtime.OperationCondWait)
-	defer runtime.GocdrCondPost(gocdrIndex)
+	gocdrIndex := runtime.GoCDRCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondWait)
+	defer runtime.GoCDRCondPost(gocdrIndex)
 	// GOCDR-END
 
 	c.checker.check()
@@ -105,9 +118,6 @@ func (c *Cond) Wait() {
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
 	// GOCDR-START
-	if c.id == 0 {
-		c.id = runtime.GetGocdrObjectID()
-	}
 
 	// replay
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondSignal, runtime.CallerSkipCond, true)
@@ -117,8 +127,8 @@ func (c *Cond) Signal() {
 	}
 
 	// recording
-	gocdrIndex := runtime.GocdrCondPre(c.id, runtime.OperationCondSignal)
-	defer runtime.GocdrCondPost(gocdrIndex)
+	gocdrIndex := runtime.GoCDRCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondSignal)
+	defer runtime.GoCDRCondPost(gocdrIndex)
 	// GOCDR-END
 
 	c.checker.check()
@@ -131,9 +141,6 @@ func (c *Cond) Signal() {
 // during the call.
 func (c *Cond) Broadcast() {
 	// GOCDR-START
-	if c.id == 0 {
-		c.id = runtime.GetGocdrObjectID()
-	}
 
 	// replay
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondBroadcast, runtime.CallerSkipCond, true)
@@ -143,8 +150,8 @@ func (c *Cond) Broadcast() {
 	}
 
 	//recording
-	gocdrIndex := runtime.GocdrCondPre(c.id, runtime.OperationCondBroadcast)
-	defer runtime.GocdrCondPost(gocdrIndex)
+	gocdrIndex := runtime.GoCDRCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondBroadcast)
+	defer runtime.GoCDRCondPost(gocdrIndex)
 	// GOCDR-END
 
 	c.checker.check()

@@ -297,3 +297,20 @@ var loong64HasLSX bool
 var riscv64HasZbb bool
 
 func asanregisterglobals(unsafe.Pointer, uintptr)
+
+// GOCDR-START
+func gocdrFunctionCall()
+func gocdrFunctionReturn()
+func GoCDRAllocMutex(unsafe.Pointer)
+func GoCDRAllocCondVar(unsafe.Pointer)
+func GoCDRAllocWG(unsafe.Pointer)
+func gocdrControllFlow(string, int, int)
+
+func GoCDRInitTracing(int, bool)
+func GoCDRFinishTracing()
+func GoCDRInitReplay(string, int, bool, bool)
+func GoCDRFinishReplay()
+func GoCDRInitFuzzing(string, int, bool)
+func GoCDRFinishFuzzing()
+
+// GOCDR-END

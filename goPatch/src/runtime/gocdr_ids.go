@@ -10,15 +10,17 @@
 
 package runtime
 
-import "internal/runtime/atomic"
+import (
+	"internal/runtime/atomic"
+)
 
 var gocdrCurrentRoutineID atomic.Uint64
 
-// GetNewGocdrRoutineID returns a new id for a routine
+// GetNewGoCDRRoutineID returns a new id for a routine
 //
 // Returns:
 //   - new id
-func GetNewGocdrRoutineID() uint64 {
+func GetNewGoCDRRoutineID() uint64 {
 	id := gocdrCurrentRoutineID.Add(1)
 	if id > 184467440 {
 		panic("Overflow Error: Two many routines. Max: 184467440")
@@ -26,19 +28,31 @@ func GetNewGocdrRoutineID() uint64 {
 	return id
 }
 
-// GetNewGocdrRoutineID returns the next routine id that will be provided
-// by GetNewGocdrRoutineID without advancing the counter
+// GetNewGoCDRRoutineID returns the next routine id that will be provided
+// by GetNewGoCDRRoutineID without advancing the counter
 //
 // Returns:
 //   - next id
-func GetNextGocdrRoutineID() uint64 {
+func GetNextGoCDRRoutineID() uint64 {
 	return gocdrCurrentRoutineID.Load() + 1
 }
 
-// GetGocdrObjectID returns a new id for an primitive
+func NewIdIfReq(currentId uint64, memOld, memCurr uintptr) (uint64, uintptr) {
+	if currentId == 0 {
+		return GetGoCDRObjectID(), memCurr
+	}
+
+	if memOld == memCurr {
+		return currentId, memCurr
+	}
+
+	return GetGoCDRObjectID(), memCurr
+}
+
+// GetGoCDRObjectID returns a new id for an primitive
 // Return:
 //   - new id
-func GetGocdrObjectID() uint64 {
+func GetGoCDRObjectID() uint64 {
 	routine := currentGoRoutineInfo()
 
 	if routine == nil {
@@ -50,5 +64,6 @@ func GetGocdrObjectID() uint64 {
 		panic("Overflow Error: Tow many objects in one routine. Max: 999999999")
 	}
 	id := routine.id*1000000000 + routine.maxObjectId
+
 	return id
 }

@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: gocdr_replay.go
-// Brief: Gocdr Replay
+// Brief: GoCDR Replay
 //
 // Author: Erik Kassubek
 // Created: 2024-12-10
@@ -20,6 +20,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	_ "unsafe"
 )
 
 const (
@@ -30,6 +31,8 @@ const (
 var timeout = false
 var tracePathRewritten = ""
 
+var initReplay bool
+
 // InitReplay reads the trace from the trace folder.
 // The function reads all files in the trace folder and adds the trace to the runtime.
 // The trace is added to the runtime by calling the AddReplayTrace function.
@@ -38,7 +41,17 @@ var tracePathRewritten = ""
 //   - tracePath string: The path to the rewritten trace, relative the the dir where gocdrResult is placed
 //   - timeout int: Timeout in seconds, 0: no timeout
 //   - atomic bool: if true, replay includes atomic
-func InitReplay(tracePath string, timeout int, atomic bool) {
+//   - init bool: true if called from init, false for main
+//
+//go:linkname InitReplay runtime.GoCDRInitReplay
+func InitReplay(tracePath string, timeout int, atomic bool, init bool) {
+	if initReplay { // called by main but alredy run by init
+		return
+	}
+	initReplay = true
+
+	FinishFunc = FinishReplay
+
 	// use first as default
 	// runtime.SetForceExit(false)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
@@ -119,6 +132,10 @@ func startReplay(timeout int) {
 			os.Exit(10)
 		}()
 	}
+
+	// DetectBlockingGC(0)
+
+	runtime.EnableReplay()
 }
 
 // readReplayActive checks if a rewrite_active.log file exists in the path
@@ -206,7 +223,7 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 //
 // We only record the relevant information for each operation.
 func readTraceFile(fileName string,
-	replayData *runtime.GocdrReplayTrace, spawns *map[int][]int, selects *map[string][]runtime.ReplayElement) {
+	replayData *runtime.GoCDRReplayTrace, spawns *map[int][]int, selects *map[string][]runtime.ReplayElement) {
 	// get the routine id from the file name
 	routineID, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(fileName, tracePathRewritten+"/trace_"), ".log"))
 	if err != nil {
@@ -262,6 +279,7 @@ func readTraceFile(fileName string,
 				(*spawns)[routineID] = make([]int, 0)
 			}
 			(*spawns)[routineID] = append((*spawns)[routineID], index)
+			println("ADD SPAWN ", routineID, " ", index)
 		case "C":
 			switch fields[4] {
 			case "S":
@@ -413,13 +431,8 @@ func readTraceFile(fileName string,
 				file = pos[0]
 				line, _ = strconv.Atoi(pos[1])
 			}
-		case "N": // new object
-			continue
-		case "E": // end of routine
-			continue
-
 		default:
-			panic("Unknown operation " + fields[0] + " in line " + elem + " in file " + fileName + ".")
+			continue
 		}
 		if blocked || time == 0 {
 			time = math.MaxInt
@@ -432,7 +445,7 @@ func readTraceFile(fileName string,
 		// 	}
 		// }
 
-		if op != runtime.OperationNone && !runtime.GocdrIgnoreReplay(op, file) {
+		if op != runtime.OperationNone && !runtime.GoCDRIgnoreReplay(op, file) {
 			newElem := runtime.ReplayElement{
 				Op: op, Routine: routineID, Time: time, TimePre: tPre, File: file, Line: line,
 				Blocked: blocked, Suc: suc,
@@ -452,18 +465,23 @@ func readTraceFile(fileName string,
 }
 
 // FinishReplay waits for the replay to finish.
+//
+//go:linkname FinishReplay runtime.GoCDRFinishReplay
 func FinishReplay() {
 	if r := recover(); r != nil {
 		println("Replay failed.")
 	}
 
-	println("FinishReplay")
 	runtime.WaitForReplayFinish()
+
+	// DetectBlockingGC()
+
+	time.Sleep(time.Second)
 
 	runtime.ExitReplayWithCode(runtime.ExitCodeDefault, "")
 }
 
-func allTraceElemToRuntimeActive(replayTrace *runtime.GocdrReplayTrace) (map[string][]int, int) {
+func allTraceElemToRuntimeActive(replayTrace *runtime.GoCDRReplayTrace) (map[string][]int, int) {
 	counter := make(map[string]int)
 	res := make(map[string][]int)
 	resCounter := 0

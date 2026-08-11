@@ -12,10 +12,6 @@
 
 package runtime
 
-import (
-	"unsafe"
-)
-
 const (
 	CallerSkipAtomic           = 2
 	CallerSkipAtomicType       = 3
@@ -44,47 +40,6 @@ func uint64ToString(n uint64) string {
 	} else {
 		return uint64ToString(n/10) + string(rune(n%10+'0'))
 	}
-}
-
-// Given a pointer, return the value of the address of this pointer as string
-//
-// Parameter:
-//   - ptr *T: the pointer
-//   - size bool: if true, the output is reduced to a size of at most 9 digits
-//
-// Returns:
-//   - string: the string address value of the pointer
-func pointerAddressAsString[T any](ptr *T, size bool) string {
-	address := uintptr(unsafe.Pointer(ptr))
-
-	// Handle zero case explicitly
-	if address == 0 {
-		return "0"
-	}
-
-	// Convert uintptr to string
-	var str string
-	for address > 0 {
-		digit := address % 10         // Get the last digit
-		str = string('0'+digit) + str // Prepend the digit
-		address /= 10                 // Remove the last digit
-	}
-
-	if !size {
-		return str
-	}
-
-	const desiredLength = 9
-
-	// Get the length of the input string
-	strLen := len(str)
-
-	if strLen >= desiredLength {
-		// If the string has 9 or more letters, return the last 9
-		return str[strLen-desiredLength:]
-	}
-
-	return str
 }
 
 // Get a string representation of an int64
@@ -381,6 +336,18 @@ func printAllGoroutines() {
 	buf := make([]byte, 1<<20) // 1 MB buffer
 	n := Stack(buf, true)
 	println(string(buf[:n]))
+}
+
+func mapToSlice[T comparable](m map[T]struct{}) []T {
+	res := make([]T, len(m))
+
+	i := 0
+	for k := range m {
+		res[i] = k
+		i++
+	}
+
+	return res
 }
 
 // GOCDR-FILE-END

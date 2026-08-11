@@ -77,8 +77,7 @@ var hasPanicked = false
 //
 // Parameter:
 //   - msg: the panic message
-func GocdrPanic(msg any) {
-	println("HAS: ", hasPanicked)
+func GoCDRPanic(msg any) {
 	if hasPanicked {
 		exit(1)
 	}
@@ -88,7 +87,7 @@ func GocdrPanic(msg any) {
 
 	SetExitCodeFromPanicMsg(msg)
 
-	if IsGocdrFuzzingEnabled() {
+	if IsGoCDRFuzzingEnabled() {
 		finishFuzzingFunc()
 	} else if IsTracingEnabled() {
 		finishTracingFunc()
@@ -114,8 +113,6 @@ func ExitReplayTimeout() {
 
 	// println("ExitPosition:" + top)
 
-	detectBlockingGC()
-
 	gocdrExitCode = ExitCodeTimeout
-	GocdrPanic("Timeout")
+	GoCDRPanic("Timeout")
 }

@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: gocdr_replay.go
-// Brief: Gocdr tracing
+// Brief: GoCDR tracing
 //
 // Author: Erik Kassubek
 // Created: 2024-11-5
@@ -17,6 +17,8 @@ import (
 	"runtime"
 	"strconv"
 	"time"
+
+	_ "unsafe"
 )
 
 var traceFileCounter = 0
@@ -28,11 +30,40 @@ var timerStarted = false
 var startTime time.Time
 var duration time.Duration
 
+var startWriting = false
+
+var initTracing bool
+
 // InitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
-func InitTracing(timeout int) {
+//
+//go:linkname InitTracing runtime.GoCDRInitTracing
+func InitTracing(timeout int, init bool) {
+	if initTracing { // called by main but alredy run by init
+		return
+	}
+	initTracing = true
+
+	FinishFunc = FinishTracing
+
 	startTime = time.Now()
 	timerStarted = true
+
+	// remove the trace folder if it exists
+	err := os.RemoveAll(tracePathRecorded)
+	if err != nil && !os.IsNotExist(err) {
+		println("Cannot remove: ", err.Error())
+		return
+	}
+
+	// create the trace folder
+	err = os.Mkdir(tracePathRecorded, 0755)
+	if err != nil {
+		if !os.IsExist(err) {
+			println("Cannot write: ", err.Error())
+			return
+		}
+	}
 
 	if timeout > 0 {
 		// start time timeout
@@ -46,12 +77,14 @@ func InitTracing(timeout int) {
 
 	// go writeTraceIfFull()
 	// go removeAtomicsIfFull()
-	runtime.InitTracing(FinishTracing)
+	runtime.InitTracing(FinishTracing, WriteToTraceFile, init)
 }
 
 // Write the trace of the program to a file.
 // The trace is written in the file named file_name.
 // The trace is written in the format of gocdr.
+//
+//go:linkname FinishTracing runtime.GoCDRFinishTracing
 func FinishTracing() {
 	if hasFinished {
 		// needed to prevent program stop while still writing
@@ -65,49 +98,54 @@ func FinishTracing() {
 		time.Sleep(time.Second)
 	}
 
-	// remove the trace folder if it exists
-	err := os.RemoveAll(tracePathRecorded)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			println("Cannot remove: ", err.Error())
-			return
-		}
-	}
-
-	// create the trace folder
-	err = os.Mkdir(tracePathRecorded, 0755)
-	if err != nil {
-		if !os.IsExist(err) {
-			println("Cannot write: ", err.Error())
-			return
-		}
-	}
-
 	runtime.AdvocatRoutineExit()
 
 	runtime.DisableTracing()
+
+	runtime.BuildOAT()
+
+	// DetectBlockingGC()
 
 	if timerStarted {
 		duration = time.Since(startTime)
 	}
 
-	writeToTraceFiles(tracePathRecorded)
+	writeToTraceFiles()
 }
 
 // Write the trace to a set of files. The traces are written into a folder
 // with name trace. For each routine, a file is created. The file is named
 // trace_routineId.log. The trace of the routine is written into the file.
-//
-// Parameter:
-//
-//	tracePath string:t path to where the trace should be written
-func writeToTraceFiles(tracePath string) {
+func writeToTraceFiles() {
+	startWriting = true
 	numRout := runtime.GetNumberOfRoutines()
-	writeToTraceFileInfo(tracePath, numRout)
+	writeToTraceFileInfo(numRout)
 
-	for i := 1; i <= numRout; i++ {
+	currentlyWriting := make([]int, 0)
+
+	for i := 1; i <= numRout+1; i++ {
+		active, writing := runtime.IsActive(i)
+		if !active {
+			continue
+		}
+		if writing {
+			currentlyWriting = append(currentlyWriting, i)
+			continue
+		}
 		// write the trace to the file
-		writeToTraceFile(i, tracePath)
+		WriteToTraceFile(i, false)
+	}
+
+	// wait for the currently writing routine to be written
+	for len(currentlyWriting) > 0 {
+		for i := 0; i < len(currentlyWriting); {
+			active, _ := runtime.IsActive(currentlyWriting[i])
+			if !active {
+				currentlyWriting = append(currentlyWriting[:i], currentlyWriting[i+1:]...)
+			} else {
+				i++
+			}
+		}
 	}
 }
 
@@ -117,10 +155,17 @@ func writeToTraceFiles(tracePath string) {
 //
 // Parameter:
 //   - routine: The id of the routine
-//   - tracePath string: path to where the trace should be written
-func writeToTraceFile(routine int, tracePath string) {
+//   - fromRuntime bool: true if the function was called from runtime
+//
+// Return:
+//   - true, if the trace can be written, false if the writing of the remaining routines has already started
+func WriteToTraceFile(routine int, fromRuntime bool) bool {
+	if fromRuntime && startWriting {
+		return false
+	}
+
 	// create the file if it does not exist and open it
-	fileName := filepath.Join(tracePath, "trace_"+strconv.Itoa(routine)+".log")
+	fileName := filepath.Join(tracePathRecorded, "trace_"+strconv.Itoa(routine)+".log")
 
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -128,26 +173,22 @@ func writeToTraceFile(routine int, tracePath string) {
 	}
 	defer file.Close()
 
-	// get the runtime to send the trace
-	gocdrChan := make(chan string)
-	go func() {
-		runtime.TraceToStringByIDChannel(routine, gocdrChan)
-		close(gocdrChan)
-	}()
+	c := runtime.TraceToChanByID(uint64(routine))
 
-	// receive the trace and write it to the file
-	for trace := range gocdrChan {
-		if _, err := file.WriteString(trace); err != nil {
+	for res := range c {
+		if _, err := file.WriteString(res); err != nil {
 			panic(err)
 		}
 	}
+
+	return true
 }
 
 /*
  * Write a trace info file
  */
-func writeToTraceFileInfo(tracePath string, numberRoutines int) {
-	fileName := filepath.Join(tracePath, "trace_info.log")
+func writeToTraceFileInfo(numberRoutines int) {
+	fileName := filepath.Join(tracePathRecorded, "trace_info.log")
 
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {

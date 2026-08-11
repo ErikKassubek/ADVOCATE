@@ -12,47 +12,51 @@
 
 package runtime
 
+import "unsafe"
+
 // Struct to store an operation on a conditional variable
 //
 // Fields
-//   - tPre int64: time when the operation started
-//   - tPost int64: time when the operation finished
-//   - id string: id of the channel
+//   - tReq int64: time when the operation started
+//   - tCom int64: time when the operation finished
+//   - res GoCDRTraceResource: the resource the op is applied to
 //   - op Operation: operation type
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type GocdrTraceCond struct {
-	tPre  int64
-	tPost int64
-	id    uint64
-	op    Operation
-	file  string
-	line  int
+type GoCDRTraceCond struct {
+	tReq int64
+	tCom int64
+	res  GoCDRTraceResource
+	op   Operation
+	file string
+	line int
 }
 
 /*
- * GocdrCondPre adds a cond wait to the trace
+ * GoCDRCondPre adds a cond wait to the trace
  * Args:
  * 	id: id of the cond
  * 	op: Operation
  * Return:
  * 	index of the operation in the trace
  */
-func GocdrCondPre(id uint64, op Operation) int {
-	if gocdrTracingDisabled {
+func GoCDRCondPre(mem unsafe.Pointer, id uint64, op Operation) int {
+	if GoCDRTracingDisabled {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
 	_, file, line, _ := Caller(CallerSkipCond)
 
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return -1
 	}
 
-	elem := GocdrTraceCond{
-		tPre: timer,
-		id:   id,
+	res := GoCDRTraceResource{id: id, addr: mem}
+
+	elem := GoCDRTraceCond{
+		tReq: timer,
+		res:  res,
 		op:   op,
 		file: file,
 		line: line,
@@ -62,12 +66,12 @@ func GocdrCondPre(id uint64, op Operation) int {
 }
 
 /*
- * GocdrCondPost adds the end counter to an operation of the trace
+ * GoCDRCondPost adds the end counter to an operation of the trace
  * Args:
  * 	index: index of the operation in the trace
  */
-func GocdrCondPost(index int) {
-	if gocdrTracingDisabled {
+func GoCDRCondPost(index int) {
+	if GoCDRTracingDisabled {
 		return
 	}
 
@@ -75,9 +79,9 @@ func GocdrCondPost(index int) {
 	if index == -1 {
 		return
 	}
-	elem := currentGoRoutineInfo().getElement(index).(GocdrTraceCond)
+	elem := currentGoRoutineInfo().getElement(index).(GoCDRTraceCond)
 
-	elem.tPost = timer
+	elem.tCom = timer
 
 	currentGoRoutineInfo().updateElement(index, elem)
 }
@@ -86,9 +90,9 @@ func GocdrCondPost(index int) {
 //
 // Returns:
 //   - string: the string representation
-func (elem GocdrTraceCond) toString() string {
+func (self GoCDRTraceCond) toString() string {
 	var opC string
-	switch elem.op {
+	switch self.op {
 	case OperationCondWait:
 		opC = "W"
 	case OperationCondSignal:
@@ -97,13 +101,29 @@ func (elem GocdrTraceCond) toString() string {
 		opC = "B"
 	}
 
-	return buildTraceElemString("D", elem.tPre, elem.tPost, elem.id, opC, posToString(elem.file, elem.line))
+	return buildTraceElemString("D", self.tReq, self.tCom, self.res.id, opC, posToString(self.file, self.line))
 }
 
 // getOperation is a getter for the operation
 //
 // Returns:
 //   - Operation: the operation
-func (elem GocdrTraceCond) getOperation() Operation {
-	return elem.op
+func (self GoCDRTraceCond) getOperation() Operation {
+	return self.op
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self GoCDRTraceCond) hasCommit() bool {
+	return self.tCom != 0
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []GoCDRTraceResource: recources
+func (self GoCDRTraceCond) resource() []GoCDRTraceResource {
+	return []GoCDRTraceResource{self.res}
 }

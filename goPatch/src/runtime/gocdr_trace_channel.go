@@ -12,6 +12,8 @@
 
 package runtime
 
+import "unsafe"
+
 var unbufferedChannelComSend = make(map[uint64]int64) // id -> tpost
 var unbufferedChannelComRecv = make(map[uint64]int64) // id -> tpost
 var unbufferedChannelComSendMutex mutex
@@ -22,7 +24,7 @@ var unbufferedChannelComRecvMutex mutex
 // Fields
 //   - tPre int64: time when the operation started
 //   - tPost int64: time when the operation finished
-//   - id string: id of the channel
+//   - res GoCDRTraceResource: the resource the op is applied to
 //   - op Operation: operation type
 //   - cl bool: true if the recv was executed because the channel is closed
 //   - oId uint64: operation id, communicating send and recv have the same oID
@@ -31,10 +33,10 @@ var unbufferedChannelComRecvMutex mutex
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
 //   - isNil bool: true if the channel is nil
-type GocdrTraceChannel struct {
-	tPre   int64
-	tPost  int64
-	id     uint64
+type GoCDRTraceChannel struct {
+	tReq   int64
+	tCom   int64
+	res    GoCDRTraceResource
 	op     Operation
 	cl     bool
 	oId    uint64
@@ -45,18 +47,17 @@ type GocdrTraceChannel struct {
 	isNil  bool
 }
 
-// GocdrChanPre adds a channel send/receive to the trace.
+// GoCDRChanPre adds a channel send/receive to the trace.
 //
 // Parameters:
-//   - id uint64: id of the channel
+//   - mem unsafe.Pointer: memory address
 //   - op Operation: operation send/recv
-//   - qSize uint: size of the channel, 0 for unbuffered
 //   - isNil bool: true if the channel is nil
 //
 // Returns:
 //   - int: index of the operation in the trace, return -1 if it is a atomic operation
-func GocdrChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
-	if gocdrTracingDisabled {
+func GoCDRChanPre(c *hchan, op Operation, isNil bool) int {
+	if GoCDRTracingDisabled {
 		return -1
 	}
 
@@ -64,16 +65,18 @@ func GocdrChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
 
 	_, file, line, _ := Caller(CallerSkipChanSendRecv)
 
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return -1
 	}
 
-	elem := GocdrTraceChannel{
-		tPre:  timer,
-		id:    id,
+	res := GoCDRTraceResource{id: c.id, addr: unsafe.Pointer(c)}
+
+	elem := GoCDRTraceChannel{
+		tReq:  timer,
+		res:   res,
 		op:    op,
 		oId:   0,
-		qSize: qSize,
+		qSize: c.dataqsiz,
 		file:  file,
 		line:  line,
 		isNil: isNil,
@@ -82,34 +85,34 @@ func GocdrChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
 	return insertIntoTrace(elem)
 }
 
-// GocdrChanClose adds a channel close to the trace
+// GoCDRChanClose adds a channel close to the trace
 //
 // Parameter:
-//   - id uint64: id of the channel
-//   - qSize uint: size of the buffer
-//   - qCount uint: number of messages in the buffer
+//   - c *hchan
 //
 // Returns:
 //   - index of the operation in the trace
-func GocdrChanClose(id uint64, qSize uint, qCount uint) int {
-	if gocdrTracingDisabled {
+func GoCDRChanClose(c *hchan) int {
+	if GoCDRTracingDisabled {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(CallerSkipChanClose)
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return -1
 	}
 
-	elem := GocdrTraceChannel{
-		tPre:   timer,
-		tPost:  timer,
-		id:     id,
+	res := GoCDRTraceResource{id: c.id, addr: unsafe.Pointer(c)}
+
+	elem := GoCDRTraceChannel{
+		tReq:   timer,
+		tCom:   timer,
+		res:    res,
 		op:     OperationChannelClose,
-		qSize:  qSize,
-		qCount: qCount,
+		qSize:  c.dataqsiz,
+		qCount: c.qcount,
 		file:   file,
 		line:   line,
 	}
@@ -117,14 +120,14 @@ func GocdrChanClose(id uint64, qSize uint, qCount uint) int {
 	return insertIntoTrace(elem)
 }
 
-// GocdrChanPost sets the operation as successfully finished
+// GoCDRChanPost sets the operation as successfully finished
 //
 // Parameters:
 //   - index: index of the operation in the trace
 //   - c: the channel
 //   - op: the operation
-func GocdrChanPost(index int, c *hchan, op Operation) {
-	if gocdrTracingDisabled {
+func GoCDRChanPost(index int, c *hchan, op Operation) {
+	if GoCDRTracingDisabled {
 		return
 	}
 
@@ -134,32 +137,32 @@ func GocdrChanPost(index int, c *hchan, op Operation) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(GocdrTraceChannel)
+	elem := currentGoRoutineInfo().getElement(index).(GoCDRTraceChannel)
 
 	set := false
 
 	if elem.qSize == 0 { // unbuffered channel
 		if elem.op == OperationChannelSend {
 			lock(&unbufferedChannelComRecvMutex)
-			if tpost, ok := unbufferedChannelComRecv[elem.id]; ok {
-				elem.tPost = tpost - 1
-				delete(unbufferedChannelComRecv, elem.id)
+			if tpost, ok := unbufferedChannelComRecv[elem.res.id]; ok {
+				elem.tCom = tpost - 1
+				delete(unbufferedChannelComRecv, elem.res.id)
 			} else {
-				elem.tPost = time
+				elem.tCom = time
 				lock(&unbufferedChannelComSendMutex)
-				unbufferedChannelComSend[elem.id] = time
+				unbufferedChannelComSend[elem.res.id] = time
 				unlock(&unbufferedChannelComSendMutex)
 			}
 			unlock(&unbufferedChannelComRecvMutex)
 			set = true
 		} else if elem.op == OperationChannelRecv {
 			lock(&unbufferedChannelComSendMutex)
-			if tpost, ok := unbufferedChannelComSend[elem.id]; ok {
-				elem.tPost = tpost + 1
-				delete(unbufferedChannelComSend, elem.id)
+			if tpost, ok := unbufferedChannelComSend[elem.res.id]; ok {
+				elem.tCom = tpost + 1
+				delete(unbufferedChannelComSend, elem.res.id)
 			} else {
-				elem.tPost = time
-				unbufferedChannelComRecv[elem.id] = time
+				elem.tCom = time
+				unbufferedChannelComRecv[elem.res.id] = time
 			}
 			unlock(&unbufferedChannelComSendMutex)
 			set = true
@@ -167,7 +170,7 @@ func GocdrChanPost(index int, c *hchan, op Operation) {
 	}
 
 	if !set {
-		elem.tPost = time
+		elem.tCom = time
 	}
 	elem.qCount = c.qcount
 
@@ -184,11 +187,11 @@ func GocdrChanPost(index int, c *hchan, op Operation) {
 	currentGoRoutineInfo().updateElement(index, elem)
 }
 
-// GocdrChanPostCausedByClose sets the operation as successfully finished
+// GoCDRChanPostCausedByClose sets the operation as successfully finished
 // Args:
 //   - index: index of the operation in the trace
-func GocdrChanPostCausedByClose(index int) {
-	if gocdrTracingDisabled {
+func GoCDRChanPostCausedByClose(index int) {
+	if GoCDRTracingDisabled {
 		return
 	}
 
@@ -198,9 +201,9 @@ func GocdrChanPostCausedByClose(index int) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(GocdrTraceChannel)
+	elem := currentGoRoutineInfo().getElement(index).(GoCDRTraceChannel)
 
-	elem.tPost = time
+	elem.tCom = time
 	elem.cl = true
 
 	currentGoRoutineInfo().updateElement(index, elem)
@@ -211,9 +214,9 @@ func GocdrChanPostCausedByClose(index int) {
 // Returns:
 //   - string: the string representation of the form
 //     C,[tPre],[tPost],[id],[operation],[cl],[oId],[qSize],[qCount],[file],[line]
-func (elem GocdrTraceChannel) toString() string {
+func (self GoCDRTraceChannel) toString() string {
 	opStr := ""
-	switch elem.op {
+	switch self.op {
 	case OperationChannelSend:
 		opStr = "S"
 	case OperationChannelRecv:
@@ -223,11 +226,11 @@ func (elem GocdrTraceChannel) toString() string {
 	}
 
 	idStr := "*"
-	if !elem.isNil {
-		idStr = uint64ToString(elem.id)
+	if !self.isNil {
+		idStr = uint64ToString(self.res.id)
 	}
 
-	return buildTraceElemString("C", elem.tPre, elem.tPost, idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount, posToString(elem.file, elem.line))
+	return buildTraceElemString("C", self.tReq, self.tCom, idStr, opStr, self.cl, self.oId, self.qSize, self.qCount, posToString(self.file, self.line))
 }
 
 // Get a string representation for the channel if it is used as a select case
@@ -235,9 +238,9 @@ func (elem GocdrTraceChannel) toString() string {
 // Returns:
 //   - string: the string representation of the form
 //     C,[id].[operation].[cl].[oId].[qSize].[qCount]
-func (elem GocdrTraceChannel) toStringForSelect() string {
+func (self GoCDRTraceChannel) toStringForSelect() string {
 	opStr := ""
-	switch elem.op {
+	switch self.op {
 	case OperationChannelSend:
 		opStr = "S"
 	case OperationChannelRecv:
@@ -247,17 +250,33 @@ func (elem GocdrTraceChannel) toStringForSelect() string {
 	}
 
 	idStr := "*"
-	if !elem.isNil {
-		idStr = uint64ToString(elem.id)
+	if !self.isNil {
+		idStr = uint64ToString(self.res.id)
 	}
 
-	return buildTraceElemStringSep(".", "C", idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount)
+	return buildTraceElemStringSep(".", "C", idStr, opStr, self.cl, self.oId, self.qSize, self.qCount)
 }
 
 // getOperation is a getter for the operation
 //
 // Returns:
 //   - Operation: the operation
-func (elem GocdrTraceChannel) getOperation() Operation {
-	return elem.op
+func (self GoCDRTraceChannel) getOperation() Operation {
+	return self.op
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self GoCDRTraceChannel) hasCommit() bool {
+	return self.tCom != 0
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []GoCDRTraceResource: recources
+func (self GoCDRTraceChannel) resource() []GoCDRTraceResource {
+	return []GoCDRTraceResource{self.res}
 }

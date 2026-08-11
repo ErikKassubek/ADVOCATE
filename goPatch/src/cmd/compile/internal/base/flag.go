@@ -128,6 +128,15 @@ type CmdFlags struct {
 	PgoProfile         string       "help:\"read profile or pre-process profile from `file`\""
 	ErrorURL           bool         "help:\"print explanatory URL with error message if applicable\""
 
+	// GOCDR-START
+	GoCDRTrace   bool   "help:\"record the program using the gocdr recorder\""
+	GoCDRReplay  bool   "help:\"replay a trace using the gocdr replayer\""
+	GoCDRFuzzing bool   "help:\"run fuzzing using the gocdr mechanism\""
+	GoCDRPath    string "help:\"set the gocdr replay path\""
+	GoCDRTimeout int    "help:\"set the gocdr tinmeout in s\""
+	GoCDRAtomics bool   "help:\"set if gocdr should use atomics\""
+	// GOCDR-END
+
 	// Configuration derived from flags; not a flag itself.
 	Cfg struct {
 		Embed struct { // set by -embedcfg

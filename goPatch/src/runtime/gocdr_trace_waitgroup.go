@@ -12,22 +12,24 @@
 
 package runtime
 
+import "unsafe"
+
 // Struct to store an operation on a wait group
 //
 // Fields
-//   - tPre int64: time when the operation started
-//   - tPost int64: time when the operation finished
-//   - id uint64: id of the mutex
+//   - tReq int64: time when the operation started
+//   - tCom int64: time when the operation finished
+//   - res GoCDRTraceResource: the resource the op is applied to
 //   - op Operation: operation type
 //   - delta int: value by which the internal counter was changed with this operation
 //     for Add > 0, for Done -1 and for wait = 0
 //   - val int32: value of the internal counter after the operation was executed
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type GocdrTraceWaitGroup struct {
-	tPre  int64
-	tPost int64
-	id    uint64
+type GoCDRTraceWaitGroup struct {
+	tReq  int64
+	tCom  int64
+	res   GoCDRTraceResource
 	op    Operation
 	delta int
 	val   int32
@@ -35,17 +37,18 @@ type GocdrTraceWaitGroup struct {
 	line  int
 }
 
-// GocdrWaitGroupAdd adds a waitgroup add or done to the trace
+// GoCDRWaitGroupAdd adds a waitgroup add or done to the trace
 //
 // Parameter:
+//   - mem unsafe.Pointer: memory address
 //   - id: id of the waitgroup
 //   - delta: delta of the waitgroup
 //   - val: value of the waitgroup after the operation
 //
 // Returns:
 //   - index of the operation in the trace
-func GocdrWaitGroupAdd(id uint64, delta int, val int32) int {
-	if gocdrTracingDisabled {
+func GoCDRWaitGroupAdd(mem unsafe.Pointer, id uint64, delta int, val int32) int {
+	if GoCDRTracingDisabled {
 		return -1
 	}
 
@@ -59,14 +62,16 @@ func GocdrWaitGroupAdd(id uint64, delta int, val int32) int {
 		_, file, line, _ = Caller(CallerSkipWaitGroupDone)
 	}
 
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return -1
 	}
 
-	elem := GocdrTraceWaitGroup{
-		tPre:  timer,
-		id:    id,
+	res := GoCDRTraceResource{id: id, addr: mem}
+
+	elem := GoCDRTraceWaitGroup{
+		tReq:  timer,
 		op:    OperationWaitgroupAddDone,
+		res:   res,
 		delta: delta,
 		val:   val,
 		file:  file,
@@ -76,15 +81,16 @@ func GocdrWaitGroupAdd(id uint64, delta int, val int32) int {
 	return insertIntoTrace(elem)
 }
 
-// GocdrWaitGroupWait adds a waitgroup wait to the trace
+// GoCDRWaitGroupWait adds a waitgroup wait to the trace
 //
 // Parameter:
+//   - mem unsafe.Pointer: memory address
 //   - id: id of the waitgroup
 //
 // Returns:
 //   - index of the operation in the trace
-func GocdrWaitGroupWait(id uint64) int {
-	if gocdrTracingDisabled {
+func GoCDRWaitGroupWait(mem unsafe.Pointer, id uint64) int {
+	if GoCDRTracingDisabled {
 		return -1
 	}
 
@@ -92,13 +98,15 @@ func GocdrWaitGroupWait(id uint64) int {
 
 	_, file, line, _ := Caller(CallerSkipWaitGroupAddWait)
 
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return -1
 	}
 
-	elem := GocdrTraceWaitGroup{
-		tPre: timer,
-		id:   id,
+	res := GoCDRTraceResource{id: id, addr: mem}
+
+	elem := GoCDRTraceWaitGroup{
+		tReq: timer,
+		res:  res,
 		op:   OperationWaitgroupWait,
 		file: file,
 		line: line,
@@ -107,13 +115,13 @@ func GocdrWaitGroupWait(id uint64) int {
 	return insertIntoTrace(elem)
 }
 
-// GocdrWaitGroupWaitPost adds the end counter to an operation of the trace
+// GoCDRWaitGroupWaitPost adds the end counter to an operation of the trace
 // Wait Post
 //
 // Parameter:
 //   - index: index of the operation in the trace
-func GocdrWaitGroupPost(index int) {
-	if gocdrTracingDisabled {
+func GoCDRWaitGroupPost(index int) {
+	if GoCDRTracingDisabled {
 		return
 	}
 
@@ -130,9 +138,9 @@ func GocdrWaitGroupPost(index int) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(GocdrTraceWaitGroup)
+	elem := currentGoRoutineInfo().getElement(index).(GoCDRTraceWaitGroup)
 
-	elem.tPost = timer
+	elem.tCom = timer
 
 	currentGoRoutineInfo().updateElement(index, elem)
 }
@@ -142,19 +150,35 @@ func GocdrWaitGroupPost(index int) {
 // Returns:
 //   - string: the string representation of the form
 //     W,[tPre],[tPost],[id],[op],[delta],[val],[file],[line]
-func (elem GocdrTraceWaitGroup) toString() string {
+func (elem GoCDRTraceWaitGroup) toString() string {
 	opStr := "A"
 	if elem.op == OperationWaitgroupWait {
 		opStr = "W"
 	}
 
-	return buildTraceElemString("W", elem.tPre, elem.tPost, elem.id, opStr, elem.delta, elem.val, posToString(elem.file, elem.line))
+	return buildTraceElemString("W", elem.tReq, elem.tCom, elem.res.id, opStr, elem.delta, elem.val, posToString(elem.file, elem.line))
 }
 
 // getOperation is a getter for the operation
 //
 // Returns:
 //   - Operation: the operation
-func (elem GocdrTraceWaitGroup) getOperation() Operation {
+func (elem GoCDRTraceWaitGroup) getOperation() Operation {
 	return elem.op
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self GoCDRTraceWaitGroup) hasCommit() bool {
+	return self.tCom != 0
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []GoCDRTraceResource: recources
+func (self GoCDRTraceWaitGroup) resource() []GoCDRTraceResource {
+	return []GoCDRTraceResource{self.res}
 }

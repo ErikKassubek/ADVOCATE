@@ -15,6 +15,22 @@ import (
 	// GOCDR-END
 )
 
+// GOCDR-START
+//
+//go:linkname GoCDRAllocWG runtime.GoCDRAllocWG
+func GoCDRAllocWG(ptr unsafe.Pointer) {
+	if runtime.GoCDRTracingDisabled {
+		return
+	}
+	w := (*WaitGroup)(ptr)
+	if w.id != 0 {
+		return
+	}
+	w.id = runtime.GoCDRAlloc("W", 0)
+}
+
+// GOCDR-END
+
 // A WaitGroup is a counting semaphore typically used to wait
 // for a group of goroutines or tasks to finish.
 //
@@ -130,20 +146,13 @@ func (wg *WaitGroup) Add(delta int) {
 	w := uint32(state & 0x7fffffff)
 
 	// GOCDR-START
-	// Waitgroups don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a wg
-	// is directly in it's functions. If the id of the wg is the default
-	// value, it is set to a new, unique object id
-	if wg.id == 0 {
-		wg.id = runtime.GetGocdrObjectID()
-	}
 	// Record the add or done of a wait group in the routine's trace.
 	// If delta > 0, it is an add, if it's -1, it's a done.
 	// The add or done cannot fait without crashing the program. Add and done
 	// do not block the program. Therefore it is not possible, that it is
 	// called but not finished (except if it panics). Therefore it is not
 	// necessary to record a post event.
-	index := runtime.GocdrWaitGroupAdd(wg.id, delta, v)
+	index := runtime.GoCDRWaitGroupAdd(unsafe.Pointer(wg), wg.id, delta, v)
 	// GOCDR-END
 
 	if race.Enabled && delta > 0 && v == int32(delta) {
@@ -160,7 +169,7 @@ func (wg *WaitGroup) Add(delta int) {
 	}
 	if v > 0 || w == 0 {
 		// GOCDR-START
-		runtime.GocdrWaitGroupPost(index)
+		runtime.GoCDRWaitGroupPost(index)
 		// GOCDR-END
 		return
 	}
@@ -184,7 +193,7 @@ func (wg *WaitGroup) Add(delta int) {
 	}
 
 	// GOCDR-START
-	runtime.GocdrWaitGroupPost(index)
+	runtime.GoCDRWaitGroupPost(index)
 	// GOCDR-END
 }
 
@@ -210,27 +219,16 @@ func (wg *WaitGroup) Wait() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			if wg.id == 0 {
-				wg.id = runtime.GetGocdrObjectID()
-			}
-			_ = runtime.GocdrWaitGroupWait(wg.id)
+			_ = runtime.GoCDRWaitGroupWait(unsafe.Pointer(wg), wg.id)
 			runtime.BlockForever()
 		}
-	}
-
-	// Waitgroups don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a wg
-	// is directly in it's functions. If the id of the wg is the default
-	// value, it is set to a new, unique object id
-	if wg.id == 0 {
-		wg.id = runtime.GetGocdrObjectID()
 	}
 
 	// Record the wait of a wait group in the routine's trace.
 	// The wait will run until the waitgroup counte is zero. Therefor it
 	// blocks the routine and it is nessesary to record the successful
 	// finish of the wait with a post.
-	gocdrIndex := runtime.GocdrWaitGroupWait(wg.id)
+	gocdrIndex := runtime.GoCDRWaitGroupWait(unsafe.Pointer(wg), wg.id)
 	// GOCDR-END
 
 	if race.Enabled {
@@ -256,7 +254,7 @@ func (wg *WaitGroup) Wait() {
 			}
 
 			// GOCDR-START
-			runtime.GocdrWaitGroupPost(gocdrIndex)
+			runtime.GoCDRWaitGroupPost(gocdrIndex)
 			//GOCDR-END
 
 			return
@@ -294,7 +292,7 @@ func (wg *WaitGroup) Wait() {
 			}
 
 			// GOCDR-START
-			runtime.GocdrWaitGroupPost(gocdrIndex)
+			runtime.GoCDRWaitGroupPost(gocdrIndex)
 			//GOCDR-END
 
 			return

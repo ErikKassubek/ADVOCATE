@@ -42,6 +42,10 @@ func Walk(fn *ir.Func) {
 		ir.DumpList(s, ir.CurFunc.Body)
 	}
 
+	// GOCDR-START
+	instrumentBody(fn)
+	// GOCDR-END
+
 	walkStmtList(ir.CurFunc.Body)
 	if base.Flag.W != 0 {
 		s := fmt.Sprintf("after walk %v", ir.CurFunc.Sym())

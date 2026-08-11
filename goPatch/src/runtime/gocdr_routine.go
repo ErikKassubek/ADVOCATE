@@ -12,21 +12,20 @@
 
 package runtime
 
-import "unsafe"
-
-var GocdrRoutines map[uint64]*GocdrRoutine
-var GocdrRoutinesLock = mutex{}
+var GoCDRRoutines map[uint64]*GoCDRRoutine
+var GoCDRRoutinesLock = mutex{}
 
 var projectPath string
 
 // var atomicRecordingDisabled = false
 
-// GocdrRoutine is a struct to store the trace of a routine
+// GoCDRRoutine is a struct to store the trace of a routine
 // Fields:
 //   - id uint64: the id of the routine
 //   - maxObjectId uint64: the maximum id of elements in the trace
 //   - G *g: the g struct of the routine
 //   - Trace []traceElem: the trace of the routine
+//   - oat []uint64: object aware trace elements, ids of blocked object the routine can access
 //   - replayID int: when used in reply, id of the new routine in the replayed trace
 //   - forkFile string: file where the routine was created in, "main" for main routine
 //   - forkLine int: line where ther routine was created in, 0 for main routine
@@ -34,19 +33,21 @@ var projectPath string
 //   - parkPos string: position of last park in form file:line
 //   - parkForeverReplay bool: if true, routine parks forever based on replay
 //   - wokenByTimeout bool: in replay block was woken up by timeout
-type GocdrRoutine struct {
-	id                uint64
-	maxObjectId       uint64
-	G                 *g
-	Trace             []traceElem
-	replayID          int
-	forkFile          string
-	forkLine          int
-	parkOn            []unsafe.Pointer
-	parkPos           string
-	parkOp            []Operation
-	parkForeverReplay bool
-	wokenButTimeout   bool
+//   - hasReturned bool: true if the routine has terminated
+type GoCDRRoutine struct {
+	id                   uint64
+	maxObjectId          uint64
+	G                    *g
+	Trace                []traceElem
+	oat                  []uint64
+	replayID             int
+	forkFile             string
+	forkLine             int32
+	parkForeverReplay    bool
+	hasReturned          bool
+	wokenButTimeout      bool
+	wokenNoTimeout       bool
+	startedWritingToFile bool
 }
 
 // Create a new gocdr routine
@@ -54,14 +55,14 @@ type GocdrRoutine struct {
 //   - g: the g struct of the routine
 //   - replayRoutine int: when used in reply, id of the new routine in the replayed trace the replay ids of the routines forked from this routine
 //   - file string: file, where the routine was created
-//   - line int: line, where the routine was created
+//   - line int32: line, where the routine was created
 //
 // Return:
 //   - the new gocdr routine
-func newGocdrRoutine(g *g, replayRoutine int, file string, line int) *GocdrRoutine {
+func newGoCDRRoutine(g *g, replayRoutine int, file string, line int32) *GoCDRRoutine {
 	// ignore the internal routines that are run before the main/test function starts
-	if gocdrTracingDisabled {
-		return &GocdrRoutine{
+	if GoCDRTracingDisabled {
+		return &GoCDRRoutine{
 			id:          0,
 			maxObjectId: 0,
 			G:           g,
@@ -69,34 +70,33 @@ func newGocdrRoutine(g *g, replayRoutine int, file string, line int) *GocdrRouti
 			forkFile:    file,
 			forkLine:    line,
 			replayID:    replayRoutine,
-			parkOp:      make([]Operation, 0),
-			parkOn:      make([]unsafe.Pointer, 0),
 		}
 	}
 
-	gocdrRoutineInfo := &GocdrRoutine{
-		id:          GetNewGocdrRoutineID(),
+	gocdrRoutineInfo := &GoCDRRoutine{
+		id:          GetNewGoCDRRoutineID(),
 		maxObjectId: 0,
 		G:           g,
 		Trace:       make([]traceElem, 0),
 		replayID:    replayRoutine,
-		parkOn:      make([]unsafe.Pointer, 0),
+		forkFile:    file,
+		forkLine:    line,
 	}
 
-	lock(&GocdrRoutinesLock)
-	defer unlock(&GocdrRoutinesLock)
+	lock(&GoCDRRoutinesLock)
+	defer unlock(&GoCDRRoutinesLock)
 
-	if GocdrRoutines == nil {
-		GocdrRoutines = make(map[uint64]*GocdrRoutine)
+	if GoCDRRoutines == nil {
+		GoCDRRoutines = make(map[uint64]*GoCDRRoutine)
 	}
 
-	GocdrRoutines[gocdrRoutineInfo.id] = gocdrRoutineInfo
+	GoCDRRoutines[gocdrRoutineInfo.id] = gocdrRoutineInfo
 
 	return gocdrRoutineInfo
 }
 
 // setCurrentRoutineToActive will set the id of the current routine to a valid id
-// and add it to GocdrRoutine
+// and add it to GoCDRRoutine
 // If it already contains a valid id, do nothing.
 // Call when tracing gets enabled
 func setCurrentRoutineToActive() {
@@ -106,16 +106,16 @@ func setCurrentRoutineToActive() {
 		return
 	}
 
-	g.gocdrRoutineInfo.id = GetNewGocdrRoutineID()
+	g.gocdrRoutineInfo.id = GetNewGoCDRRoutineID()
 
-	lock(&GocdrRoutinesLock)
-	defer unlock(&GocdrRoutinesLock)
+	lock(&GoCDRRoutinesLock)
+	defer unlock(&GoCDRRoutinesLock)
 
-	if GocdrRoutines == nil {
-		GocdrRoutines = make(map[uint64]*GocdrRoutine)
+	if GoCDRRoutines == nil {
+		GoCDRRoutines = make(map[uint64]*GoCDRRoutine)
 	}
 
-	GocdrRoutines[g.gocdrRoutineInfo.id] = g.gocdrRoutineInfo
+	GoCDRRoutines[g.gocdrRoutineInfo.id] = g.gocdrRoutineInfo
 }
 
 // Add an element to the trace of the current routine
@@ -124,7 +124,7 @@ func setCurrentRoutineToActive() {
 //
 // Return:
 //   - the index of the element in the trace
-func (gi *GocdrRoutine) addToTrace(elem traceElem) int {
+func (gi *GoCDRRoutine) addToTrace(elem traceElem) int {
 	// never needed in actual code, without it the compiler tests fail
 	if gi == nil {
 		return -1
@@ -134,20 +134,28 @@ func (gi *GocdrRoutine) addToTrace(elem traceElem) int {
 	return len(gi.Trace) - 1
 }
 
-func (gi *GocdrRoutine) getElement(index int) traceElem {
+func (gi *GoCDRRoutine) getElement(index int) traceElem {
 	return gi.Trace[index]
 }
 
-func (gi *GocdrRoutine) getLastElement() traceElem {
+func (gi *GoCDRRoutine) getPosCreated() string {
+	return posToString(gi.forkFile, int(int(gi.forkLine)))
+}
+
+func (gi *GoCDRRoutine) getLastElement() traceElem {
 	return gi.Trace[len(gi.Trace)-1]
+}
+
+func (gi *GoCDRRoutine) GetForkPos() string {
+	return posToString(gi.forkFile, int(gi.forkLine))
 }
 
 // Update an element in the trace of the current routine
 // Params:
 //   - index: the index of the element to update
 //   - elem: the new element
-func (gi *GocdrRoutine) updateElement(index int, elem traceElem) {
-	if gocdrTracingDisabled {
+func (gi *GoCDRRoutine) updateElement(index int, elem traceElem) {
+	if GoCDRTracingDisabled {
 		return
 	}
 
@@ -166,14 +174,10 @@ func (gi *GocdrRoutine) updateElement(index int, elem traceElem) {
 	gi.Trace[index] = elem
 }
 
-func (gi *GocdrRoutine) GetForkPos() string {
-	return gi.forkFile + ":" + intToString(gi.forkLine)
-}
-
 // Get the current routine
 // Return:
-//   - *GocdrRoutine: the current routine
-func currentGoRoutineInfo() *GocdrRoutine {
+//   - *GoCDRRoutine: the current routine
+func currentGoRoutineInfo() *GoCDRRoutine {
 	return getg().gocdrRoutineInfo
 }
 

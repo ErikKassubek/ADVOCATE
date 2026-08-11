@@ -67,8 +67,6 @@ var (
 	releasedFork = 0
 )
 
-var detectBlockingGC func() int
-
 func SetReplayAtomic(repl bool) {
 	ignoreAtomicsReplay = !repl
 }
@@ -166,7 +164,7 @@ var (
 	waitDeadlockDetectLock mutex
 
 	// replay info
-	replayData            = make(GocdrReplayTrace, 0)
+	replayData            = make(GoCDRReplayTrace, 0)
 	numberElementsInTrace int
 	active                map[string][]int
 	startTimeActive       = -1
@@ -197,10 +195,8 @@ var (
 )
 
 // Enable the replay by starting the replay manager
-func EnableReplay(detectBlockingGCFunc func() int) {
+func EnableReplay() {
 	numberElementsInTrace = len(replayData)
-
-	detectBlockingGC = detectBlockingGCFunc
 
 	if printDebug {
 		println("\nTRACE\n")
@@ -208,9 +204,10 @@ func EnableReplay(detectBlockingGCFunc func() int) {
 		println("\n\n")
 	}
 
+	replayEnabled = true
+
 	go ReplayManager()
 
-	replayEnabled = true
 }
 
 /*

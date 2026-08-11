@@ -20,6 +20,15 @@ Before Gocdr can be used, it must first be build.
 
 There are two elements that need to be build.
 
+You can directly build both parts by running 
+
+```shell
+make
+```
+
+
+If you want to build the parts individually, it can be done as follows
+
 ### Runtime
 
 To run the recording and replay for Go, a modified version of the Go runtime
@@ -43,7 +52,7 @@ script. This will create a go executable in the `bin` directory.
 ### Gocdr
 
 Additionally, the gocdr program needs to be build. This is a standard Go
-program. To build it, move into the [gocdr](../gocdr/) directory
+program. To build it, move into the [goCDR](../goCDE/) directory
 and build it with the standard
 
 ```shell

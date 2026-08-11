@@ -19,8 +19,8 @@ package runtime
 //   - newID uint64: id of new routine
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type GocdrTraceSpawn struct {
-	tPost int64
+type GoCDRTraceSpawn struct {
+	t     int64
 	newID uint64
 	file  string
 	line  int
@@ -30,31 +30,31 @@ type GocdrTraceSpawn struct {
 //
 // Fields
 //   - tPost int64: time when the routine finished
-type GocdrTraceRoutineExit struct {
+type GoCDRTraceRoutineExit struct {
 	tPost int64
 }
 
-// GocdrSpawnCaller adds a routine spawn to the trace
+// GoCDRSpawnCaller adds a routine spawn to the trace
 //
 // Parameter:
-//   - callerRoutine *GocdrRoutine: routine that created the new routine
+//   - callerRoutine *GoCDRRoutine: routine that created the new routine
 //   - newID uint64: id of the new routine
 //   - file string: file where the routine was created
 //   - line int32: line where the routine was created
-func GocdrSpawnCaller(callerRoutine *GocdrRoutine, newID uint64, file string,
+func GoCDRSpawnCaller(callerRoutine *GoCDRRoutine, newID uint64, file string,
 	line int32) {
-	if gocdrTracingDisabled {
+	if GoCDRTracingDisabled {
 		return
 	}
 
 	timer := GetNextTimeStep()
 
-	if GocdrIgnore(file) {
+	if GoCDRIgnore(file) {
 		return
 	}
 
-	elem := GocdrTraceSpawn{
-		tPost: timer,
+	elem := GoCDRTraceSpawn{
+		t:     timer,
 		newID: newID,
 		file:  file,
 		line:  int(line),
@@ -65,15 +65,16 @@ func GocdrSpawnCaller(callerRoutine *GocdrRoutine, newID uint64, file string,
 
 // Record the finish of a routine
 func AdvocatRoutineExit() {
-	if gocdrTracingDisabled {
+	if GoCDRTracingDisabled {
 		return
 	}
 
 	timer := GetNextTimeStep()
-	elem := GocdrTraceRoutineExit{
+	elem := GoCDRTraceRoutineExit{
 		tPost: timer,
 	}
 	insertIntoTrace(elem)
+	currentGoRoutineInfo().hasReturned = true
 }
 
 // Get a string representation of a trace spawn
@@ -81,8 +82,8 @@ func AdvocatRoutineExit() {
 // Returns:
 //   - string: the string representation of the form
 //     G,[tPost],[newID],[file],[line]
-func (elem GocdrTraceSpawn) toString() string {
-	return buildTraceElemString("G", elem.tPost, elem.newID, posToString(elem.file, elem.line))
+func (self GoCDRTraceSpawn) toString() string {
+	return buildTraceElemString("G", self.t, self.newID, posToString(self.file, self.line))
 }
 
 // Get a string representation of the routine element
@@ -90,7 +91,7 @@ func (elem GocdrTraceSpawn) toString() string {
 // Returns:
 //   - string: the string representation of the form
 //     E,[tPost]
-func (elem GocdrTraceRoutineExit) toString() string {
+func (elem GoCDRTraceRoutineExit) toString() string {
 	return buildTraceElemString("E", elem.tPost)
 }
 
@@ -98,7 +99,7 @@ func (elem GocdrTraceRoutineExit) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem GocdrTraceSpawn) getOperation() Operation {
+func (self GoCDRTraceSpawn) getOperation() Operation {
 	return OperationSpawn
 }
 
@@ -106,7 +107,7 @@ func (elem GocdrTraceSpawn) getOperation() Operation {
 //
 // Returns:
 //   - Operation: the operation
-func (elem GocdrTraceRoutineExit) getOperation() Operation {
+func (elem GoCDRTraceRoutineExit) getOperation() Operation {
 	return OperationRoutineExit
 }
 
@@ -114,7 +115,7 @@ func (elem GocdrTraceRoutineExit) getOperation() Operation {
 //
 // Returns:
 //   - bool: true if its finished, false otherwise
-func (elem GocdrTraceSpawn) hasFinished() bool {
+func (self GoCDRTraceSpawn) hasFinished() bool {
 	return true
 }
 
@@ -122,6 +123,38 @@ func (elem GocdrTraceSpawn) hasFinished() bool {
 //
 // Returns:
 //   - bool: true if its finished, false otherwise
-func (elem GocdrTraceRoutineExit) hasFinished() bool {
+func (elem GoCDRTraceRoutineExit) hasFinished() bool {
 	return true
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self GoCDRTraceSpawn) hasCommit() bool {
+	return true
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self GoCDRTraceRoutineExit) hasCommit() bool {
+	return true
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []GoCDRTraceResource: recources
+func (self GoCDRTraceSpawn) resource() []GoCDRTraceResource {
+	return []GoCDRTraceResource{}
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []GoCDRTraceResource: recources
+func (self GoCDRTraceRoutineExit) resource() []GoCDRTraceResource {
+	return []GoCDRTraceResource{}
 }

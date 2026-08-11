@@ -518,7 +518,7 @@ type g struct {
 	// For each routine a g is automaticcaly created. In this g the gocdrRoutineInfo
 	// element is added to store the information about the routine.
 	// This includes the Id and the trace of the routine.
-	gocdrRoutineInfo *GocdrRoutine
+	gocdrRoutineInfo *GoCDRRoutine
 	// GOCDR-END
 }
 

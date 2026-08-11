@@ -6,6 +6,7 @@ package sync
 
 import (
 	"sync/atomic"
+	"unsafe"
 
 	// GOCDR-START
 	"runtime"
@@ -33,7 +34,8 @@ type Once struct {
 	m    Mutex
 
 	// GOCDR-START
-	id uint64 // id of the once
+	id     uint64 // id of the once
+	memAdr uintptr
 	// GOCDR-END
 }
 
@@ -77,20 +79,16 @@ func (o *Once) Do(f func()) {
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
-			if o.id == 0 {
-				o.id = runtime.GetGocdrObjectID()
-			}
-			_ = runtime.GocdrOncePre(o.id)
+			o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
+			_ = runtime.GoCDROncePre(unsafe.Pointer(o), o.id)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(2)
 
-	if o.id == 0 {
-		o.id = runtime.GetGocdrObjectID()
-	}
-	index := runtime.GocdrOncePre(o.id)
+	o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
+	index := runtime.GoCDROncePre(unsafe.Pointer(o), o.id)
 	res := false
 	// GOCDR-END
 
@@ -101,7 +99,7 @@ func (o *Once) Do(f func()) {
 		// GOCDR-END
 	}
 	// GOCDR-START
-	runtime.GocdrOncePost(index, res)
+	runtime.GoCDROncePost(index, res)
 	// GOCDR-END
 }
 

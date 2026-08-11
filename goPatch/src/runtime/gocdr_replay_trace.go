@@ -10,7 +10,7 @@
 
 package runtime
 
-type GocdrReplayTrace []ReplayElement
+type GoCDRReplayTrace []ReplayElement
 
 // Add a routine local replay trace to the replay data.
 //
@@ -18,12 +18,12 @@ type GocdrReplayTrace []ReplayElement
 //   - trace trace: the replay trace
 //   - map[int][]int: for each routine replay id store the replay ids of all spawns
 //   - map[string][]ReplayElement: for each routPath with a select, store the replay elements
-func GetReplayTrace() (*GocdrReplayTrace, *map[int][]int, *map[string][]ReplayElement) {
+func GetReplayTrace() (*GoCDRReplayTrace, *map[int][]int, *map[string][]ReplayElement) {
 	return &replayData, &spawns, &selects
 }
 
 // Print the replay trace for one routine.
-func (t GocdrReplayTrace) Print() {
+func (t GoCDRReplayTrace) Print() {
 	for _, e := range t {
 		println(e.Op.ToString(), e.Time, e.File, e.Line, e.Blocked, e.Suc)
 	}
@@ -48,6 +48,9 @@ func AddActiveTrace(startTime int, activeMap map[string][]int, numActive int) {
 	startTimeActive = startTime
 	if printDebug {
 		println("Add active with start time ", startTimeActive, " and ", len(active), " active elements")
+		for key := range activeMap {
+			println(key)
+		}
 	}
 	if startTime == 0 {
 		PartialReplay = true
@@ -81,7 +84,7 @@ func getNextReplayElement() (int, ReplayElement) {
 	return elem.Routine, elem
 }
 
-// GocdrIgnoreReplay decides if an operation should be ignored for replay.
+// GoCDRIgnoreReplay decides if an operation should be ignored for replay.
 // Ignored means it is just executed when called without waiting.
 // All internal operations are ignored
 // Atomic operations are ignored if the corresponding variable is set
@@ -92,7 +95,7 @@ func getNextReplayElement() (int, ReplayElement) {
 //
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
-func GocdrIgnoreReplay(operation Operation, file string) bool {
+func GoCDRIgnoreReplay(operation Operation, file string) bool {
 	if ignoreAtomicsReplay && getOperationObjectString(operation) == "Atomic" {
 		return true
 	}
@@ -101,7 +104,7 @@ func GocdrIgnoreReplay(operation Operation, file string) bool {
 		return true
 	}
 
-	return GocdrIgnore(file)
+	return GoCDRIgnore(file)
 }
 
 // foundReplayElement is executed if an operation has been executed.

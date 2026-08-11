@@ -17,10 +17,13 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	_ "unsafe"
 )
 
 var isFuzzing = false
 var finishFuzzingStarted = false
+
+var initFuzzing bool
 
 // Initialize fuzzing
 //
@@ -28,11 +31,21 @@ var finishFuzzingStarted = false
 //   - tracePath string: For fuzzing approaches that use trace, add the path to the
 //     trace, otherwise set to ""
 //   - timeout int: Timeout in seconds
-func InitFuzzing(tracePath string, timeout int) {
+//   - init bool: true if called from init, false otherwise
+//
+//go:linkname InitFuzzing runtime.GoCDRInitFuzzing
+func InitFuzzing(tracePath string, timeout int, init bool) {
+	if initFuzzing { // called by main but alredy run by init
+		return
+	}
+	initFuzzing = true
+
+	FinishFunc = FinishFuzzing
+
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 
-	InitTracing(0) // timeout will be done in startReplay
+	InitTracing(0, init) // timeout will be done in startReplay
 
 	if tracePath == "" { // GoFuzz and Flow
 		fuzzingSelectPath := "fuzzingData.log"
@@ -53,6 +66,8 @@ func InitFuzzing(tracePath string, timeout int) {
 
 // Run when fuzzing is finished (normally as defer)
 // This records the traces and some additional info
+//
+//go:linkname FinishFuzzing runtime.GoCDRFinishFuzzing
 func FinishFuzzing() {
 	if finishFuzzingStarted {
 		return
@@ -96,7 +111,7 @@ func readFuzzingSelectFile(pathSelect string) (map[string][]int, map[string][]in
 			continue
 		}
 
-		if line == "#" {
+		if line == "@" {
 			mode = 2
 			continue
 		}

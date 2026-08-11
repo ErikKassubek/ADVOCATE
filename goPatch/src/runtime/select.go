@@ -125,7 +125,7 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 	var replayElem ReplayElement
 	wait, ch, _, _ := WaitForReplay(OperationSelect, CallerSkipSelectRepl, false)
 
-	gFuzzEnabled, fuzzingIndex := GocdrFuzzingGetPreferredCase(2)
+	gFuzzEnabled, fuzzingIndex := GoCDRFuzzingGetPreferredCase(2)
 
 	ai := -1
 
@@ -149,6 +149,182 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 
 	return originalSelect(cas0, order0, pc0, nsends, nrecvs, block, ai)
 }
+
+// func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, preferredIndex int, preferredTimeout int64) (bool, int, bool, int) {
+// 	gp := getg()
+// 	if debugSelect {
+// 		print("select: cas0=", cas0, "\n")
+// 	}
+
+// 	// NOTE: In order to maintain a lean stack size, the number of scases
+// 	// is capped at 65536.
+// 	cas1 := (*[1 << 16]scase)(unsafe.Pointer(cas0))
+// 	order1 := (*[1 << 17]uint16)(unsafe.Pointer(order0))
+
+// 	ncases := nsends + nrecvs
+// 	scases := cas1[:ncases:ncases]
+// 	pollorder := order1[:ncases:ncases]
+// 	lockorder := order1[ncases:][:ncases:ncases]
+// 	// NOTE: pollorder/lockorder's underlying array was not zero-initialized by compiler.
+
+// 	// Even when raceenabled is true, there might be select
+// 	// statements in packages compiled without -race (e.g.,
+// 	// ensureSigM in runtime/signal_unix.go).
+// 	var pcs []uintptr
+// 	if raceenabled && pc0 != nil {
+// 		pc1 := (*[1 << 16]uintptr)(unsafe.Pointer(pc0))
+// 		pcs = pc1[:ncases:ncases]
+// 	}
+// 	casePC := func(casi int) uintptr {
+// 		if pcs == nil {
+// 			return 0
+// 		}
+// 		return pcs[casi]
+// 	}
+
+// 	var t0 int64
+// 	if blockprofilerate > 0 {
+// 		t0 = cputicks()
+// 	}
+
+// 	// The compiler rewrites selects that statically have
+// 	// only 0 or 1 cases plus default into simpler constructs.
+// 	// The only way we can end up with such small sel.ncase
+// 	// values here is for a larger select in which most channels
+// 	// have been nilled out. The general code handles those
+// 	// cases correctly, and they are rare enough not to bother
+// 	// optimizing (and needing to test).
+
+// 	// generate permuted order
+// 	norder := 0
+// 	allSynctest := true
+// 	for i := range scases {
+// 		cas := &scases[i]
+
+// 		// Omit cases without channels from the poll and lock orders.
+// 		if cas.c == nil {
+// 			cas.elem = nil // allow GC
+// 			continue
+// 		}
+
+// 		if cas.c.bubble != nil {
+// 			if getg().bubble != cas.c.bubble {
+// 				panic(plainError("select on synctest channel from outside bubble"))
+// 			}
+// 		} else {
+// 			allSynctest = false
+// 		}
+
+// 		if cas.c.timer != nil {
+// 			cas.c.timer.maybeRunChan(cas.c)
+// 		}
+
+// 		j := cheaprandn(uint32(norder + 1))
+// 		pollorder[norder] = pollorder[j]
+// 		pollorder[j] = uint16(i)
+// 		norder++
+// 	}
+// 	pollorder = pollorder[:norder]
+// 	lockorder = lockorder[:norder]
+
+// 	waitReason := WaitReasonSelect
+// 	if gp.bubble != nil && allSynctest {
+// 		// Every channel selected on is in a synctest bubble,
+// 		// so this goroutine will count as idle while selecting.
+// 		waitReason = waitReasonSynctestSelect
+// 	}
+
+// 	// sort the cases by Hchan address to get the locking order.
+// 	// simple heap sort, to guarantee n log n time and constant stack footprint.
+// 	for i := range lockorder {
+// 		j := i
+// 		// Start with the pollorder to permute cases on the same channel.
+// 		c := scases[pollorder[i]].c
+// 		for j > 0 && scases[lockorder[(j-1)/2]].c.sortkey() < c.sortkey() {
+// 			k := (j - 1) / 2
+// 			lockorder[j] = lockorder[k]
+// 			j = k
+// 		}
+// 		lockorder[j] = pollorder[i]
+// 	}
+// 	for i := len(lockorder) - 1; i >= 0; i-- {
+// 		o := lockorder[i]
+// 		c := scases[o].c
+// 		lockorder[i] = lockorder[0]
+// 		j := 0
+// 		for {
+// 			k := j*2 + 1
+// 			if k >= i {
+// 				break
+// 			}
+// 			if k+1 < i && scases[lockorder[k]].c.sortkey() < scases[lockorder[k+1]].c.sortkey() {
+// 				k++
+// 			}
+// 			if c.sortkey() < scases[lockorder[k]].c.sortkey() {
+// 				lockorder[j] = lockorder[k]
+// 				j = k
+// 				continue
+// 			}
+// 			break
+// 		}
+// 		lockorder[j] = o
+// 	}
+
+// 	if debugSelect {
+// 		for i := 0; i+1 < len(lockorder); i++ {
+// 			if scases[lockorder[i]].c.sortkey() > scases[lockorder[i+1]].c.sortkey() {
+// 				print("i=", i, " x=", lockorder[i], " y=", lockorder[i+1], "\n")
+// 				throw("select: broken sort")
+// 			}
+// 		}
+// 	}
+
+// 	// lock all the channels involved in the select
+// 	sellock(scases, lockorder)
+
+// 	// GOCDR-START
+// 	// This block is called, if the code runs a select statement.
+// 	// GoCDRSelectPre records the state of the select case, meaning which
+// 	// cases exists (channel / direction) and weather a default statement is present.
+// 	// Here the first lock order is set. This is only needed if the select
+// 	// is never executed.
+// 	gocdrIndex := GoCDRSelectPre(&scases, nsends, ncases, block)
+// 	// GOCDR-END
+
+// 	if block && preferredIndex == -1 {
+// 		return true, -1, false, gocdrIndex
+// 	}
+
+// 	var (
+// 		sg     *sudog
+// 		c      *hchan
+// 		k      *scase
+// 		sglist *sudog
+// 		sgnext *sudog
+// 		qp     unsafe.Pointer
+// 		nextp  **sudog
+// 	)
+
+// 	var casi int
+// 	var cas *scase
+
+// 	for _, casei := range pollorder {
+// 		casi = int(casei)
+// 		cas = &scases[casi]
+// 		c = cas.c
+
+// 		if casi == preferredIndex {
+// 			break
+// 		}
+// 	}
+
+// 	if casi < nsends {
+// 		c.sendq.enqueue(sg)
+// 	} else {
+// 		c.recvq.enqueue(sg)
+// 	}
+
+// }
 
 /*
  * Run the fuzzing for select. If successful, the first bool return is true, if it ran into timeout
@@ -288,11 +464,11 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 
 	// GOCDR-START
 	// This block is called, if the code runs a select statement.
-	// GocdrSelectPre records the state of the select case, meaning which
+	// GoCDRSelectPre records the state of the select case, meaning which
 	// cases exists (channel / direction) and weather a default statement is present.
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
-	gocdrIndex := GocdrSelectPre(&scases, nsends, ncases, block)
+	gocdrIndex := GoCDRSelectPre(&scases, nsends, ncases, block)
 	gocdrRClose := false // case was chosen, because channel was closed
 	wasTimeout := false
 	// GOCDR-END
@@ -366,6 +542,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	nextp = &gp.waiting
 	for _, casei := range lockorder {
 		casi = int(casei)
+
 		cas = &scases[casi]
 		c = cas.c
 		sg := acquireSudog()
@@ -383,11 +560,15 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		*nextp = sg
 		nextp = &sg.waitlink
 
-		if casi < nsends {
-			c.sendq.enqueue(sg)
-		} else {
-			c.recvq.enqueue(sg)
+		// GOCDR-START
+		if casi == preferredIndex {
+			if casi < nsends {
+				c.sendq.enqueue(sg)
+			} else {
+				c.recvq.enqueue(sg)
+			}
 		}
+		// GOCDR-END
 
 		if c.timer != nil {
 			blockTimerChan(c)
@@ -402,6 +583,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
 	// GOCDR-START
+	gp.gocdrRoutineInfo.wokenNoTimeout = false
 	goparkWithTimeout(selparkcommit, nil, waitReason, traceBlockSelect, 1, preferredTimeout)
 	wasTimeout = gp.gocdrRoutineInfo.wokenButTimeout
 	// GOCDR-END
@@ -435,17 +617,22 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		if k.c.timer != nil {
 			unblockTimerChan(k.c)
 		}
-		if sg == sglist {
-			// sg has already been dequeued by the G that woke us up.
-			casi = int(casei)
-			cas = k
-			caseSuccess = sglist.success
-			if sglist.releasetime > 0 {
-				caseReleaseTime = sglist.releasetime
-			}
-		} else {
-			c = k.c
-			if casi == preferredIndex {
+
+		// GOCDR-START
+		casi = int(casei)
+
+		// Only dequeue for the preferred case
+		if casi == preferredIndex {
+			if sg == sglist {
+				// sg has already been dequeued by the G that woke us up.
+				casi = int(casei)
+				cas = k
+				caseSuccess = sglist.success
+				if sglist.releasetime > 0 {
+					caseReleaseTime = sglist.releasetime
+				}
+			} else {
+				c = k.c
 				if int(casei) < nsends {
 					c.sendq.dequeueSudoG(sglist)
 				} else {
@@ -453,11 +640,20 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 				}
 			}
 		}
+		// GOCDR-END
+
 		sgnext = sglist.waitlink
 		sglist.waitlink = nil
 		releaseSudog(sglist)
 		sglist = sgnext
 	}
+
+	// GOCDR-STRAT
+	if wasTimeout {
+		selunlock(scases, lockorder)
+		return false, 0, false, gocdrIndex
+	}
+	// GOCDR-END
 
 	if cas == nil {
 		throw("selectgo: bad wakeup")
@@ -505,7 +701,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	}
 
 	gocdrRClose = !caseSuccess
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -538,7 +734,7 @@ bufrecv:
 	c.qcount--
 
 	// GOCDR-START
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -564,7 +760,7 @@ bufsend:
 	c.qcount++
 
 	// GOCDR-START
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -579,7 +775,7 @@ recv:
 	recvOK = true
 
 	// GOCDR-START
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	goto retc
@@ -589,7 +785,7 @@ rclose:
 
 	// GOCDR-START
 	gocdrRClose = true
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -616,7 +812,7 @@ send:
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 
 	// GOCDR-START
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	if debugSelect {
@@ -636,7 +832,7 @@ sclose:
 	// send on closed channel
 	// GOCDR-START
 	gocdrRClose = true
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -781,12 +977,12 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 	// GOCDR-START
 	// This block is called, if the code runs a select statement.
-	// GocdrSelectPre records the state of the select case, meaning which
+	// GoCDRSelectPre records the state of the select case, meaning which
 	// cases exists (channel / direction) and weather a default statement is present.
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
 	if gocdrIndex == -1 {
-		gocdrIndex = GocdrSelectPre(&scases, nsends, ncases, block)
+		gocdrIndex = GoCDRSelectPre(&scases, nsends, ncases, block)
 	}
 	gocdrRClose := false // case was chosen, because channel was closed
 	// GOCDR-END
@@ -983,7 +1179,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 	// GOCDR-START
 	gocdrRClose = !caseSuccess
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -1016,7 +1212,7 @@ bufrecv:
 	c.qcount--
 
 	// GOCDR-START
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -1042,7 +1238,7 @@ bufsend:
 	c.qcount++
 
 	// GOCDR-START
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -1057,7 +1253,7 @@ recv:
 	recvOK = true
 
 	// GOCDR-START
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	goto retc
@@ -1067,7 +1263,7 @@ rclose:
 
 	// GOCDR-START
 	gocdrRClose = true
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)
@@ -1094,7 +1290,7 @@ send:
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 
 	// GOCDR-START
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	if debugSelect {
@@ -1112,7 +1308,7 @@ sclose:
 	// send on closed channel
 	// GOCDR-START
 	gocdrRClose = true
-	GocdrSelectPost(gocdrIndex, c, casi, gocdrRClose)
+	GoCDRSelectPost(gocdrIndex, c, casi, gocdrRClose)
 	// GOCDR-END
 
 	selunlock(scases, lockorder)

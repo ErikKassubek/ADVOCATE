@@ -47,7 +47,7 @@ flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
 To replay a trace, import 
 
 ```
-import _ "advocatego"
+import _ "gocctgo"
 ``` 
 
 and
@@ -55,7 +55,7 @@ and
 build the program with 
 
 ```
-./go build -gcflags=all="-advocatereplay -advocatepath=[path]"
+./go build -gcflags=all="-gocctreplay -gocctpath=[path]"
 ```
 
 where [path] is the relative path to the trace.
@@ -200,9 +200,9 @@ If we would wait for the send to fully execute and send an acknowledgement befor
 
 ### Detail
 
-The code for the replay is mainly in [advocate/advocate_replay.go](../goPatch/src/advocate/advocate_replay.go) and [runtime/advocate_replay.go](../goPatch/src/runtime/advocate_replay.go) as well as in the code implementation of all recorded operations.
+The code for the replay is mainly in [gocct/gocct_replay.go](../goPatch/src/gocct/gocct_replay.go) and [runtime/gocct_replay.go](../goPatch/src/runtime/gocct_replay.go) as well as in the code implementation of all recorded operations.
 
-[advocate/advocate_replay.go](../goPatch/src/advocate/advocate_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read.
+[gocct/gocct_replay.go](../goPatch/src/gocct/gocct_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read.
 
 The internal representation of the replay consists of a slice of `ReplayElements` called `replayData`.
 Each `ReplayElement` represents one operation that is to be executed. It contains data about
@@ -270,7 +270,7 @@ if wait {
 ```
 
 When a operation wants to execute
-it will call the [WaitForReplay](../goPatch/src/runtime/advocate_replay.go#L587) function.
+it will call the [WaitForReplay](../goPatch/src/runtime/gocct_replay.go#L587) function.
 The arguments of the function
 contain information about the operation (type of operation and
 skip value for `runtime.Caller`) as well as information about whether the
@@ -323,7 +323,7 @@ next operation.
 
 The replay manager releases the operations in the correct order.
 
-To release the operations, a separate routine [ReplayManager](../goPatch/src/runtime/advocate_replay.go#L353) is run in the
+To release the operations, a separate routine [ReplayManager](../goPatch/src/runtime/gocct_replay.go#L353) is run in the
 background.
 
 This routing loops as long as the replay is active.
@@ -391,7 +391,7 @@ pushed far enough in the correct direction.
 
 ##### getNextReplayElement
 
-The function to get the next element to be replayed is implemented [here](../goPatch/src/runtime/advocate_replay.go#L789).
+The function to get the next element to be replayed is implemented [here](../goPatch/src/runtime/gocct_replay.go#L789).
 
 The trace is stored in a sorted slice. The replay is therefore done in the
 order, in which the operations occur in this trace. To keep track of this,
@@ -410,7 +410,7 @@ replayed.
 
 ##### release
 
-To [release](../goPatch/src/runtime/advocate_replay.go#L693) a waiting element,
+To [release](../goPatch/src/runtime/gocct_replay.go#L693) a waiting element,
 we send the element info over the corresponding
 channel, on which the operation is waiting.
 
@@ -514,7 +514,7 @@ For more information about this, see the [atomic recording documentation](./trac
 Go stops the execution of all routines in a program, as soon as all operations
 in the main routine have been executed. In the replay, we want to avoid that the
 program terminates, before all operations in the trace have been executed.
-To do this, we implement a function [FinishReplay](../goPatch/src/advocate/advocate_replay.go#L447).
+To do this, we implement a function [FinishReplay](../goPatch/src/gocct/gocct_replay.go#L447).
 This function should be executed at the end of the main functions.
 It will run, until all operations in the trace have been executed, stopping the
 main routine from terminating to early.

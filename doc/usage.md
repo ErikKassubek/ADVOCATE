@@ -42,50 +42,22 @@ script. This will create a go executable in the `bin` directory.
 
 ### Advocate
 
-Additionally, the advocate program needs to be build. This is a standard Go
-program. To build it, move into the [advocate](../advocate/) directory
+Additionally, the gocct program needs to be build. This is a standard Go
+program. To build it, move into the [goCCT](../goCCT/) directory
 and build it with the standard
 
 ```shell
 go build
 ```
 
-command. This will create an `advocate` executable, which will be used to
+command. This will create an `gocct` executable, which will be used to
 run all recordings, replays, analysis and fuzzing.
 
 
-## Docker
-
-We also provide a docker file to create the environment.
-
-To build the docker file, run
-
-```shell
-docker build -t advocate-app .
-```
-
-To run the analysis or fuzzing on a program, you can call the following:
-
-```shell
-docker run --rm -it \
-  -v <pathToProg>:/prog \
-  advocate-app [mode] -path /prog [args]
-```
-
-e.g.
-
-```shell
-docker run --rm -it \
-  -v /home/erik/progToTest:/prog \
-  advocate-app fuzzing -path /prog
-```
-
-For the modes and args, see [usage](#usage).
-Note that the -path argument has already been set and does not need to be set again.
 
 ## Usage
 
-All modes of advocates are started and controlled using the [advocate](../advocate/)
+All modes of goccts are started and controlled using the [gocct](../goCCT/)
 program. This program implements multiple modes:
 
 - [Recording](#mode-recording)
@@ -98,7 +70,7 @@ program. This program implements multiple modes:
 To get an overview over the possible modes and arguments, you can run
 
 ```shell
-./advocate -help
+./gocct -help
 ```
 
 ### Mode: Recording
@@ -109,15 +81,15 @@ trace of all the elements executed in the program.
 
 For more information about the recording and the created trace, see [here](./recording.md).
 
-To run a recording, we use the advocate program implemented [here](../advocate/).
+To run a recording, we use the gocct program implemented [here](../gocct/).
 To record a program, run
 
 ```shell
-./advocate record [args]
+./gocct record [args]
 ```
 
 This will run the program or tests and create the traces. They are placed
-into a folder called `advocateResult`.
+into a folder called `gocctResult`.
 
 Normally, the print outputs of the executed programs are not printed to
 the terminal, but printed into an `output.log` file. To show them on the terminal,
@@ -145,7 +117,7 @@ tests share the same name, all of them will be executed.
 An example command would be
 
 ```
-./advocate record -path ~/program/testFolder/ -exec TestOne
+./gocct record -path ~/program/testFolder/ -exec TestOne
 ```
 
 #### Program
@@ -159,7 +131,7 @@ Here, main tells the program to run the main function instead of the tests.
 Path should point to the file containing the main function of this program.
 
 Go will try to determine the executable name of the program from the `go.mod`
-file. If advocate is unable to find this file, it needs to be set manually
+file. If gocct is unable to find this file, it needs to be set manually
 using
 
 - `-exec [executableName]`
@@ -170,7 +142,7 @@ cannot be recorded (the tests can still be recorded in this case).
 A possible command would therefore be
 
 ```
-./advocate record -main -path ~/program/main.go -exec progName
+./gocct record -main -path ~/program/main.go -exec progName
 ```
 
 ### Mode: Replay
@@ -180,7 +152,7 @@ The replay mode allows us to replay a previously recorded trace.
 This can be done by calling
 
 ```
-./advocate replay [args]
+./gocct replay [args]
 ```
 
 The following args are required
@@ -197,8 +169,8 @@ be found.
 Possible command would therefore be
 
 ```
-./advocate replay -path ~/program/testFolder/ -trace ~/traceFolder
-./advocate -main replay -path ~/program/main.go -trace ~/traceFolder
+./gocct replay -path ~/program/testFolder/ -trace ~/traceFolder
+./gocct -main replay -path ~/program/main.go -trace ~/traceFolder
 ```
 
 Please not, that the trace folder should not be inside the `AdvocateResult` folder.
@@ -228,7 +200,7 @@ to confirm the bug.
 It can be run with
 
 ```
-./advocate analysis [args]
+./gocct analysis [args]
 ```
 
 The arguments for `-path` and if necessary `-main` are required. They are
@@ -262,7 +234,7 @@ To select multiple by adding them together, e.g.
 to run the analysis for send on closed and cyclic (resource) deadlocks.\
 If `-scen` is not set, all scenarios will be searched for.
 
-While running, the analyzer will create a `advocateResult` folder. In it, it will create on
+While running, the analyzer will create a `gocctResult` folder. In it, it will create on
 folder for each of the analyzed tests. In this folder it will create a file
 for the output of the program runs, as well as two files showing an
 overview over all detected bugs. Additionally, it will create a bug folder.
@@ -272,13 +244,13 @@ type and position of the bug and information about the replay (if performed).
 An example command would be
 
 ```
-./advocate analysis -path ~/pathToProg/progDir/main.go -prog progName -main
+./gocct analysis -path ~/pathToProg/progDir/main.go -prog progName -main
 ```
 
 to run the analysis on the main function of a program, or
 
 ```
-./advocate analysis -path ~/pathToProg/progDir/ -prog progName -scen c -exec TestOne
+./gocct analysis -path ~/pathToProg/progDir/ -prog progName -scen c -exec TestOne
 ```
 
 to analyze the test `TestOne` in the given path, only checking for cyclic (resource) deadlocks.
@@ -310,9 +282,9 @@ you can set `-noRewrite`.\
 The default behavior is to not replay bugs that have already been replayed successfully.
 To still replay them, you can set `-replayAll`.
 
-The traces can become very large. When using advocate for many tests, or multiple
+The traces can become very large. When using gocct for many tests, or multiple
 times, this can lead to a large amount of data being stored in the trace files.
-For this reason, advocate can delete the trace files, as soon as the analysis
+For this reason, gocct can delete the trace files, as soon as the analysis
 has finished. To activate this, you can set `-deleteTrace`.
 
 The [Go Memory-Model](https://go.dev/ref/mem#chan) does not specify, that
@@ -333,7 +305,7 @@ for actually occurring panics or leaks, you can set the `-onlyActual` flag.
 To run the fuzzing as described [here](doc/fuzzing.md), the following command can be used:
 
 ```
-./advocate fuzzing [args]
+./gocct fuzzing [args]
 ```
 
 To use the fuzzing, you need to apply a fuzzing mode with `-fuzzingMode [mode]`.
@@ -357,7 +329,7 @@ Alternatively, a maximum time can be set using `-timeoutFuz [to in s]` (default 
 An example command would therefore be
 
 ```
-./advocate fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
+./gocct fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
 ```
 
 ## Additional Tags
@@ -375,7 +347,7 @@ To get additional information, the following tags can also be set:
 
 If one of these are set, the `-prog [name]` tag can be set to indicate the name of the program.
 
-The created statistic and time files can also be found in the `advocateResult` folder.
+The created statistic and time files can also be found in the `gocctResult` folder.
 
 In some situations, especially when only limited storage is available, it may
 be useful to ignore atomic operations during recording and analysis. To do this,
@@ -389,7 +361,7 @@ During the runtime, multiple status messages are shown in the terminal.
 To disable them and only show found bugs, you can set `-noInfo`.
 
 Sometimes the analysis or execution of a test may result in a panic in
-advocatego. Since it would be annoying to terminate the total analysis of all tests,
+gocctgo. Since it would be annoying to terminate the total analysis of all tests,
 only because the analysis of one of the tests crashed, a catch mechanism
 has been implemented, that will only terminate the analysis of the given tests
 and continue with the next, without crashing the whole program. To disable this,

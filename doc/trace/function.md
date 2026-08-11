@@ -57,7 +57,7 @@ the recording functions implemented in the runtime.
 
 This is mainly done in [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go) in the buildssa function.
 
-For the recording of a function call, we implement a function `advocateFunctionCall` and insert it into the SSA using
+For the recording of a function call, we implement a function `gocctFunctionCall` and insert it into the SSA using
 
 ```go
 if fn != nil &&
@@ -65,8 +65,8 @@ if fn != nil &&
 		fn.Sym().Pkg.Path != "runtime" &&
 		fn.Pragma&ir.Nosplit == 0 &&
 		!fn.Wrapper() &&
-		fn.Sym().Name != "advocateFunctionCall" &&
-        fn.Sym().Name != "advocateFunctionReturn" {
+		fn.Sym().Name != "gocctFunctionCall" &&
+        fn.Sym().Name != "gocctFunctionReturn" {
 
 		s.rtcall(
 			ir.Syms.AdvocateFunctionCall,
@@ -76,7 +76,7 @@ if fn != nil &&
 	}
 ```
 
-We insert it into the compiler using by adding `AdvocateFunctionCall *obj.LSym` into `symsStruct` in [src/cmd/compile/internal/ir/symtab.go](./goPatch/src/cmd/compile/internal/ir/symtab.go) and initialize it in [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go) as `ir.Syms.AdvocateFunctionCall = typecheck.LookupRuntimeFunc("advocateFunctionCall")`.
+We insert it into the compiler using by adding `AdvocateFunctionCall *obj.LSym` into `symsStruct` in [src/cmd/compile/internal/ir/symtab.go](./goPatch/src/cmd/compile/internal/ir/symtab.go) and initialize it in [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go) as `ir.Syms.AdvocateFunctionCall = typecheck.LookupRuntimeFunc("gocctFunctionCall")`.
 We classify the recording function as as a runtimeDecl in [src/cmd/compile/internal/typecheck/builtin.go](./goPatch/src/cmd/compile/internal/typecheck/builtin.go).
 
-For the return of a function we create the corresponding elements for the advocateFunctionReturn function and add it into the `exit` function in the SSA creation.
+For the return of a function we create the corresponding elements for the gocctFunctionReturn function and add it into the `exit` function in the SSA creation.

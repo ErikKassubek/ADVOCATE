@@ -61,7 +61,7 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 // MARK: ID
 // ========================================================
 
-func (this *ElementReturn) ObjID() int {
+func (this *ElementReturn) ResourceID() int {
 	return -1
 }
 
@@ -106,18 +106,6 @@ func (this *ElementReturn) Line() int {
 }
 
 // ========================================================
-// MARK: Index
-// ========================================================
-
-func (this *ElementReturn) Routine() int {
-	return this.routine
-}
-
-func (this *ElementReturn) TraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// ========================================================
 // MARK: Operation
 // ========================================================
 
@@ -159,7 +147,7 @@ func (this *ElementReturn) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementReturn) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
@@ -201,7 +189,7 @@ func (this *ElementReturn) SetNumberConcurrent(_ int, _, _ bool) {
 // ========================================================
 
 func (this *ElementReturn) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, "", -1)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, "", -1)
 }
 
 // ========================================================

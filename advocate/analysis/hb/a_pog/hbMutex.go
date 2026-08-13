@@ -22,7 +22,7 @@ import (
 //   - mu *trace.TraceElementMutex: the mutex trace element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBMutex(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
-	objId := mu.ObjID()
+	objId := mu.ResourceID()
 
 	gr := graph
 	if graph == nil {
@@ -66,7 +66,7 @@ func UpdateHBMutex(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - mu *TraceElementMutex: The trace element
 func Lock(graph *PoGraph, mu *trace.ElementMutex) {
-	id := mu.ObjID()
+	id := mu.ResourceID()
 
 	if !mu.Committed() {
 		return
@@ -100,7 +100,7 @@ func Lock(graph *PoGraph, mu *trace.ElementMutex) {
 //   - mu *TraceElementMutex: The trace element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func RLock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
-	id := mu.ObjID()
+	id := mu.ResourceID()
 
 	if recorded && !mu.Committed() {
 		return
@@ -127,7 +127,7 @@ func RLock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 //   - mu *TraceElementMutex: The trace element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func RUnlock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
-	id := mu.ObjID()
+	id := mu.ResourceID()
 
 	if recorded && !mu.Committed() {
 		return

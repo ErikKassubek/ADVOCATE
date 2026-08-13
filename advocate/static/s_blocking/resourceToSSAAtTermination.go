@@ -19,7 +19,8 @@ import (
 )
 
 func determineResouceToSSAAtTermination() {
-	trIter := a_base.MainTrace.AsIterator()
+	tr := &a_base.MainTrace
+	trIter := tr.AsIterator()
 
 	// get the first relevant value in init
 	f := data.Ssa().InitFunc()
@@ -56,7 +57,7 @@ func determineResouceToSSAAtTermination() {
 			continue
 		}
 
-		routine := elem.Routine()
+		routine := elem.RoutineID()
 		if _, ok := elem.(*trace.ElementFunc); ok && lastWasFork[routine] {
 			lastWasFork[routine] = false
 			continue
@@ -66,10 +67,25 @@ func determineResouceToSSAAtTermination() {
 		case *trace.ElementReplay, *trace.ElementRoutineEnd:
 			continue
 		case *trace.ElementFork:
-			lastWasFork[elem.ObjID()] = true
+			lastWasFork[elem.ResourceID()] = true
 		default:
 			lastWasFork[routine] = false
 		}
+
+		// we can ignore routines that are no longer running.
+		// We also do not need to determine current pos of routine
+		// if elem.Routine().IsTerminated() {
+		// 	delete(blocking.nextPerRout, routine)
+		// 	continue
+		// }
+
+		// // we can ignore routines, where the OAT tells us, that it does not contain any blocking operations.
+		// // Here, we only need to find the current instruction
+		// if !types.HasCommonElement(elem.Routine().Resources(), blocking.blockedResources) {
+
+		// 	blocking.nextPerRout[routine] = skipNonRelevant(blocking.nextPerRout[routine], routine)
+		// 	continue
+		// }
 
 		next := parseInstructions(elem, blocking.nextPerRout[routine], routine)
 		if next != nil {
@@ -96,7 +112,7 @@ func parseInstructions(elem trace.Element, inst s_ssa.Instruction, rout int) s_s
 }
 
 func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ssa.Instruction {
-	if elem != nil && !elem.Committed() {
+	if elem != nil && !elem.Committed() { // skip blocked routinen
 		return inst.Next()
 	}
 

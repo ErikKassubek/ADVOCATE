@@ -22,7 +22,7 @@ import (
 //   - mu *trace.TraceElementMutex: the mutex trace element
 //   - alt bool: if Ignore critical sections is set
 func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
-	routine := mu.Routine()
+	routine := mu.RoutineID()
 	mu.Vc(a_clock.Strong, CurrentVC[routine])
 	mu.Vc(a_clock.Weak, CurrentWVC[routine])
 
@@ -62,7 +62,7 @@ func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
 // Parameter:
 //   - mu *trace.TraceElementMutex: the mutex trace element
 func UpdateHBMutexAlt(mu *trace.ElementMutex) {
-	routine := mu.Routine()
+	routine := mu.RoutineID()
 	mu.Vc(a_clock.Strong, CurrentVC[routine])
 }
 
@@ -71,8 +71,8 @@ func UpdateHBMutexAlt(mu *trace.ElementMutex) {
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
 func Lock(mu *trace.ElementMutex) {
-	id := mu.ObjID()
-	routine := mu.Routine()
+	id := mu.ResourceID()
+	routine := mu.RoutineID()
 
 	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)
@@ -96,8 +96,8 @@ func Lock(mu *trace.ElementMutex) {
 // Returns:
 //   - *VectorClock: The new vector clock
 func RLock(mu *trace.ElementMutex) {
-	id := mu.ObjID()
-	routine := mu.Routine()
+	id := mu.ResourceID()
+	routine := mu.RoutineID()
 
 	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)
@@ -115,8 +115,8 @@ func RLock(mu *trace.ElementMutex) {
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
 func RUnlock(mu *trace.ElementMutex) {
-	id := mu.ObjID()
-	routine := mu.Routine()
+	id := mu.ResourceID()
+	routine := mu.RoutineID()
 
 	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)

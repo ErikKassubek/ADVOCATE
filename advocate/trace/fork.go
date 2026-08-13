@@ -88,11 +88,11 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the newly created routine
+// ResourceID returns the ID of the newly created routine
 //
 // Returns:
 //   - int: The id of the new routine
-func (this *ElementFork) ObjID() int {
+func (this *ElementFork) ResourceID() int {
 	return this.objId
 }
 
@@ -164,27 +164,6 @@ func (this *ElementFork) Line() int {
 }
 
 // ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementFork) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementFork) TraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// ========================================================
 // MARK: Operation
 // ========================================================
 
@@ -214,7 +193,7 @@ func (this *ElementFork) Type(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementFork) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -248,7 +227,7 @@ func (this *ElementFork) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementFork) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
@@ -319,7 +298,7 @@ func (this *ElementFork) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementFork) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================

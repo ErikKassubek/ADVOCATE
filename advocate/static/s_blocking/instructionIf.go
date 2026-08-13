@@ -64,3 +64,27 @@ func followSwitchRec(inst s_ssa.Instruction, rout, chosen int) s_ssa.Instruction
 
 	return followSwitchRec(inst, rout, chosen-1)
 }
+
+func ParseIfAll(inst *s_ssa.InstructionIf) []s_ssa.Instruction {
+	res := make([]s_ssa.Instruction, 0)
+
+	res = append(res, inst.FirstInBlock(inst.If()))
+
+	elseBlock := inst.FirstInBlock(inst.Else())
+	if inst, ok := elseBlock.(*s_ssa.InstructionIf); ok {
+		res = append(res, ParseIfAll(inst)...)
+	} else {
+		if _, ok := elseBlock.(*s_ssa.InstructionBinOp); ok { // sometimes needed for switch
+			next := elseBlock.Next()
+			if nb, ok := next.(*s_ssa.InstructionIf); ok {
+				res = append(res, ParseIfAll(nb)...)
+			} else {
+				res = append(res, elseBlock)
+			}
+		} else {
+			res = append(res, elseBlock)
+		}
+	}
+
+	return res
+}

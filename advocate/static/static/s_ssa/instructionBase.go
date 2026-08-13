@@ -35,7 +35,7 @@ type InstructionBase struct {
 	conc hasConcInfo
 
 	f    *Function
-	b_id int
+	b    *ssa.BasicBlock
 	i_id int
 }
 
@@ -79,7 +79,7 @@ func newInstructionBase(f *Function, c InstClass, inst ssa.Instruction, index in
 		term = fields[1]
 	}
 
-	b := InstructionBase{class: c, f: f, b_id: inst.Block().Index, i_id: index}
+	b := InstructionBase{class: c, f: f, b: inst.Block(), i_id: index}
 
 	b.setVariable(name, globalName)
 	b.setTerm(term, globalTerm)
@@ -232,7 +232,7 @@ func (this *InstructionBase) Function() *Function {
 }
 
 func (this *InstructionBase) Block() *Block {
-	return this.f.blocks[this.b_id]
+	return this.f.blocks[this.b.Index]
 }
 
 func (this *InstructionBase) FirstInBlock(b_id int) Instruction {

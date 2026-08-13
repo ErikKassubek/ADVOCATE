@@ -165,33 +165,12 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementChannel) ObjID() int {
+func (this *ElementChannel) ResourceID() int {
 	return this.objId
-}
-
-// ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementChannel) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementChannel) TraceIndex() (int, int) {
-	return this.routine, this.index
 }
 
 // ========================================================
@@ -380,7 +359,7 @@ func (this *ElementChannel) Type(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementChannel) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -396,7 +375,7 @@ func (this *ElementChannel) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.objId == elem.ObjID()
+	return this.objId == elem.ResourceID()
 }
 
 // ========================================================
@@ -447,7 +426,7 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementChannel) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
@@ -518,7 +497,7 @@ func (this *ElementChannel) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementChannel) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================
@@ -717,7 +696,7 @@ func (this *ElementChannel) SetOID(oID int) {
 // Returns:
 //   - *TraceElementChannel: The partner, -1 if not found
 func (this *ElementChannel) findPartner(tr *Trace) *ElementChannel {
-	id := this.ObjID()
+	id := this.ResourceID()
 	oID := this.GetOID()
 
 	// return -1 if closed by channel

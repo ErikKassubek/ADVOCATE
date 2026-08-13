@@ -48,7 +48,7 @@ func UpdateHBMutex(mu *trace.ElementMutex) {
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
 func Lock(mu *trace.ElementMutex) {
-	id := mu.ObjID()
+	id := mu.ResourceID()
 
 	if !mu.Committed() {
 		return
@@ -70,7 +70,7 @@ func Lock(mu *trace.ElementMutex) {
 // Returns:
 //   - *VectorClock: The new vector clock
 func RLock(mu *trace.ElementMutex) {
-	id := mu.ObjID()
+	id := mu.ResourceID()
 
 	if !mu.Committed() {
 		return
@@ -86,7 +86,7 @@ func RLock(mu *trace.ElementMutex) {
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
 func RUnlock(mu *trace.ElementMutex) {
-	id := mu.ObjID()
+	id := mu.ResourceID()
 
 	if !mu.Committed() {
 		return

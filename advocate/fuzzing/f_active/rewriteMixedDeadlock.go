@@ -30,8 +30,8 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 		return errors.New("rewriteMixedDeadlock: incorrect element types in cycle")
 	}
 
-	holderRout := cdHolder.Routine()
-	waiterRout := lockWaiter.Routine()
+	holderRout := cdHolder.RoutineID()
+	waiterRout := lockWaiter.RoutineID()
 
 	mainRout := 0
 	for rid := range tr.GetTraces() {

@@ -15,13 +15,17 @@ import (
 	"advocate/utils/types"
 )
 
-func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element) *instructionWithInfo {
-	if _, ok := blocking.chanBuffer[elem.ObjID()]; !ok {
-		blocking.chanBuffer[elem.ObjID()] = types.NewStack[*instructionWithInfo]()
-	}
+// TODO: handle case where elem is nil/all case
 
-	d := getDecOfSSAVar(rout, inst.Instruction().X.Name())
-	blocking.chanBuffer[elem.ObjID()].Push(d)
+func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element) *instructionWithInfo {
+	if elem != nil {
+		if _, ok := blocking.chanBuffer[elem.ResourceID()]; !ok {
+			blocking.chanBuffer[elem.ResourceID()] = types.NewStack[*instructionWithInfo]()
+		}
+
+		d := getDecOfSSAVar(rout, inst.Instruction().X.Name())
+		blocking.chanBuffer[elem.ResourceID()].Push(d)
+	}
 
 	return addPathInstr(rout, inst, nil)
 }

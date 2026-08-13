@@ -24,7 +24,7 @@ func AnalyzeCond(co *trace.ElementCond) {
 	a_hbcalc.UpdateHBCond(co)
 
 	// update currently waiting elements
-	id := co.ObjID()
+	id := co.ResourceID()
 	if co.Committed() { // not leak
 		switch co.Type(true) {
 		case trace.CondWait:

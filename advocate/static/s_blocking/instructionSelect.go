@@ -27,3 +27,11 @@ func ParseSelect(inst *s_ssa.InstructionSelect, rout int, elem trace.Element) (s
 
 	return inst.Next(), info
 }
+
+func ParseSelectAll(inst *s_ssa.InstructionSelect, rout int, elem trace.Element) ([]s_ssa.Instruction, *instructionWithInfo) {
+	info := instInfoSelect(inst, rout, elem)
+
+	log.Todo("InstructionSelect NOT IMPLEMENTED YET")
+
+	return []s_ssa.Instruction{inst.Next()}, info
+}

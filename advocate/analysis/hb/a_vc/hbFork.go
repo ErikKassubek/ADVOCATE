@@ -21,13 +21,13 @@ import (
 // Parameter:
 //   - fo *TraceElementFork: the fork element
 func UpdateHBFork(fo *trace.ElementFork) {
-	routine := fo.Routine()
+	routine := fo.RoutineID()
 
 	fo.Vc(a_clock.Strong, CurrentVC[routine])
 	fo.Vc(a_clock.Weak, CurrentWVC[routine])
 
-	oldRout := fo.Routine()
-	newRout := fo.ObjID()
+	oldRout := fo.RoutineID()
+	newRout := fo.ResourceID()
 
 	CurrentVC[newRout] = CurrentVC[oldRout].Copy()
 	CurrentVC[oldRout].Inc(oldRout)

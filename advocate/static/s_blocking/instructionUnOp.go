@@ -22,7 +22,7 @@ func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element) *in
 		ssaVar := getDecOfSSAVar(rout, term)
 		return addPathInstr(rout, inst, ssaVar.Resource)
 	case token.ARROW: // channel receive
-		receivedValue := blocking.chanBuffer[elem.ObjID()].Pop()
+		receivedValue := blocking.chanBuffer[elem.ResourceID()].Pop()
 		return addPathInstr(rout, inst, receivedValue.Resource)
 	}
 

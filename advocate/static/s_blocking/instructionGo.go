@@ -40,7 +40,7 @@ func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Ins
 
 	newRoutId := blocking.maxRoutId + 1
 	if elem != nil {
-		newRoutId = elem.ObjID()
+		newRoutId = elem.ResourceID()
 	}
 
 	firstInFunc := s_ssa.NewSsaPosFunc(f)

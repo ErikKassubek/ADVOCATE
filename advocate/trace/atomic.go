@@ -109,33 +109,12 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementAtomic) ObjID() int {
+func (this *ElementAtomic) ResourceID() int {
 	return this.objId
-}
-
-// ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementAtomic) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementAtomic) TraceIndex() (int, int) {
-	return this.routine, this.index
 }
 
 // ========================================================
@@ -236,7 +215,7 @@ func (this *ElementAtomic) Line() int {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementAtomic) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -248,7 +227,7 @@ func (this *ElementAtomic) IsEqual(elem Element) bool {
 // Returns:
 //   - bool: true if at and elem are operations on the same atomic variable
 func (this *ElementAtomic) IsSameElement(elem Element) bool {
-	return this.objId == elem.ObjID()
+	return this.objId == elem.ResourceID()
 }
 
 // ========================================================
@@ -270,7 +249,7 @@ func (this *ElementAtomic) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementAtomic) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
@@ -341,7 +320,7 @@ func (this *ElementAtomic) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementAtomic) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================

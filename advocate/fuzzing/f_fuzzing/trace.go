@@ -111,7 +111,7 @@ func parseNew(elem *trace.ElementAlloc) {
 	if f_base.FuzzingModeGFuzz {
 		fuzzingElem := f_gfuzz.FuzzingChannel{
 			GlobalID:  elem.Pos().String(),
-			LocalID:   elem.ObjID(),
+			LocalID:   elem.ResourceID(),
 			CloseInfo: f_gfuzz.Never,
 			QSize:     elem.GetNum(),
 			MaxQCount: 0,
@@ -134,9 +134,9 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 		// close -> update channelInfoTrace
 		switch op {
 		case trace.ChannelClose:
-			e := f_gfuzz.ChannelInfoTrace[elem.ObjID()]
+			e := f_gfuzz.ChannelInfoTrace[elem.ResourceID()]
 			e.CloseInfo = f_gfuzz.Always // before is always unknown
-			f_gfuzz.ChannelInfoTrace[elem.ObjID()] = e
+			f_gfuzz.ChannelInfoTrace[elem.ResourceID()] = e
 			f_gfuzz.NumberClose++
 		case trace.ChannelSend:
 			if !elem.Committed() {
@@ -144,7 +144,7 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 			}
 
 			recv := elem.GetPartner()
-			chanID := elem.ObjID()
+			chanID := elem.ResourceID()
 
 			if recv != nil {
 				sendPos := elem.Pos().String()

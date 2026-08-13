@@ -101,11 +101,11 @@ func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, cho
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementControllFlow) ObjID() int {
+func (this *ElementControllFlow) ResourceID() int {
 	return -1
 }
 
@@ -114,27 +114,6 @@ func (this *ElementControllFlow) ObjID() int {
 // Parameter:
 //   - id int: the object id
 func (this *ElementControllFlow) setObjId(id int) {
-}
-
-// ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementControllFlow) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementControllFlow) TraceIndex() (int, int) {
-	return this.routine, this.index
 }
 
 // ========================================================
@@ -285,7 +264,7 @@ func (this *ElementControllFlow) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementControllFlow) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}

@@ -79,11 +79,11 @@ func (this *ElementRoutineEnd) setID(ID int) {
 	this.id = ID
 }
 
-// ObjID is a dummy function to implement the traceElement interface
+// ResourceID is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - int: 0
-func (this *ElementRoutineEnd) ObjID() int {
+func (this *ElementRoutineEnd) ResourceID() int {
 	return 0
 }
 
@@ -156,27 +156,6 @@ func (this *ElementRoutineEnd) Line() int {
 }
 
 // ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementRoutineEnd) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementRoutineEnd) TraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// ========================================================
 // MARK: Operation
 // ========================================================
 
@@ -238,7 +217,7 @@ func (this *ElementRoutineEnd) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementRoutineEnd) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}

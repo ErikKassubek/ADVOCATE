@@ -23,7 +23,7 @@ import (
 type Element interface {
 	ID() int
 	setID(ID int)
-	ObjID() int
+	ResourceID() int
 
 	T(t timeType) int
 	SetT(t timeType, time int)
@@ -34,7 +34,8 @@ type Element interface {
 	File() string
 	Line() int
 
-	Routine() int
+	RoutineID() int
+	Routine() *Routine
 	TraceIndex() (int, int)
 
 	Type(operation bool) OperationType
@@ -76,16 +77,18 @@ func IsOp(elem Element) bool {
 // ========================================================
 
 type ElementBase struct {
-	id      int
-	index   int
-	routine int
+	id        int
+	index     int
+	routineId int
+	routine   *Routine
 
 	init bool
 }
 
-func (this *Trace) newElementBase(routine int) ElementBase {
+func (this *Trace) newElementBase(routID int) ElementBase {
 	this.minTraceID++
-	return ElementBase{id: this.minTraceID, routine: routine, index: this.NumberElemInRoutine(routine), init: !this.hasPassedMain}
+	rout := this.routines[routID]
+	return ElementBase{id: this.minTraceID, routineId: routID, index: this.NumberElemInRoutine(routID), routine: rout, init: !this.hasPassedMain}
 }
 
 // ID returns the trace id
@@ -102,6 +105,18 @@ func (this *ElementBase) ID() int {
 //   - ID int: the trace id
 func (this *ElementBase) setID(ID int) {
 	this.id = ID
+}
+
+func (this *ElementBase) Routine() *Routine {
+	return this.routine
+}
+
+func (this *ElementBase) RoutineID() int {
+	return this.routine.id
+}
+
+func (this *ElementBase) TraceIndex() (int, int) {
+	return this.routineId, this.index
 }
 
 // GetTraceID sets the trace id

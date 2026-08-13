@@ -59,7 +59,7 @@ func addEdgeIndex(from, to types.Pair[int, int], weak bool) {
 //   - elem *trace.ElementFork: the fork element
 func AddEdgeFork(elem *trace.ElementFork) {
 	routine, index := elem.TraceIndex()
-	newRout := elem.ObjID()
+	newRout := elem.ResourceID()
 	if a_base.GetTraceLength(newRout) > 0 {
 		addEdgeIndex(
 			types.Pair[int, int]{X: routine, Y: index},

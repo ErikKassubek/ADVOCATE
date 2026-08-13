@@ -37,7 +37,7 @@ func UpdateHBWait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - wa *TraceElementWait: The trace element
 func Change(graph *PoGraph, wa *trace.ElementWait) {
-	id := wa.ObjID()
+	id := wa.ResourceID()
 
 	gr := graph
 	if graph == nil {
@@ -66,7 +66,7 @@ func Wait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
 		return
 	}
 
-	id := wa.ObjID()
+	id := wa.ResourceID()
 	gr := graph
 	if graph == nil {
 		gr = &po

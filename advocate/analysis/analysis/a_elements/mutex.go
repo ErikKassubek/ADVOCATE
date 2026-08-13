@@ -30,8 +30,8 @@ import (
 func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	a_hbcalc.UpdateHBMutex(mu, alt)
 
-	routine := mu.Routine()
-	id := mu.ObjID()
+	routine := mu.RoutineID()
+	id := mu.ResourceID()
 
 	switch mu.Type(true) {
 

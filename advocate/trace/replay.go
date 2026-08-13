@@ -124,11 +124,11 @@ func (this *ElementReplay) Line() int {
 // MARK: Index
 // ========================================================
 
-// Routine returns the routine ID of the element.
+// RoutineID returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementReplay) Routine() int {
+func (this *ElementReplay) RoutineID() int {
 	return 1
 }
 
@@ -141,11 +141,11 @@ func (this *ElementReplay) TraceIndex() (int, int) {
 	return -1, -1
 }
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementReplay) ObjID() int {
+func (this *ElementReplay) ResourceID() int {
 	return 0
 }
 
@@ -212,7 +212,7 @@ func (this *ElementReplay) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementReplay) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}

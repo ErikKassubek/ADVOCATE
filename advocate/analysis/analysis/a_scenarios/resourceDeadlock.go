@@ -45,8 +45,8 @@ import (
 // We show the event processing functions for acquire and release.
 
 func acquire(s *a_base.State, readLock bool, event trace.Element) {
-	if _, exists := s.Routines[event.Routine()]; !exists {
-		s.Routines[event.Routine()] = a_base.Thread{
+	if _, exists := s.Routines[event.RoutineID()]; !exists {
+		s.Routines[event.RoutineID()] = a_base.Thread{
 			CurrentLockset:   make(a_base.Lockset),
 			LockDependencies: make(map[a_base.LockID][]a_base.Dependency),
 			ReaderCounter:    make(map[a_base.LockID]int),
@@ -54,39 +54,39 @@ func acquire(s *a_base.State, readLock bool, event trace.Element) {
 	}
 
 	lockID := a_base.LockID{
-		ID:       event.ObjID(),
+		ID:       event.ResourceID(),
 		ReadLock: readLock,
 	}
 
-	ls := s.Routines[event.Routine()].CurrentLockset
+	ls := s.Routines[event.RoutineID()].CurrentLockset
 	if !ls.Empty() {
-		deps := s.Routines[event.Routine()].LockDependencies
+		deps := s.Routines[event.RoutineID()].LockDependencies
 		deps[lockID] = insert(deps[lockID], ls, event)
 	}
 
 	if lockID.IsRead() {
-		lockID.AddReader(s.Routines[event.Routine()])
+		lockID.AddReader(s.Routines[event.RoutineID()])
 	}
-	s.Routines[event.Routine()].CurrentLockset.Add(lockID)
+	s.Routines[event.RoutineID()].CurrentLockset.Add(lockID)
 }
 
 func release(s *a_base.State, readLock bool, event trace.Element) {
 	lockID := a_base.LockID{
-		ID:       event.ObjID(),
+		ID:       event.ResourceID(),
 		ReadLock: readLock,
 	}
 
 	if lockID.IsRead() {
-		lockID.RemoveReader(s.Routines[event.Routine()])
+		lockID.RemoveReader(s.Routines[event.RoutineID()])
 		for _, thread := range s.Routines {
 			if lockID.HasReaders(thread) {
 				continue
 			}
 			thread.CurrentLockset.Remove(lockID)
 		}
-		s.Routines[event.Routine()].CurrentLockset.Remove(lockID)
+		s.Routines[event.RoutineID()].CurrentLockset.Remove(lockID)
 	} else {
-		if !s.Routines[event.Routine()].CurrentLockset.Remove(lockID) {
+		if !s.Routines[event.RoutineID()].CurrentLockset.Remove(lockID) {
 			// "Lock not found in lockset! Has probably been released in another thread, this is an unsupported case."
 			s.Failed = true
 		}
@@ -353,18 +353,18 @@ func CheckForResourceDeadlock() {
 				}
 			}
 
-			if request.Routine() != cycle[i].Thread {
-				log.Error("Request thread id ", request.Routine(), "does not match entry thread id", cycle[i].Thread, ". Ignoring circle!")
+			if request.RoutineID() != cycle[i].Thread {
+				log.Error("Request thread id ", request.RoutineID(), "does not match entry thread id", cycle[i].Thread, ". Ignoring circle!")
 				break
 			}
 
 			cycleElements = append(cycleElements, results.TraceElementResult{
-				RoutineID: request.Routine(),
-				ObjID:     request.ObjID(),
-				TRequest:  request.T(trace.Request),
-				ObjType:   "DC",
-				File:      request.File(),
-				Line:      request.Line(),
+				RoutineID:  request.RoutineID(),
+				ResourceID: request.ResourceID(),
+				TRequest:   request.T(trace.Request),
+				ObjType:    "DC",
+				File:       request.File(),
+				Line:       request.Line(),
 			})
 		}
 

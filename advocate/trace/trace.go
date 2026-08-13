@@ -90,7 +90,7 @@ func (this *Trace) Clear() {
 // Parameter:
 //   - elem TraceElement: Element to add
 func (this *Trace) AddElement(elem Element) {
-	routine := elem.Routine()
+	routine := elem.RoutineID()
 
 	if !elem.Committed() {
 		this.blocked[routine] = elem
@@ -115,7 +115,7 @@ func (this *Trace) AddResource(elem Element) {
 		return
 	}
 
-	id := elem.ObjID()
+	id := elem.ResourceID()
 
 	if _, ok := this.resources[id]; ok {
 		return
@@ -347,7 +347,7 @@ func (this *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 		for _, elem := range routine.elems {
 			switch e := elem.(type) {
 			case *ElementWait:
-				if e.ObjID() == wgID {
+				if e.ResourceID() == wgID {
 					if e.T(Request) < waitTime {
 						delta := e.GetDelta()
 						if delta > 0 {
@@ -392,7 +392,7 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 					thread int
 					vc     *a_clock.VectorClock
 					wVc    *a_clock.VectorClock
-				}{elemStr, elem.T(Commit), elem.Routine(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
+				}{elemStr, elem.T(Commit), elem.RoutineID(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
 			}
 		}
 	}
@@ -459,6 +459,14 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 		}
 	}
 	return res
+}
+
+func (this *Trace) IsRoutTerm(id int) (bool, error) {
+	if rout, ok := this.routines[id]; ok {
+		return rout.IsTerminated(), nil
+	}
+
+	return false, fmt.Errorf("No Routine with ID %d", id)
 }
 
 // SetTSortAtIndex sets the tSort for an element given by its index
@@ -1011,14 +1019,14 @@ func (this *Trace) GetResources(elem Element) []Resource {
 	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay:
 	case *ElementSelect:
 		for _, c := range elem.GetCases() {
-			r, ok := this.resources[c.ObjID()]
+			r, ok := this.resources[c.ResourceID()]
 			if !ok || r.id == 0 {
 				panic("Invalid Resource")
 			}
 			res = append(res, r)
 		}
 	default:
-		r, ok := this.resources[elem.ObjID()]
+		r, ok := this.resources[elem.ResourceID()]
 		if !ok || r.id == 0 {
 			panic("Invalid Resource")
 		}

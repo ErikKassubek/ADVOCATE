@@ -111,7 +111,7 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef
 // MARK: ID
 // ========================================================
 
-func (this *ElementFunc) ObjID() int {
+func (this *ElementFunc) ResourceID() int {
 	return -1
 }
 
@@ -160,18 +160,6 @@ func (this *ElementFunc) GetPosDef() string {
 }
 
 // ========================================================
-// MARK: Index
-// ========================================================
-
-func (this *ElementFunc) Routine() int {
-	return this.routine
-}
-
-func (this *ElementFunc) TraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// ========================================================
 // MARK: Operation
 // ========================================================
 
@@ -213,7 +201,7 @@ func (this *ElementFunc) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementFunc) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
@@ -255,7 +243,7 @@ func (this *ElementFunc) SetNumberConcurrent(_ int, _, _ bool) {
 // ========================================================
 
 func (this *ElementFunc) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.posCall.file, this.posCall.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.posCall.file, this.posCall.line)
 }
 
 // ========================================================

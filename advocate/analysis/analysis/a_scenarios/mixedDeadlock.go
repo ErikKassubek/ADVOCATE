@@ -107,7 +107,7 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	tid := element.Routine()
+	tid := element.RoutineID()
 	t := getOrCreateMDThread(tid)
 
 	isReadLock := false
@@ -119,7 +119,7 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 		isReadUnlock = true
 	}
 
-	lockID := a_base.LockID{ID: element.ObjID(), ReadLock: isReadLock || isReadUnlock}
+	lockID := a_base.LockID{ID: element.ResourceID(), ReadLock: isReadLock || isReadUnlock}
 
 	switch element.Type(true) {
 
@@ -215,7 +215,7 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 		return
 	}
 
-	tid := element.Routine()
+	tid := element.RoutineID()
 	t := getOrCreateMDThread(tid)
 
 	var assocRDs []mdLockRef
@@ -244,7 +244,7 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 
 	cd := &mdCDNode{
 		Thread:     tid,
-		ChanID:     element.ObjID(),
+		ChanID:     element.ResourceID(),
 		OpType:     opType,
 		Buffered:   element.IsBuffered(),
 		AssocRDs:   assocRDs,
@@ -473,43 +473,43 @@ func mdReportCandidate(
 
 	// holder's channel element
 	holderChanRes := results.TraceElementResult{
-		RoutineID: int(holderCD.Thread),
-		ObjID:     holderCD.ChanID,
-		TRequest:  holderCD.Elem.T(trace.Request),
-		ObjType:   holderCD.OpType,
-		File:      holderCD.Elem.File(),
-		Line:      holderCD.Elem.Line(),
+		RoutineID:  int(holderCD.Thread),
+		ResourceID: holderCD.ChanID,
+		TRequest:   holderCD.Elem.T(trace.Request),
+		ObjType:    holderCD.OpType,
+		File:       holderCD.Elem.File(),
+		Line:       holderCD.Elem.Line(),
 	}
 
 	// holder's lock acquire element
 	holderLockRes := results.TraceElementResult{
-		RoutineID: int(holderRef.RD.Thread),
-		ObjID:     holderRef.LockID.ID,
-		TRequest:  holderCD.Elem.T(trace.Request),
-		ObjType:   "DC",
-		File:      holderCD.Elem.File(),
-		Line:      holderCD.Elem.Line(),
+		RoutineID:  int(holderRef.RD.Thread),
+		ResourceID: holderRef.LockID.ID,
+		TRequest:   holderCD.Elem.T(trace.Request),
+		ObjType:    "DC",
+		File:       holderCD.Elem.File(),
+		Line:       holderCD.Elem.Line(),
 	}
 
 	// waiter's channel element
 	waiterChanRes := results.TraceElementResult{
-		RoutineID: int(waiterCD.Thread),
-		ObjID:     waiterCD.ChanID,
-		TRequest:  waiterCD.Elem.T(trace.Request),
-		ObjType:   waiterCD.OpType,
-		File:      waiterCD.Elem.File(),
-		Line:      waiterCD.Elem.Line(),
+		RoutineID:  int(waiterCD.Thread),
+		ResourceID: waiterCD.ChanID,
+		TRequest:   waiterCD.Elem.T(trace.Request),
+		ObjType:    waiterCD.OpType,
+		File:       waiterCD.Elem.File(),
+		Line:       waiterCD.Elem.Line(),
 	}
 
 	// waiter's lock acquire element (stuck element)
 	waiterLockReq := waiterRef.RD.Requests[0]
 	waiterLockRes := results.TraceElementResult{
-		RoutineID: int(waiterRef.RD.Thread),
-		ObjID:     waiterRef.LockID.ID,
-		TRequest:  waiterLockReq.T(trace.Request),
-		ObjType:   "DC",
-		File:      waiterLockReq.File(),
-		Line:      waiterLockReq.Line(),
+		RoutineID:  int(waiterRef.RD.Thread),
+		ResourceID: waiterRef.LockID.ID,
+		TRequest:   waiterLockReq.T(trace.Request),
+		ObjType:    "DC",
+		File:       waiterLockReq.File(),
+		Line:       waiterLockReq.Line(),
 	}
 
 	stuckElement := waiterLockRes

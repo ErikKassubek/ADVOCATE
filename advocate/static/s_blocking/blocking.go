@@ -10,6 +10,7 @@
 package s_blocking
 
 import (
+	"advocate/analysis/a_base"
 	"advocate/static/static"
 	"advocate/utils/flags"
 	"advocate/utils/log"
@@ -41,7 +42,7 @@ func BuildStaticBlockingAnalysis() (err error) {
 }
 
 func isBlockingBug() {
-	blocking.blocked = getBlockedResources()
+	blocking.blocked, blocking.blockedResources = getBlockedResources()
 
 	for _, res := range blocking.blocked {
 		for _, r := range res {
@@ -58,4 +59,11 @@ func isBlockingBug() {
 	buildFuncCallToSSAFunc()
 
 	determineResouceToSSAAtTermination()
+
+	for rout, path := range blocking.pathPerRoutine {
+		if ok, _ := a_base.MainTrace.IsRoutTerm(rout); ok {
+			continue
+		}
+		MayUnblock(rout, path.Peek()[0])
+	}
 }

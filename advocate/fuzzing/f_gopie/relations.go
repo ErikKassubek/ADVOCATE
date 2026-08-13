@@ -69,7 +69,7 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 		return
 	}
 
-	id := elem.ObjID()
+	id := elem.ResourceID()
 	if _, ok := ElemsByID[id]; !ok {
 		ElemsByID[id] = make([]trace.Element, 0)
 	}
@@ -90,7 +90,7 @@ func CalculateRelRule2And4() {
 			elem1 := elems[i]
 			for j := i + 1; j < len(elems)-1; j++ {
 				elem2 := elems[j]
-				if elem1.Routine() != elem2.Routine() {
+				if elem1.RoutineID() != elem2.RoutineID() {
 					if _, ok := rel2[elem1]; !ok {
 						rel2[elem1] = make(map[trace.Element]struct{})
 					}

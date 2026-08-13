@@ -24,6 +24,7 @@ const (
 	Blue   = "\033[34m"
 	Purple = "\033[35m"
 	Grey   = "\033[90m"
+	Pink   = "\033[95m"
 )
 
 var numberErr = 0
@@ -99,6 +100,25 @@ func Debug(v ...any) {
 //   - v ...any: the content of the log
 func Debugf(format string, v ...any) {
 	log.Printf(Yellow+format+Reset, v...)
+}
+
+// Debug logs an debug information to the terminal
+// Printed in yellow
+//
+// Parameter:
+//   - v ...any: the content of the log
+func Debug2(v ...any) {
+	log.Print(Pink, fmt.Sprint(v...), Reset, "\n")
+}
+
+// Debugf logs an debug information to the terminal
+// Printed in yellow
+//
+// Parameter:
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
+func Debugf2(format string, v ...any) {
+	log.Printf(Pink+format+Reset, v...)
 }
 
 // `Todo logs an todo information to the terminal

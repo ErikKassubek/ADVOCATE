@@ -321,7 +321,6 @@ func popMutation() f_base.Mutation {
 
 // Reset fuzzing
 func ResetFuzzing() {
-	log.Debug("RESET1")
 	f_base.NumberFuzzingRuns = 0
 	f_base.MutationQueue = types.NewQueue[f_base.Mutation]()
 	// count how often a specific mutation has been in the queue

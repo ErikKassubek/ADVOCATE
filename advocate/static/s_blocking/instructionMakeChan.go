@@ -21,10 +21,8 @@ func instInfoMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Elem
 	}
 
 	resources := make(map[int]trace.Resource)
-	if res, ok := blocking.blocked[elem]; ok {
-		for _, r := range res {
-			resources[r.Id()] = r
-		}
+	if res, ok := blocking.blockedResources[elem.ResourceID()]; ok {
+		resources[res.Id()] = res
 	}
 
 	return addPathInstr(rout, inst, newInstructionWithInfoResorce(resources))

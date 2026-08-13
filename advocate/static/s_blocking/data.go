@@ -37,7 +37,7 @@ type BlockingData struct {
 
 	funcCallToSSAFunc map[*trace.ElementFunc]*s_ssa.Function
 	blocked           map[trace.Element][]trace.Resource
-	blockedResources  []trace.Resource
+	blockedResources  map[int]trace.Resource
 
 	maxRoutId int
 }
@@ -52,6 +52,7 @@ func newBlockData() *BlockingData {
 		pathPerRoutine:        make(map[int]*types.Stack[path]),
 		funcCallToSSAFunc:     make(map[*trace.ElementFunc]*s_ssa.Function),
 		blocked:               make(map[trace.Element][]trace.Resource),
+		blockedResources:      make(map[int]trace.Resource),
 		lastBlockIdPerRoutine: make(map[int]int),
 		chanBuffer:            make(map[int]*types.Stack[*instructionWithInfo]),
 		returnVariables:       make(map[int]*types.Stack[*s_ssa.InstructionCall]),
@@ -68,6 +69,10 @@ type instructionWithInfo struct {
 }
 
 func compatible(iwi *instructionWithInfo, elem trace.Element) (bool, *trace.Resource) {
+	if iwi == nil || iwi.Resource == nil {
+		return false, nil
+	}
+
 	for _, res := range iwi.Resource { // should be only one element, but better to be sure
 		if _, ok := res[elem.ResourceID()]; !ok { // not the same object
 			return false, nil
@@ -216,6 +221,7 @@ func getDecOfSSAVar(rout int, v string) *instructionWithInfo {
 		}
 	}
 
+	// global variables
 	if b, ok := blocking.globalVars[v]; ok {
 		return b
 	}

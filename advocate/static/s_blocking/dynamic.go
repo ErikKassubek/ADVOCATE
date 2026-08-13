@@ -21,10 +21,10 @@ import (
 // Returns:
 //   - map[int]trace.Resource: blocked object id to blocked resource.
 //   - []trace.Resource: list of blocked resources
-func getBlockedResources() (map[trace.Element][]trace.Resource, []trace.Resource) {
+func getBlockedResources() (map[trace.Element][]trace.Resource, map[int]trace.Resource) {
 	res := make(map[trace.Element][]trace.Resource)
 
-	blockedRes := make(map[trace.Resource]bool)
+	blockedRes := make(map[int]trace.Resource)
 
 	for _, e := range a_base.MainTrace.GetBlocked() {
 		log.Debug("Blocked: ", e)
@@ -33,18 +33,11 @@ func getBlockedResources() (map[trace.Element][]trace.Resource, []trace.Resource
 
 		for _, r := range resources {
 			res[e] = append(res[e], r)
-			blockedRes[r] = true
+			blockedRes[r.Id()] = r
 		}
 	}
 
-	resBlocked := make([]trace.Resource, len(blockedRes))
-	i := 0
-	for r := range blockedRes {
-		resBlocked[i] = r
-		i++
-	}
-
-	return res, resBlocked
+	return res, blockedRes
 }
 
 func buildFuncCallToSSAFunc() {

@@ -41,12 +41,19 @@ func parseCallParameter(call ssa.CallInstruction, inst *s_ssa.InstructionCall, r
 
 	if call != nil {
 		for i, param := range f.Params() {
-			if !sharesUnderlyingResource(param.Type()) {
-				paras[param.Name()] = nil
+			if sharesUnderlyingResource(param.Type()) {
+				arg := call.Common().Args[i]
+				var argStr string
+				switch arg.(type) {
+				case *ssa.Alloc:
+					argStr = arg.Name()
+				default:
+					argStr = arg.String()
+				}
+				d := getDecOfSSAVar(routCall, argStr)
+				paras[argStr] = d
 			} else {
-				arg := call.Common().Args[i].String()
-				d := getDecOfSSAVar(routCall, arg)
-				paras[arg] = d
+				paras[param.Name()] = nil
 			}
 		}
 	}
@@ -54,7 +61,11 @@ func parseCallParameter(call ssa.CallInstruction, inst *s_ssa.InstructionCall, r
 	blocking.NewFuncStack(routFunc, inst)
 
 	for p, i := range paras {
-		addPathParam(routFunc, p, i.Resource)
+		if i == nil {
+			addPathParam(routFunc, p, nil)
+		} else {
+			addPathParam(routFunc, p, i.Resource)
+		}
 	}
 
 	if routCall != routFunc { // fork

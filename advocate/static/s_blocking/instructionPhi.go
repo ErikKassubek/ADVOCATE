@@ -14,6 +14,8 @@ import (
 	"advocate/trace"
 )
 
+// TODO: can this be used to reduce double pass
+
 func instInfoPhi(inst *s_ssa.InstructionPhi, rout int, _ trace.Element) *instructionWithInfo {
 	lastBlock := blocking.lastBlockIdPerRoutine[rout]
 

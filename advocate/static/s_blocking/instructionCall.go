@@ -18,7 +18,7 @@ import (
 	"golang.org/x/tools/go/ssa"
 )
 
-func ParseCall(inst *s_ssa.InstructionCall, rout int, _ trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
+func ParseCall(inst *s_ssa.InstructionCall, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
 	f := inst.GetFunc(data.Ssa())
 
 	parseCallParameter(inst.Instruction(), inst, rout, rout, f, inst.Variable())
@@ -26,6 +26,10 @@ func ParseCall(inst *s_ssa.InstructionCall, rout int, _ trace.Element) (s_ssa.In
 	if f != nil {
 		blocking.jumpBackPos[rout].Push(inst.Next())
 		return s_ssa.NewSsaPosFunc(f), nil
+	}
+
+	if elem != nil && !elem.Committed() {
+		return nil, nil
 	}
 
 	return inst.Next(), nil

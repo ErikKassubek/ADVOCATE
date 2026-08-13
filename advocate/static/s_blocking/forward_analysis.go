@@ -12,6 +12,7 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"advocate/utils/log"
 	"advocate/utils/types"
 )
 
@@ -35,8 +36,6 @@ func MayUnblock(routine int, start *instructionWithInfo) map[trace.Element][]pot
 		execPath path
 	}
 
-	// TODO: init aliases
-
 	initial := workItem{pp: start.Inst, execPath: path{start}}
 	workQueue := types.NewQueue[workItem]()
 	workQueue.Push(initial)
@@ -49,7 +48,17 @@ func MayUnblock(routine int, start *instructionWithInfo) map[trace.Element][]pot
 
 		nexts, alias := parseAllPaths(point, routine)
 
+		if alias != nil {
+			log.Debug2("CheckUnblock: ", routine, " # ", point, alias.Resource)
+		} else {
+			log.Debug2("CheckUnblock: ", routine, " # ", point)
+		}
+
 		for _, next := range nexts {
+			if next == nil {
+				continue
+			}
+
 			newExecPath := append(path, alias)
 			wi := workItem{
 				pp:       next,

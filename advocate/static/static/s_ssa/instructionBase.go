@@ -79,6 +79,11 @@ func newInstructionBase(f *Function, c InstClass, inst ssa.Instruction, index in
 		term = fields[1]
 	}
 
+	switch inst := inst.(type) {
+	case *ssa.Send:
+		name = inst.Chan.Name()
+	}
+
 	b := InstructionBase{class: c, f: f, b: inst.Block(), i_id: index}
 
 	b.setVariable(name, globalName)

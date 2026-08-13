@@ -64,6 +64,10 @@ func isBlockingBug() {
 		if ok, _ := a_base.MainTrace.IsRoutTerm(rout); ok {
 			continue
 		}
-		MayUnblock(rout, path.Peek()[0])
+		unbl := MayUnblock(rout, path.Peek().last())
+
+		for ub, _ := range unbl {
+			log.Debug2(ub)
+		}
 	}
 }

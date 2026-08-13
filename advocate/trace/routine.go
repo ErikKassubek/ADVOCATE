@@ -9,7 +9,9 @@
 
 package trace
 
-import "sort"
+import (
+	"sort"
+)
 
 // ========================================================
 // MARK: Routine

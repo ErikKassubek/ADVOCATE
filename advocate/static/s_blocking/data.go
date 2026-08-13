@@ -62,6 +62,10 @@ func newBlockData() *BlockingData {
 
 type path []*instructionWithInfo
 
+func (p path) last() *instructionWithInfo {
+	return p[len(p)-1]
+}
+
 type instructionWithInfo struct {
 	Inst     s_ssa.Instruction
 	Resource []map[int]trace.Resource // make list to deal with extract.

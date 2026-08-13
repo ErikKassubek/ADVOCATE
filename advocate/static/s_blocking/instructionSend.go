@@ -18,20 +18,27 @@ import (
 // TODO: handle case where elem is nil/all case
 
 func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element) *instructionWithInfo {
+	iwi := getDecOfSSAVar(rout, inst.Instruction().Chan.Name())
+
 	if elem != nil {
 		if _, ok := blocking.chanBuffer[elem.ResourceID()]; !ok {
 			blocking.chanBuffer[elem.ResourceID()] = types.NewStack[*instructionWithInfo]()
 		}
-
-		d := getDecOfSSAVar(rout, inst.Instruction().X.Name())
-		blocking.chanBuffer[elem.ResourceID()].Push(d)
+		blocking.chanBuffer[elem.ResourceID()].Push(iwi)
 	}
 
+	if iwi != nil {
+		return addPathInstr(rout, inst, iwi.Resource)
+	}
 	return addPathInstr(rout, inst, nil)
 }
 
 func ParseSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
 	info := instInfoSend(inst, rout, elem)
+
+	if elem != nil && !elem.Committed() {
+		return nil, info
+	}
 
 	return inst.Next(), info
 }

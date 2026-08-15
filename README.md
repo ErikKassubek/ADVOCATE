@@ -1,5 +1,7 @@
 # AdvocateGo
 
+![Arechitecture](./doc/img/architecture/architecture_new.png)
+
 ## What is AdvocateGo
 
 AdvocateGo is an analysis tool for concurrent Go programs.

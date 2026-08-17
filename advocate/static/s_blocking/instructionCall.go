@@ -21,7 +21,7 @@ import (
 func ParseCall(inst *s_ssa.InstructionCall, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
 	f := inst.GetFunc(data.Ssa())
 
-	parseCallParameter(inst.Instruction(), inst, rout, rout, f, inst.Variable())
+	parseCallParameter(inst.Instruction(), inst, rout, rout, f)
 
 	if f != nil {
 		blocking.jumpBackPos[rout].Push(inst.Next())
@@ -36,7 +36,7 @@ func ParseCall(inst *s_ssa.InstructionCall, rout int, elem trace.Element) (s_ssa
 
 }
 
-func parseCallParameter(call ssa.CallInstruction, inst *s_ssa.InstructionCall, routCall int, routFunc int, f *s_ssa.Function, retVarName string) {
+func parseCallParameter(call ssa.CallInstruction, inst *s_ssa.InstructionCall, routCall int, routFunc int, f *s_ssa.Function) {
 	if f == nil {
 		return
 	}
@@ -55,7 +55,7 @@ func parseCallParameter(call ssa.CallInstruction, inst *s_ssa.InstructionCall, r
 					argStr = arg.String()
 				}
 				d := getDecOfSSAVar(routCall, argStr)
-				paras[argStr] = d
+				paras[param.Name()] = d
 			} else {
 				paras[param.Name()] = nil
 			}

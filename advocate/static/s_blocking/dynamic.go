@@ -37,6 +37,11 @@ func getBlockedResources() (map[trace.Element][]trace.Resource, map[int]trace.Re
 		}
 	}
 
+	// TODO: added to trace all variables, remove
+	if true {
+		return res, a_base.MainTrace.Resources()
+	}
+
 	return res, blockedRes
 }
 

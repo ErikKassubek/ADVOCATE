@@ -91,3 +91,6 @@ Modifications in files are marked with
 - [src/cmd/compile/internal/typecheck/builtin.go](../goPatch/src/cmd/compile/internal/typecheck/builtin.go) (indirect via running `go run mkbuiltin.go` in src/cmd/compile/internal/typecheck)
 - [src/cmd/compile/internal/base/flag.go](../goPatch/src/cmd/compile/internal/base/flag.go)
 - [src/cmd/compile/internal/pkginit/init.go](../goPatch/src/cmd/compile/internal/pkginit/init.go)
+- [src/cmd/go/internal/load/pkg.go](../goPatch/src/cmd/go/internal/load/pkg.go)
+- [src/cmd/compile/internal/types2/resolver.go](../goPatch/src/cmd/compile/internal/types2/resolver.go)
+- [src/go/doc/testdata/testing.go](../goPatch/src/go/doc/testdata/testing.go)

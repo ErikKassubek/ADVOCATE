@@ -135,6 +135,7 @@ type CmdFlags struct {
 	AdvocatePath    string "help:\"set the advocate replay path\""
 	AdvocateTimeout int    "help:\"set the advocate tinmeout in s\""
 	AdvocateAtomics bool   "help:\"set if advocate should use atomics\""
+	AdvocateMain    bool   "help:\"set if advocate is used on main\""
 	// ADVOCATE-END
 
 	// Configuration derived from flags; not a flag itself.

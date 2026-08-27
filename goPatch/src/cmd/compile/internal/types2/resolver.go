@@ -5,6 +5,9 @@
 package types2
 
 import (
+	// ADVOCATE-START
+	"cmd/compile/internal/base"
+	// ADVOCATE-END
 	"cmd/compile/internal/syntax"
 	"cmp"
 	"fmt"
@@ -236,6 +239,23 @@ func (check *Checker) collectObjects() {
 		// FileName may be "" (typically for tests) in which case
 		// we get "." as the directory which is what we would want.
 		fileDir := dir(file.PkgName.Pos().RelFilename()) // TODO(gri) should this be filename?
+
+		// ADVOCATE-START
+		if check.pkg.Name() == "main" {
+			if base.Flag.AdvocateMain && (base.Flag.AdvocateTrace || base.Flag.AdvocateFuzzing || base.Flag.AdvocateReplay) {
+				file.DeclList = append([]syntax.Decl{
+					&syntax.ImportDecl{
+						LocalPkgName: &syntax.Name{
+							Value: "_",
+						},
+						Path: &syntax.BasicLit{
+							Value: `"advocatego"`,
+						},
+					},
+				}, file.DeclList...)
+			}
+		}
+		// ADVOCATE-END
 
 		first := -1                // index of first ConstDecl in the current group, or -1
 		var last *syntax.ConstDecl // last ConstDecl with init expressions, or nil

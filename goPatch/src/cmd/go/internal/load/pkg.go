@@ -2988,6 +2988,15 @@ func PackagesAndErrors(ctx context.Context, opts PackageOpts, patterns []string)
 		pkgs = mainPackagesOnly(pkgs, matches)
 	}
 
+	// ADVOCATE-START
+	// Inject advocatego into command-line packages.
+	for _, p := range pkgs {
+		if p.Internal.CmdlinePkg && p.Name == "main" && p.ImportPath != "advocatego" {
+			EnsureImport(p, "advocatego")
+		}
+	}
+	// ADVOCATE-END
+
 	// Now that CmdlinePkg is set correctly,
 	// compute the effective flags for all loaded packages
 	// (not just the ones matching the patterns but also

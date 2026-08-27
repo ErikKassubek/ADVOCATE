@@ -24,7 +24,7 @@ import (
 )
 
 func getBuildArg(fileName string, replay bool, tracePath string,
-	replayTimeout int, record bool, fuzzing int, fuzzingTrace string) (buildArg string) {
+	replayTimeout int, record bool, fuzzing int, fuzzingTrace string, isMain bool) (buildArg string) {
 
 	buildArg = buildFlagsDefault + " "
 
@@ -43,6 +43,10 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 		buildArg += fmt.Sprintf("-advocatefuzzing -advocatepath=%s -advocatetimeout=%d", fuzzingTrace, replayTimeout)
 	} else { // recording
 		buildArg += fmt.Sprintf("-advocatetrace  -advocatetimeout=%d", replayTimeout)
+	}
+
+	if isMain {
+		buildArg += " -advocatemain"
 	}
 
 	// buildArg += "'"
@@ -101,49 +105,49 @@ func importInsertMain(fileName string, replay bool, replayNumber string,
 		fmt.Println("TestName: Main")
 	}
 
-	var lines []string
-	scanner := bufio.NewScanner(file)
+	// var lines []string
+	// scanner := bufio.NewScanner(file)
 	importLine := -1
-	currentLine := 0
-	for scanner.Scan() {
-		currentLine++
-		line := scanner.Text()
-		lines = append(lines, line)
+	// currentLine := 0
+	// for scanner.Scan() {
+	// 	currentLine++
+	// 	line := scanner.Text()
+	// 	lines = append(lines, line)
 
-		if strings.Contains(line, "package main") {
-			if static {
-				lines = append(lines, "")
-			} else {
-				lines = append(lines, "import _ \"advocatego\"")
-				fmt.Println("Import added at line:", currentLine)
-			}
-			importLine = currentLine
-		} else if strings.Contains(line, "import \"") && importLine == -1 {
-			if static {
-				lines = append(lines, "")
-			} else {
-				lines = append(lines, "import _ \"advocatego\"")
-				fmt.Println("Import added at line:", currentLine)
-			}
-			importLine = currentLine
-		} else if strings.Contains(line, "import (") && importLine == -1 {
-			if static {
-				lines = append(lines, "")
-			} else {
-				lines = append(lines, "\t _ \"advocatego\"")
-				fmt.Println("Import added at line:", currentLine)
-			}
-			importLine = currentLine
-		}
-	}
+	// 	if strings.Contains(line, "package main") {
+	// 		if static {
+	// 			lines = append(lines, "")
+	// 		} else {
+	// 			lines = append(lines, "import _ \"advocatego\"")
+	// 			fmt.Println("Import added at line:", currentLine)
+	// 		}
+	// 		importLine = currentLine
+	// 	} else if strings.Contains(line, "import \"") && importLine == -1 {
+	// 		if static {
+	// 			lines = append(lines, "")
+	// 		} else {
+	// 			lines = append(lines, "import _ \"advocatego\"")
+	// 			fmt.Println("Import added at line:", currentLine)
+	// 		}
+	// 		importLine = currentLine
+	// 	} else if strings.Contains(line, "import (") && importLine == -1 {
+	// 		if static {
+	// 			lines = append(lines, "")
+	// 		} else {
+	// 			lines = append(lines, "\t _ \"advocatego\"")
+	// 			fmt.Println("Import added at line:", currentLine)
+	// 		}
+	// 		importLine = currentLine
+	// 	}
+	// }
 
-	file.Truncate(0)
-	file.Seek(0, 0)
-	writer := bufio.NewWriter(file)
-	for _, line := range lines {
-		fmt.Fprintln(writer, line)
-	}
-	writer.Flush()
+	// file.Truncate(0)
+	// file.Seek(0, 0)
+	// writer := bufio.NewWriter(file)
+	// for _, line := range lines {
+	// 	fmt.Fprintln(writer, line)
+	// }
+	// writer.Flush()
 
 	replayPath := ""
 	if replayNumber != "" {
@@ -154,7 +158,7 @@ func importInsertMain(fileName string, replay bool, replayNumber string,
 		replayPath = "advocateTrace"
 	}
 
-	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, fuzzingTrace), fileName, importLine, nil
+	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, fuzzingTrace, true), fileName, importLine, nil
 }
 
 // Remove the header from a file with a header in a main function
@@ -271,47 +275,47 @@ func importInsertUnit(fileName, testName string, replay bool, fuzzing int, repla
 		return "", errors.New("Test Method not found in file")
 	}
 
-	importAdded := false
-	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
+	// importAdded := false
+	// file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// defer file.Close()
 
-	if replay && fuzzing >= 0 {
-		return "", fmt.Errorf("Cannot add header for replay and fuzzing at the same time")
-	}
+	// if replay && fuzzing >= 0 {
+	// 	return "", fmt.Errorf("Cannot add header for replay and fuzzing at the same time")
+	// }
 
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	currentLine := 0
+	// var lines []string
+	// scanner := bufio.NewScanner(file)
+	// currentLine := 0
 
-	fmt.Println("FileName: ", fileName)
-	fmt.Println("TestName: ", testName)
+	// fmt.Println("FileName: ", fileName)
+	// fmt.Println("TestName: ", testName)
 
-	for scanner.Scan() {
-		currentLine++
-		line := scanner.Text()
-		lines = append(lines, line)
+	// for scanner.Scan() {
+	// 	currentLine++
+	// 	line := scanner.Text()
+	// 	lines = append(lines, line)
 
-		if strings.Contains(line, "import \"") && !importAdded {
-			lines = append(lines, "import _ \"advocatego\"")
-			fmt.Println("Import added at line:", currentLine)
-			importAdded = true
-		} else if strings.Contains(line, "import (") && !importAdded {
-			lines = append(lines, "\t _ \"advocatego\"")
-			fmt.Println("Import added at line:", currentLine)
-			importAdded = true
-		}
-	}
+	// 	if strings.Contains(line, "import \"") && !importAdded {
+	// 		lines = append(lines, "import _ \"advocatego\"")
+	// 		fmt.Println("Import added at line:", currentLine)
+	// 		importAdded = true
+	// 	} else if strings.Contains(line, "import (") && !importAdded {
+	// 		lines = append(lines, "\t _ \"advocatego\"")
+	// 		fmt.Println("Import added at line:", currentLine)
+	// 		importAdded = true
+	// 	}
+	// }
 
-	file.Truncate(0)
-	file.Seek(0, 0)
-	writer := bufio.NewWriter(file)
-	for _, line := range lines {
-		fmt.Fprintln(writer, line)
-	}
-	writer.Flush()
+	// file.Truncate(0)
+	// file.Seek(0, 0)
+	// writer := bufio.NewWriter(file)
+	// for _, line := range lines {
+	// 	fmt.Fprintln(writer, line)
+	// }
+	// writer.Flush()
 
 	replayPath := ""
 	if replayInfo != "" {
@@ -322,7 +326,7 @@ func importInsertUnit(fileName, testName string, replay bool, fuzzing int, repla
 		replayPath = "advocateTrace"
 	}
 
-	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, replayInfo), nil
+	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, replayInfo, false), nil
 }
 
 // Remove all headers from a unit test file

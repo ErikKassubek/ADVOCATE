@@ -5,10 +5,18 @@
 package x509
 
 import (
+	"bytes"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/x509/pkix"
 	"encoding/asn1"
 	"encoding/pem"
 	"os"
+	"reflect"
+	"strings"
 	"testing"
+	"time"
 
 	cryptobyte_asn1 "golang.org/x/crypto/cryptobyte/asn1"
 )
@@ -249,5 +257,169 @@ d5l1tRhScKu2NBgm74nYmJxJYgvuTA38wGhRrGU=
 		if err == nil || err.Error() != "x509: invalid basic constraints" {
 			t.Errorf(`ParseCertificate() = %v; want = "x509: invalid basic constraints"`, err)
 		}
+	}
+}
+
+func TestDomainNameValid(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		dnsName    string
+		constraint bool
+		valid      bool
+	}{
+		// TODO(#75835): these tests are for stricter name validation, which we
+		// had to disable. Once we reenable these strict checks, behind a
+		// GODEBUG, we should add them back in.
+		// {"empty name, name", "", false, false},
+		// {"254 char label, name", strings.Repeat("a.a", 84) + "aaa", false, false},
+		// {"254 char label, constraint", strings.Repeat("a.a", 84) + "aaa", true, false},
+		// {"253 char label, name", strings.Repeat("a.a", 84) + "aa", false, false},
+		// {"253 char label, constraint", strings.Repeat("a.a", 84) + "aa", true, false},
+		// {"64 char single label, name", strings.Repeat("a", 64), false, false},
+		// {"64 char single label, constraint", strings.Repeat("a", 64), true, false},
+		// {"64 char label, name", "a." + strings.Repeat("a", 64), false, false},
+		// {"64 char label, constraint", "a." + strings.Repeat("a", 64), true, false},
+
+		// TODO(#75835): these are the inverse of the tests above, they should be removed
+		// once the strict checking is enabled.
+		{"254 char label, name", strings.Repeat("a.a", 84) + "aaa", false, true},
+		{"254 char label, constraint", strings.Repeat("a.a", 84) + "aaa", true, true},
+		{"253 char label, name", strings.Repeat("a.a", 84) + "aa", false, true},
+		{"253 char label, constraint", strings.Repeat("a.a", 84) + "aa", true, true},
+		{"64 char single label, name", strings.Repeat("a", 64), false, true},
+		{"64 char single label, constraint", strings.Repeat("a", 64), true, true},
+		{"64 char label, name", "a." + strings.Repeat("a", 64), false, true},
+		{"64 char label, constraint", "a." + strings.Repeat("a", 64), true, true},
+
+		// Check we properly enforce properties of domain names.
+		{"empty name, constraint", "", true, true},
+		{"empty label, name", "a..a", false, false},
+		{"empty label, constraint", "a..a", true, false},
+		{"period, name", ".", false, false},
+		{"period, constraint", ".", true, false}, // TODO(roland): not entirely clear if this is a valid constraint (require at least one label?)
+		{"valid, name", "a.b.c", false, true},
+		{"valid, constraint", "a.b.c", true, true},
+		{"leading period, name", ".a.b.c", false, false},
+		{"leading period, constraint", ".a.b.c", true, true},
+		{"trailing period, name", "a.", false, false},
+		{"trailing period, constraint", "a.", true, false},
+		{"bare label, name", "a", false, true},
+		{"bare label, constraint", "a", true, true},
+		{"63 char single label, name", strings.Repeat("a", 63), false, true},
+		{"63 char single label, constraint", strings.Repeat("a", 63), true, true},
+		{"63 char label, name", "a." + strings.Repeat("a", 63), false, true},
+		{"63 char label, constraint", "a." + strings.Repeat("a", 63), true, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			valid := domainNameValid(tc.dnsName, tc.constraint)
+			if tc.valid != valid {
+				t.Errorf("domainNameValid(%q, %t) = %v; want %v", tc.dnsName, tc.constraint, !tc.valid, tc.valid)
+			}
+			// Also check that we enforce the same properties as domainToReverseLabels
+			trimmedName := tc.dnsName
+			if tc.constraint && len(trimmedName) > 1 && trimmedName[0] == '.' {
+				trimmedName = trimmedName[1:]
+			}
+			_, revValid := domainToReverseLabels(trimmedName)
+			if valid != revValid {
+				t.Errorf("domainNameValid(%q, %t) = %t != domainToReverseLabels(%q) = %t", tc.dnsName, tc.constraint, valid, trimmedName, revValid)
+			}
+		})
+	}
+}
+
+func TestRoundtripWeirdSANs(t *testing.T) {
+	// TODO(#75835): check that certificates we create with CreateCertificate that have malformed SAN values
+	// can be parsed by ParseCertificate. We should eventually restrict this, but for now we have to maintain
+	// this property as people have been relying on it.
+	k, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	badNames := []string{
+		"baredomain",
+		"baredomain.",
+		strings.Repeat("a", 255),
+		strings.Repeat("a", 65) + ".com",
+	}
+	tmpl := &Certificate{
+		EmailAddresses: badNames,
+		DNSNames:       badNames,
+	}
+	b, err := CreateCertificate(rand.Reader, tmpl, tmpl, &k.PublicKey, k)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = ParseCertificate(b)
+	if err != nil {
+		t.Fatalf("Couldn't roundtrip certificate: %v", err)
+	}
+}
+
+func FuzzDomainNameValid(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data string) {
+		domainNameValid(data, false)
+		domainNameValid(data, true)
+	})
+}
+
+func TestParseNameTypes(t *testing.T) {
+	block, _ := pem.Decode([]byte(`
+-----BEGIN CERTIFICATE-----
+MIICGzCCAcGgAwIBAgIJAIZft7jy3RcpMAoGCCqGSM49BAMCMA8xDTALBgNVBAMM
+BFRlc3QwHhcNMjUwOTAyMTg0MzE3WhcNMjUxMDAyMTg0MzE3WjCCARUxIjAgBg0q
+hkiG9xIEAYS3CQIBDA91dGY4LXN0cmluZ/CfpooxHzAdBg0qhkiG9xIEAYS3CQIC
+BAxvY3RldC1zdHJpbmcxGDAWBg0qhkiG9xIEAYS3CQIDDQUBAgMEBTETMBEGDSqG
+SIb3EgQBhLcJAgQFADEVMBMGDSqGSIb3EgQBhLcJAgUwAgECMRQwEgYNKoZIhvcS
+BAGEtwkCBgIBKjEgMB4GDSqGSIb3EgQBhLcJAgcGDSqGSIb3EgQBhLcJAgcxGDAW
+Bg0qhkiG9xIEAYS3CQIIAwUAqrvM3TEgMB4GDSqGSIb3EgQBhLcJAgkXDTI1MDkw
+MjE4NDMxN1oxFDASBg0qhkiG9xIEAYS3CQIKAQH/MFkwEwYHKoZIzj0CAQYIKoZI
+zj0DAQcDQgAE7M4zoqQtXbvGsudKaM5gd8emxyk68AFTjIYU4PO1AtiYX3wyL89k
+wbHjxgvmh/9aBg1LOj6kfsJIxULUmUpdzTAKBggqhkjOPQQDAgNIADBFAiBvKz3o
+ALhCqKrRFLUbax6+tI1s1B14IPVk2ZHbBEou5gIhAOpvJRNj5qluPXKLXmZvIK8u
+OjUhiZoowYvborSS1EBK
+-----END CERTIFICATE-----
+	`))
+	expected := map[string]any{
+		"1.2.840.113554.4.1.72585.2.1": "utf8-string🦊",
+		"1.2.840.113554.4.1.72585.2.2": []byte("octet-string"),
+		"1.2.840.113554.4.1.72585.2.3": asn1.RawValue{Tag: 13,
+			Bytes: []byte{1, 2, 3, 4, 5}, FullBytes: []byte{13, 5, 1, 2, 3, 4, 5}},
+		"1.2.840.113554.4.1.72585.2.4": nil,
+		"1.2.840.113554.4.1.72585.2.5": asn1.RawValue{Tag: asn1.TagSequence, IsCompound: true,
+			Bytes: []byte{1, 2}, FullBytes: []byte{0x30, 2, 1, 2}},
+		"1.2.840.113554.4.1.72585.2.6": int64(42),
+		"1.2.840.113554.4.1.72585.2.7": asn1.ObjectIdentifier{1, 2, 840, 113554, 4, 1, 72585, 2, 7},
+		"1.2.840.113554.4.1.72585.2.8": asn1.BitString{BitLength: 32,
+			Bytes: []byte{0xaa, 0xbb, 0xcc, 0xdd}},
+		"1.2.840.113554.4.1.72585.2.9":  time.Date(2025, 9, 2, 18, 43, 17, 0, time.UTC),
+		"1.2.840.113554.4.1.72585.2.10": true,
+	}
+	cert, err := ParseCertificate(block.Bytes)
+	if err != nil {
+		t.Fatalf("ParseCertificate failed: %v", err)
+	}
+	for _, attr := range cert.Subject.Names {
+		if val, ok := expected[attr.Type.String()]; ok {
+			if !reflect.DeepEqual(attr.Value, val) {
+				t.Errorf("unexpected value for %s: got %v (%T), want %v (%T)", attr.Type, attr.Value, attr.Value, val, val)
+			}
+		} else {
+			t.Errorf("unexpected attribute type: %s", attr.Type)
+		}
+	}
+	extra := pkix.Name{ExtraNames: cert.Subject.Names}
+	// asn1.Marshal does not encode NULL.
+	for i := range extra.ExtraNames {
+		if extra.ExtraNames[i].Value == nil {
+			extra.ExtraNames[i].Value = asn1.NullRawValue
+		}
+	}
+	got, err := asn1.Marshal(extra.ToRDNSequence())
+	if err != nil {
+		t.Fatalf("asn1.Marshal failed: %v", err)
+	}
+	if !bytes.Equal(got, cert.RawSubject) {
+		t.Errorf("unexpected marshaled RDNSequence: got %x, want %x", got, cert.RawSubject)
 	}
 }

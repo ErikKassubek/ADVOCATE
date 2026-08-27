@@ -1,10 +1,9 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_partial_deadlock.go
 // Brief: Detect partial deadlocks while running
 //
 // Author: Erik Kassubek
-// Created: 2025-08-01
 //
 // License: BSD-3-Clause
 
@@ -12,6 +11,7 @@ package runtime
 
 var CollectPartialDeadlockInfo = false
 var InfoHaveRef map[uintptr][]bool // pointer to parked operation -> list of routines with reference to this
+var haveRefArray []uintptr
 
 // build oat creates the object aware trace.
 // It first determines the blocked concurrency objects.
@@ -26,6 +26,13 @@ func BuildOAT() {
 	InfoHaveRef = make(map[uintptr][]bool)
 	for b := range blocked {
 		InfoHaveRef[b] = make([]bool, maxRoutId+1)
+	}
+
+	haveRefArray = make([]uintptr, len(InfoHaveRef))
+	i := 0
+	for b := range InfoHaveRef {
+		haveRefArray[i] = b
+		i++
 	}
 
 	CollectPartialDeadlockInfo = true

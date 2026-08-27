@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace_waitgroup.go
 // Brief: Functionality for wait groups
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -81,7 +80,7 @@ func AdvocateWaitGroupAdd(mem unsafe.Pointer, id uint64, delta int, val int32) i
 	return insertIntoTrace(elem)
 }
 
-// AdvocateWaitGroupWait adds a waitgroup wait to the trace
+// AdvocateWaitGroupWaitReq adds a waitgroup wait to the trace
 //
 // Parameter:
 //   - mem unsafe.Pointer: memory address
@@ -89,7 +88,7 @@ func AdvocateWaitGroupAdd(mem unsafe.Pointer, id uint64, delta int, val int32) i
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateWaitGroupWait(mem unsafe.Pointer, id uint64) int {
+func AdvocateWaitGroupWaitReq(mem unsafe.Pointer, id uint64) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -120,7 +119,7 @@ func AdvocateWaitGroupWait(mem unsafe.Pointer, id uint64) int {
 //
 // Parameter:
 //   - index: index of the operation in the trace
-func AdvocateWaitGroupPost(index int) {
+func AdvocateWaitGroupCom(index int) {
 	if AdvocateTracingDisabled {
 		return
 	}

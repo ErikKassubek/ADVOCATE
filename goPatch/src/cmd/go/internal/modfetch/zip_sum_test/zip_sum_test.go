@@ -31,7 +31,6 @@ import (
 
 	"cmd/go/internal/cfg"
 	"cmd/go/internal/modfetch"
-	"cmd/go/internal/modload"
 
 	"golang.org/x/mod/module"
 )
@@ -67,7 +66,6 @@ func TestZipSums(t *testing.T) {
 
 	testenv.MustHaveGoBuild(t)
 	testenv.MustHaveExternalNetwork(t)
-	testenv.MustHaveExecPath(t, "bzr")
 	testenv.MustHaveExecPath(t, "git")
 	// TODO(jayconrod): add hg, svn, and fossil modules to testdata.
 	// Could not find any for now.
@@ -94,7 +92,6 @@ func TestZipSums(t *testing.T) {
 
 	cfg.GOPROXY = "direct"
 	cfg.GOSUMDB = "off"
-	modload.Init()
 
 	// Shard tests by downloading only every nth module when shard flags are set.
 	// This makes it easier to test small groups of modules quickly. We avoid
@@ -114,6 +111,7 @@ func TestZipSums(t *testing.T) {
 	// Download modules with a rate limit. We may run out of file descriptors
 	// or cause timeouts without a limit.
 	needUpdate := false
+	fetcher := modfetch.NewFetcher()
 	for i := range tests {
 		test := &tests[i]
 		name := fmt.Sprintf("%s@%s", strings.ReplaceAll(test.m.Path, "/", "_"), test.m.Version)
@@ -121,7 +119,7 @@ func TestZipSums(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 
-			zipPath, err := modfetch.DownloadZip(ctx, test.m)
+			zipPath, err := fetcher.DownloadZip(ctx, test.m)
 			if err != nil {
 				if *updateTestData {
 					t.Logf("%s: could not download module: %s (will remove from testdata)", test.m, err)

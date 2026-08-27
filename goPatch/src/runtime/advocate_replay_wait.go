@@ -1,10 +1,9 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_replay_wait.go
 // Brief: Wait for replay
 //
 // Author: Erik Kassubek
-// Created: 2025-07-14
 //
 // License: BSD-3-Clause
 

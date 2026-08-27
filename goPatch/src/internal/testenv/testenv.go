@@ -34,8 +34,13 @@ import (
 // environment might cause environment checks to behave erratically.
 var origEnv = os.Environ()
 
-// Builder reports the name of the builder running this test
-// (for example, "linux-amd64" or "windows-386-gce").
+// Builder reports the name of the builder running this test. For example,
+// "gotip-linux-amd64_avx512-test_only" or "go1.24-windows-arm64" on LUCI,
+// or "linux-amd64" on our old infrastructure. Prefer using runtime.GOOS,
+// runtime.GOARCH, race.Enabled, reading the OS version, checking CPU
+// feature flags with internal/cpu, etc. over parsing builder names when
+// possible. When matching builder names, prefer a fuzzy match instead
+// of a strict comparison.
 // If the test is not running on the build infrastructure,
 // Builder returns the empty string.
 func Builder() string {
@@ -270,11 +275,27 @@ var goTool = sync.OnceValues(func() (string, error) {
 
 // MustHaveSource checks that the entire source tree is available under GOROOT.
 // If not, it calls t.Skip with an explanation.
+//
+// This is needed when reading files from GOROOT that are not in ./testdata.
 func MustHaveSource(t testing.TB) {
+	t.Helper()
 	switch runtime.GOOS {
 	case "ios":
-		t.Helper()
 		t.Skip("skipping test: no source tree on " + runtime.GOOS)
+	}
+	if Builder() != "" {
+		// The builders have the source tree available, and if they don't the
+		// tests should error out.
+		return
+	}
+	// If not running on the builders, the test binary might have been copied to
+	// a target machine where the source tree isn't available.
+	goroot, err := findGOROOT()
+	if err != nil {
+		t.Skipf("skipping test: cannot locate GOROOT: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(goroot, "src", "go.mod")); err != nil {
+		t.Skipf("skipping test: GOROOT/src not available: %v", err)
 	}
 }
 
@@ -484,7 +505,7 @@ func WriteImportcfg(t testing.TB, dstPath string, packageFiles map[string]string
 			t.Fatalf("%v: %v\n%s", cmd, err, cmd.Stderr)
 		}
 
-		for _, line := range strings.Split(string(out), "\n") {
+		for line := range strings.SplitSeq(string(out), "\n") {
 			if line == "" {
 				continue
 			}
@@ -540,4 +561,11 @@ func CPUProfilingBroken() bool {
 	}
 
 	return false
+}
+
+// SetGODEBUG appends v to the GODEBUG environment variable for the
+// duration of the test.
+func SetGODEBUG(t testing.TB, v string) {
+	t.Helper()
+	t.Setenv("GODEBUG", os.Getenv("GODEBUG")+","+v)
 }

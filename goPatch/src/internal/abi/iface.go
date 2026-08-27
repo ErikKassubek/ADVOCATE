@@ -4,7 +4,10 @@
 
 package abi
 
-import "unsafe"
+import (
+	"internal/goarch"
+	"unsafe"
+)
 
 // The first word of every non-empty interface type contains an *ITab.
 // It records the underlying concrete type (Type), the interface type it
@@ -18,6 +21,15 @@ type ITab struct {
 	Fun   [1]uintptr // variable sized. fun[0]==0 means Type does not implement Inter.
 }
 
+// Size returns the size of the itab in memory.
+func (it *ITab) Size() int {
+	size := int(unsafe.Sizeof(ITab{}))
+	if it.Fun[0] == 0 {
+		return size
+	}
+	return size + (len(it.Inter.Methods)-1)*goarch.PtrSize
+}
+
 // EmptyInterface describes the layout of a "interface{}" or a "any."
 // These are represented differently than non-empty interface, as the first
 // word always points to an abi.Type.
@@ -29,5 +41,13 @@ type EmptyInterface struct {
 // NonEmptyInterface describes the layout of an interface that contains any methods.
 type NonEmptyInterface struct {
 	ITab *ITab
+	Data unsafe.Pointer
+}
+
+// CommonInterface describes the layout of both [EmptyInterface] and [NonEmptyInterface].
+type CommonInterface struct {
+	// Either an *ITab or a *Type, unexported to avoid accidental use.
+	_ unsafe.Pointer
+
 	Data unsafe.Pointer
 }

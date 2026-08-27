@@ -147,6 +147,39 @@ func testTempDir(t *testing.T) {
 	}
 }
 
+func TestTempDirGOTMPDIR(t *testing.T) {
+	// The first call to t.TempDir will create a parent temporary directory
+	// that will contain all temporary directories created by TempDir.
+	//
+	// Use os.TempDir (not t.TempDir) to get a temporary directory,
+	// set GOTMPDIR to that directory,
+	// and then verify that t.TempDir creates a directory in GOTMPDIR.
+	customTmpDir := filepath.Join(os.TempDir(), "custom-gotmpdir-test")
+	if err := os.MkdirAll(customTmpDir, 0777); err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(customTmpDir)
+
+	t.Setenv("GOTMPDIR", customTmpDir)
+
+	dir := t.TempDir()
+	if dir == "" {
+		t.Fatal("expected dir")
+	}
+
+	if !strings.HasPrefix(dir, customTmpDir) {
+		t.Errorf("TempDir did not use GOTMPDIR: got %q, want prefix %q", dir, customTmpDir)
+	}
+
+	fi, err := os.Stat(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !fi.IsDir() {
+		t.Errorf("dir %q is not a dir", dir)
+	}
+}
+
 func TestSetenv(t *testing.T) {
 	tests := []struct {
 		name               string
@@ -436,7 +469,7 @@ func TestTesting(t *testing.T) {
 
 // runTest runs a helper test with -test.v, ignoring its exit status.
 // runTest both logs and returns the test output.
-func runTest(t *testing.T, test string) []byte {
+func runTest(t *testing.T, test string, args ...string) []byte {
 	t.Helper()
 
 	testenv.MustHaveExec(t)
@@ -444,6 +477,7 @@ func runTest(t *testing.T, test string) []byte {
 	cmd := testenv.Command(t, testenv.Executable(t), "-test.run=^"+test+"$", "-test.bench="+test, "-test.v", "-test.parallel=2", "-test.benchtime=2x")
 	cmd = testenv.CleanCmdEnv(cmd)
 	cmd.Env = append(cmd.Env, "GO_WANT_HELPER_PROCESS=1")
+	cmd.Args = append(cmd.Args, args...)
 	out, err := cmd.CombinedOutput()
 	t.Logf("%v: %v\n%s", cmd, err, out)
 
@@ -1022,6 +1056,200 @@ func TestAttrInvalid(t *testing.T) {
 	}
 }
 
+const artifactContent = "It belongs in a museum.\n"
+
+func TestArtifactDirExample(t *testing.T) {
+	os.WriteFile(filepath.Join(t.ArtifactDir(), "artifact"), []byte(artifactContent), 0o666)
+}
+
+func TestArtifactDirDefault(t *testing.T) {
+	tempDir := t.TempDir()
+	t.Chdir(tempDir)
+	out := runTest(t, "TestArtifactDirExample", "-test.artifacts")
+	checkArtifactDir(t, out, "TestArtifactDirExample", tempDir)
+}
+
+func TestArtifactDirSpecified(t *testing.T) {
+	tempDir := t.TempDir()
+	out := runTest(t, "TestArtifactDirExample", "-test.artifacts", "-test.outputdir="+tempDir)
+	checkArtifactDir(t, out, "TestArtifactDirExample", tempDir)
+}
+
+func TestArtifactDirNoArtifacts(t *testing.T) {
+	t.Chdir(t.TempDir())
+	out := string(runTest(t, "TestArtifactDirExample"))
+	if strings.Contains(out, "=== ARTIFACTS") {
+		t.Errorf("expected output with no === ARTIFACTS, got\n%q", out)
+	}
+	ents, err := os.ReadDir(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, e := range ents {
+		t.Errorf("unexpected file in current directory after test: %v", e.Name())
+	}
+}
+
+func TestArtifactDirSubtestExample(t *testing.T) {
+	t.Run("Subtest", func(t *testing.T) {
+		os.WriteFile(filepath.Join(t.ArtifactDir(), "artifact"), []byte(artifactContent), 0o666)
+	})
+}
+
+func TestArtifactDirInSubtest(t *testing.T) {
+	tempDir := t.TempDir()
+	out := runTest(t, "TestArtifactDirSubtestExample/Subtest", "-test.artifacts", "-test.outputdir="+tempDir)
+	checkArtifactDir(t, out, "TestArtifactDirSubtestExample/Subtest", tempDir)
+}
+
+func TestArtifactDirLongTestNameExample(t *testing.T) {
+	name := strings.Repeat("x", 256)
+	t.Run(name, func(t *testing.T) {
+		os.WriteFile(filepath.Join(t.ArtifactDir(), "artifact"), []byte(artifactContent), 0o666)
+	})
+}
+
+func TestArtifactDirWithLongTestName(t *testing.T) {
+	tempDir := t.TempDir()
+	out := runTest(t, "TestArtifactDirLongTestNameExample", "-test.artifacts", "-test.outputdir="+tempDir)
+	checkArtifactDir(t, out, `TestArtifactDirLongTestNameExample/\w+`, tempDir)
+}
+
+func TestArtifactDirConsistent(t *testing.T) {
+	a := t.ArtifactDir()
+	b := t.ArtifactDir()
+	if a != b {
+		t.Errorf("t.ArtifactDir is not consistent between calls: %q, %q", a, b)
+	}
+}
+
+func TestArtifactDirectoryPaths(t *testing.T) {
+	testenv.MustHaveExec(t)
+	t.Parallel()
+
+	tempDir := t.TempDir()
+
+	// 1. Setup the temporary module.
+	if err := os.WriteFile(filepath.Join(tempDir, "go.mod"), []byte("module example.com/testmod\n"), 0666); err != nil {
+		t.Fatal(err)
+	}
+
+	writeTmpl := func(pkgDir string, content string) {
+		fullDir := filepath.Join(tempDir, pkgDir)
+		if err := os.MkdirAll(fullDir, 0777); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(fullDir, "a_test.go"), []byte(content), 0666); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// Root package test
+	writeTmpl(".", `package root_test
+import "testing"
+func TestRootNiceName(t *testing.T) { t.ArtifactDir() }
+`)
+
+	// Subpackage test
+	writeTmpl("subpkg", `package subpkg_test
+import "testing"
+func TestSubNiceName(t *testing.T) { t.ArtifactDir() }
+`)
+
+	// Deep subpackage test with various scenarios
+	writeTmpl("deep/nested/pkg", `package pkg_test
+import "testing"
+func TestNiceName(t *testing.T) { t.ArtifactDir() }
+func TestParent(t *testing.T) {
+	t.Run("SubTest", func(t *testing.T) { t.ArtifactDir() })
+}
+func TestVeryLongNameThatExceedsSixtyFourCharactersAndThereforeMustBeTruncatedAndHashed(t *testing.T) { t.ArtifactDir() }
+func TestInvalid_Chars_In_Name(t *testing.T) { t.ArtifactDir() }
+`)
+	// We use "TestInvalid_Chars_In_Name" because go test framework parses functions by ^Test.
+	// But let's actually make it have invalid path chars:
+	writeTmpl("deep/nested/pkg2", `package pkg2_test
+import "testing"
+func TestInvalid_Chars_In_Name(t *testing.T) {
+	t.Run("SubTest:with*stars", func(t *testing.T) { t.ArtifactDir() })
+}
+`)
+
+	// 2. Run the tests.
+	cmd := testenv.Command(t, testenv.GoToolPath(t), "test", "-v", "-artifacts", "./...")
+	cmd.Dir = tempDir
+	cmd = testenv.CleanCmdEnv(cmd)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("%v failed: %v\n%s", cmd, err, out)
+	}
+
+	// 3. Parse and verify output.
+	tests := []struct {
+		name       string
+		wantPrefix string
+	}{
+		// Root package tests don't have a package prefix because modulePath == importPath
+		{"TestRootNiceName", "TestRootNiceName"},
+		{"TestSubNiceName", "subpkg/TestSubNiceName"},
+		{"TestNiceName", "deep/nested/pkg/TestNiceName"},
+		{"TestParent/SubTest", "deep/nested/pkg/TestParent__SubTest"},
+		{"TestVeryLongNameThatExceedsSixtyFourCharactersAndThereforeMustBeTruncatedAndHashed", `deep/nested/pkg/TestVeryLongNameThatExceedsSixtyFourCharactersAn[0-9a-f]+`},
+		{`TestInvalid_Chars_In_Name/SubTest:with\*stars`, `deep/nested/pkg2/TestInvalid_Chars_In_Name__SubTestwithstars`},
+	}
+
+	for _, tt := range tests {
+		re := regexp.MustCompile(`=== ARTIFACTS ` + tt.name + ` ([^\n]+)`)
+		match := re.FindSubmatch(out)
+		if match == nil {
+			t.Errorf("expected output matching %q, got\n%q", re, out)
+			continue
+		}
+		artifactDir := string(match[1])
+
+		slashDir := filepath.ToSlash(artifactDir)
+
+		wantSuffixPattern := `_artifacts/` + tt.wantPrefix + `/[^/]+$`
+		wantRegex := regexp.MustCompile(wantSuffixPattern)
+
+		if !wantRegex.MatchString(slashDir) {
+			t.Errorf("artifact directory for %s: got %s, want suffix matching %s", tt.name, slashDir, wantSuffixPattern)
+		}
+	}
+}
+
+func checkArtifactDir(t *testing.T, out []byte, testName, outputDir string) {
+	t.Helper()
+
+	re := regexp.MustCompile(`=== ARTIFACTS ` + testName + ` ([^\n]+)`)
+	match := re.FindSubmatch(out)
+	if match == nil {
+		t.Fatalf("expected output matching %q, got\n%q", re, out)
+	}
+	artifactDir := string(match[1])
+
+	// Verify that the artifact directory is contained in the expected output directory.
+	relDir, err := filepath.Rel(outputDir, artifactDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !filepath.IsLocal(relDir) {
+		t.Fatalf("want artifact directory contained in %q, got %q", outputDir, artifactDir)
+	}
+
+	for _, part := range strings.Split(relDir, string(os.PathSeparator)) {
+		const maxSize = 64
+		if len(part) > maxSize {
+			t.Errorf("artifact directory %q contains component >%v characters long: %q", relDir, maxSize, part)
+		}
+	}
+
+	got, err := os.ReadFile(filepath.Join(artifactDir, "artifact"))
+	if err != nil || string(got) != artifactContent {
+		t.Errorf("reading artifact in %q: got %q, %v; want %q", artifactDir, got, err, artifactContent)
+	}
+}
+
 func TestBenchmarkBLoopIterationCorrect(t *testing.T) {
 	out := runTest(t, "BenchmarkBLoopPrint")
 	c := bytes.Count(out, []byte("Printing from BenchmarkBLoopPrint"))
@@ -1076,4 +1304,8 @@ func BenchmarkBNPrint(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.Logf("Printing from BenchmarkBNPrint")
 	}
+}
+
+func TestArtifactDir(t *testing.T) {
+	t.Log(t.ArtifactDir())
 }

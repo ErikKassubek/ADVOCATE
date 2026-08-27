@@ -31,10 +31,10 @@ func CheckBin() error {
 }
 
 // CheckProg checks the version of the program to be analyzed and finds the exec name
-// Advocate is implemented in and for go1.25. It the analyzed program has another
+// Advocate is implemented in and for go1.27. It the analyzed program has another
 // version, especially if the other version is also installed on the machine,
 // this can lead to problems. checkGoMod therefore reads the version of the
-// analyzed program and if its not 1.25, a warning and information is printed
+// analyzed program and if its not 1.27, a warning and information is printed
 // to the terminal
 // Additionally it reads the module name from the go.mod file.
 // If -main is set, but -exec is not set it will try to set the
@@ -116,12 +116,12 @@ func CheckProg() string {
 				log.Importantf("Updated Go version in go.mod to %s", version)
 			}
 
-			if versionSplit[0] != "1" || versionSplit[1] != "25" {
-				errString := "ADVOCATE is implemented for go version 1.25. "
-				errString += fmt.Sprintf("Found version %s. ", version)
-				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])
-				errString += "The message 'package advocate is not in std' in the output.log file may indicate this.\t"
-				errString += "If this message appears it may help to remove the minor version number in the go.mod file of the analyzed program (e.g. in go 1.25.7 -> 1.25)"
+			if versionSplit[0] != "1" || versionSplit[1] != "27" {
+				errString := "ADVOCATE is implemented for go version 1.27.\n"
+				errString += fmt.Sprintf("Found version %s in go.mod.\n", version)
+				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer.\n", versionSplit[0], versionSplit[1])
+				errString += "The message 'package advocate is not in std' in the output.log file may indicate this.\n"
+				errString += "If this message appears it may help to remove the minor version number in the go.mod file of the analyzed program (e.g. in go 1.27.0 -> 1.27)\n"
 				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
 				log.Important(errString)
 			}

@@ -44,8 +44,8 @@ func CompareAndSwapUint64Advocate(addr *uint64, old, new uint64) (swapped bool)
 func AddInt64Advocate(addr *int64, delta int64) (new int64)
 
 // AddUint64 atomically adds delta to *addr and returns the new value.
-// To subtract a signed positive constant value c from x, do AddUint64(&x, ^uint64(c-1)).
-// In particular, to decrement x, do AddUint64(&x, ^uint64(0)).
+// To subtract a signed positive constant value c from x, do AddUint64Advocate(&x, ^uint64Advocate(c-1)).
+// In particular, to decrement x, do AddUint64Advocate(&x, ^uint64Advocate(0)).
 // Consider using the more ergonomic and less error-prone [Uint64.Add] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 //

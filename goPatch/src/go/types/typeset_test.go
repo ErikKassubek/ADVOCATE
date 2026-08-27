@@ -48,7 +48,7 @@ func TestTypeSetString(t *testing.T) {
 		// parse
 		src := "package p; type T interface" + body
 		fset := token.NewFileSet()
-		file, err := parser.ParseFile(fset, "p.go", src, parser.AllErrors)
+		file, err := parser.ParseFile(fset, "p.go", src, parser.AllErrors|parser.SkipObjectResolution)
 		if file == nil {
 			t.Fatalf("%s: %v (invalid test case)", body, err)
 		}
@@ -65,7 +65,7 @@ func TestTypeSetString(t *testing.T) {
 		if obj == nil {
 			t.Fatalf("%s: T not found (invalid test case)", body)
 		}
-		T, ok := under(obj.Type()).(*Interface)
+		T, ok := obj.Type().Underlying().(*Interface)
 		if !ok {
 			t.Fatalf("%s: %v is not an interface (invalid test case)", body, obj)
 		}

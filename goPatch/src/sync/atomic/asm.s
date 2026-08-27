@@ -4,9 +4,9 @@
 
 //go:build !race
 
-// ADVOCATE-START
-
 #include "textflag.h"
+
+// ADVOCATE-START
 
 TEXT ·SwapInt32Advocate(SB),NOSPLIT,$0
 	JMP	internal∕runtime∕atomic·Xchg(SB)

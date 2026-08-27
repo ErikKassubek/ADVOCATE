@@ -915,6 +915,8 @@ func vop(as obj.As) (opcode, es, cs uint32) {
 		return op_VSTEB, 0, 0
 	case AVSTM:
 		return op_VSTM, 0, 0
+	case AVSTRL:
+		return op_VSTRL, 0, 0
 	case AVSTL:
 		return op_VSTL, 0, 0
 	case AVSTRC:
@@ -1027,6 +1029,22 @@ func vop(as obj.As) (opcode, es, cs uint32) {
 		return op_VUPL, 1, 0
 	case AVUPLF:
 		return op_VUPL, 2, 0
+	case AVFMAXDB:
+		return op_VFMAX, 3, 0
+	case AWFMAXDB:
+		return op_VFMAX, 3, 0
+	case AVFMAXSB:
+		return op_VFMAX, 2, 0
+	case AWFMAXSB:
+		return op_VFMAX, 2, 0
+	case AVFMINDB:
+		return op_VFMIN, 3, 0
+	case AWFMINDB:
+		return op_VFMIN, 3, 0
+	case AVFMINSB:
+		return op_VFMIN, 2, 0
+	case AWFMINSB:
+		return op_VFMIN, 2, 0
 	}
 }
 
@@ -1062,7 +1080,11 @@ func singleElementMask(as obj.As) uint32 {
 		AWFSQDB,
 		AWFSDB,
 		AWFTCIDB,
-		AWFIDB:
+		AWFIDB,
+		AWFMAXDB,
+		AWFMAXSB,
+		AWFMINDB,
+		AWFMINSB:
 		return 8
 	}
 	return 0

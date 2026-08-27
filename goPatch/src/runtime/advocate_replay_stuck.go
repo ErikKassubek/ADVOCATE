@@ -1,10 +1,9 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_replay_stuck.go
 // Brief: Stuck replay
 //
 // Author: Erik Kassubek
-// Created: 2025-07-14
 //
 // License: BSD-3-Clause
 
@@ -18,8 +17,8 @@ var alreadyExecutedAsOldest = make(map[string]int)
 // Parameters:
 //   - checkStuckTime float64: find routines that have been waiting for at least this many seconds
 //   - checkStuckIterations int: iterations to check
-func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]WaitReason {
-	stuckRoutines := make(map[uint64]WaitReason)
+func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]waitReason {
+	stuckRoutines := make(map[uint64]waitReason)
 
 	lock(&AdvocateRoutinesLock)
 	for id, routine := range AdvocateRoutines {

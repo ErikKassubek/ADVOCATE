@@ -60,10 +60,14 @@ constraints imposed by other modules.
 
 The -go=version flag sets the expected Go language version.
 This flag is mainly for tools that understand Go version dependencies.
+It takes a version like "1.26" or "1.26.2".
+Using the version "none" removes the go directive.
 Users should prefer 'go get go@version'.
 
-The -toolchain=version flag sets the Go toolchain to use.
+The -toolchain=name flag sets the Go toolchain to use.
 This flag is mainly for tools that understand Go version dependencies.
+It takes a toolchain name like "go1.26" or "go1.26.2".
+Using the name "none" removes the toolchain directive.
 Users should prefer 'go get toolchain@version'.
 
 The -exclude=path@version and -dropexclude=path@version flags
@@ -104,11 +108,6 @@ writing it back to go.mod.
 The -json flag prints the final go.mod file in JSON format instead of
 writing it back to go.mod. The JSON output corresponds to these Go types:
 
-	type Module struct {
-		Path    string
-		Version string
-	}
-
 	type GoMod struct {
 		Module    ModPath
 		Go        string
@@ -118,6 +117,13 @@ writing it back to go.mod. The JSON output corresponds to these Go types:
 		Exclude   []Module
 		Replace   []Replace
 		Retract   []Retract
+		Tool      []Tool
+		Ignore    []Ignore
+	}
+
+	type Module struct {
+		Path    string
+		Version string
 	}
 
 	type ModPath struct {
@@ -164,7 +170,7 @@ use 'go list -m -json all'.
 
 Edit also provides the -C, -n, and -x build flags.
 
-See https://golang.org/ref/mod#go-mod-edit for more about 'go mod edit'.
+See https://go.dev/ref/mod#go-mod-edit for more about 'go mod edit'.
 	`,
 }
 
@@ -207,6 +213,7 @@ func init() {
 }
 
 func runEdit(ctx context.Context, cmd *base.Command, args []string) {
+	moduleLoader := modload.NewLoader()
 	anyFlags := *editModule != "" ||
 		*editGo != "" ||
 		*editToolchain != "" ||
@@ -230,11 +237,15 @@ func runEdit(ctx context.Context, cmd *base.Command, args []string) {
 	if len(args) == 1 {
 		gomod = args[0]
 	} else {
-		gomod = modload.ModFilePath()
+		gomod = moduleLoader.ModFilePath()
 	}
 
 	if *editModule != "" {
-		if err := module.CheckImportPath(*editModule); err != nil {
+		err := module.CheckImportPath(*editModule)
+		if err == nil {
+			err = modload.CheckReservedModulePath(*editModule)
+		}
+		if err != nil {
 			base.Fatalf("go: invalid -module: %v", err)
 		}
 	}
@@ -321,7 +332,10 @@ func runEdit(ctx context.Context, cmd *base.Command, args []string) {
 
 // parsePathVersion parses -flag=arg expecting arg to be path@version.
 func parsePathVersion(flag, arg string) (path, version string) {
-	before, after, found := strings.Cut(arg, "@")
+	before, after, found, err := modload.ParsePathVersion(arg)
+	if err != nil {
+		base.Fatalf("go: -%s=%s: %v", flag, arg, err)
+	}
 	if !found {
 		base.Fatalf("go: -%s=%s: need path@version", flag, arg)
 	}
@@ -355,7 +369,10 @@ func parsePathVersionOptional(adj, arg string, allowDirPath bool) (path, version
 	if allowDirPath && modfile.IsDirectoryPath(arg) {
 		return arg, "", nil
 	}
-	before, after, found := strings.Cut(arg, "@")
+	before, after, found, err := modload.ParsePathVersion(arg)
+	if err != nil {
+		return "", "", err
+	}
 	if !found {
 		path = arg
 	} else {
@@ -577,19 +594,25 @@ func flagDropIgnore(arg string) {
 // fileJSON is the -json output data structure.
 type fileJSON struct {
 	Module    editModuleJSON
-	Go        string `json:",omitempty"`
-	Toolchain string `json:",omitempty"`
-	Require   []requireJSON
-	Exclude   []module.Version
-	Replace   []replaceJSON
-	Retract   []retractJSON
-	Tool      []toolJSON
-	Ignore    []ignoreJSON
+	Go        string           `json:",omitempty"`
+	Toolchain string           `json:",omitempty"`
+	GoDebug   []debugJSON      `json:",omitempty"`
+	Require   []requireJSON    `json:",omitempty"`
+	Exclude   []module.Version `json:",omitempty"`
+	Replace   []replaceJSON    `json:",omitempty"`
+	Retract   []retractJSON    `json:",omitempty"`
+	Tool      []toolJSON       `json:",omitempty"`
+	Ignore    []ignoreJSON     `json:",omitempty"`
 }
 
 type editModuleJSON struct {
 	Path       string
 	Deprecated string `json:",omitempty"`
+}
+
+type debugJSON struct {
+	Key   string
+	Value string
 }
 
 type requireJSON struct {
@@ -649,6 +672,9 @@ func editPrintJSON(modFile *modfile.File) {
 	}
 	for _, i := range modFile.Ignore {
 		f.Ignore = append(f.Ignore, ignoreJSON{i.Path})
+	}
+	for _, d := range modFile.Godebug {
+		f.GoDebug = append(f.GoDebug, debugJSON{d.Key, d.Value})
 	}
 	data, err := json.MarshalIndent(&f, "", "\t")
 	if err != nil {

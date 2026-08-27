@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_exit.go
 // Brief: Functionality for the exit codes
 //
 // Author: Erik Kassubek
-// Created: 2025-03-18
 //
 // License: BSD-3-Clause
 

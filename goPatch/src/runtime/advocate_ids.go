@@ -1,10 +1,9 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_ids.go
 // Brief: Get required ids and timestamps
 //
 // Author: Erik Kassubek
-// Created: 2025-03-21
 //
 // License: BSD-3-Clause
 
@@ -35,18 +34,6 @@ func GetNewAdvocateRoutineID() uint64 {
 //   - next id
 func GetNextAdvocateRoutineID() uint64 {
 	return advocateCurrentRoutineID.Load() + 1
-}
-
-func NewIdIfReq(currentId uint64, memOld, memCurr uintptr) (uint64, uintptr) {
-	if currentId == 0 {
-		return GetAdvocateObjectID(), memCurr
-	}
-
-	if memOld == memCurr {
-		return currentId, memCurr
-	}
-
-	return GetAdvocateObjectID(), memCurr
 }
 
 // GetAdvocateObjectID returns a new id for an primitive

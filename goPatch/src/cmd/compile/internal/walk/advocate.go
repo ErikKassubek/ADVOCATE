@@ -1,12 +1,11 @@
 // ADVOCATE-FILE-START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate.go
 // Brief: Insert recording for mutex, cond var and wait group creation
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -219,6 +218,9 @@ func addAlloc(n ir.Node) ir.Node {
 
 	case isSyncType(t, "WaitGroup"):
 		runtimeName = "AdvocateAllocWG"
+
+	case isSyncType(t, "Once"):
+		runtimeName = "AdvocateAllocOnce"
 
 	default:
 		return nil
@@ -435,6 +437,10 @@ func instrumentParameterCopy(fn *ir.Func) {
 
 		case isSyncType(n.Type(), "WaitGroup"):
 			runtimeName = "AdvocateAllocWG"
+
+		case isSyncType(n.Type(), "Once"):
+			runtimeName = "AdvocateAllocOnce"
+
 		default:
 			continue
 		}
@@ -506,6 +512,7 @@ func isAdvocateCall(n ir.Node) bool {
 		(fmt.Sprint(name.Sym()) == "AdvocateAllocMutex" ||
 			fmt.Sprint(name.Sym()) == "AdvocateAllocCondVar" ||
 			fmt.Sprint(name.Sym()) == "AdvocateAllocWG" ||
+			fmt.Sprint(name.Sym()) == "AdvocateAllocOnce" ||
 			fmt.Sprint(name.Sym()) == "advocateTraceControllFlow")
 }
 

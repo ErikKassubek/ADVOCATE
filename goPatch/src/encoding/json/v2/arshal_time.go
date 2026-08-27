@@ -46,20 +46,26 @@ func makeTimeArshaler(fncs *arshaler, t reflect.Type) *arshaler {
 		fncs.marshal = func(enc *jsontext.Encoder, va addressableValue, mo *jsonopts.Struct) error {
 			xe := export.Encoder(enc)
 			var m durationArshaler
-			if mo.Format != "" && mo.FormatDepth == xe.Tokens.Depth() {
+			if mo.Flags.Has(jsonflags.FormatTag) {
 				if !m.initFormat(mo.Format) {
-					return newInvalidFormatError(enc, t, mo)
+					return newInvalidFormatError(enc, t)
 				}
 			} else if mo.Flags.Get(jsonflags.FormatDurationAsNano) {
 				return marshalNano(enc, va, mo)
 			} else {
 				// TODO(https://go.dev/issue/71631): Decide on default duration representation.
-				return newMarshalErrorBefore(enc, t, errors.New("no default representation (see https://go.dev/issue/71631); specify an explicit format"))
+				var workaround string
+				if mo.Flags.Get(jsonflags.FormatTagSupported) {
+					workaround = "; specify an explicit format"
+				}
+				return newMarshalErrorBefore(enc, t, errors.New("no default representation"+workaround))
+			}
+			if mo.Flags.Get(jsonflags.StringTag) && !m.isNumeric() && !mo.Flags.Get(jsonflags.ReportErrorsWithLegacySemantics) {
+				return newMarshalErrorBefore(enc, t, errInvalidStringTag)
 			}
 
-			// TODO(https://go.dev/issue/62121): Use reflect.Value.AssertTo.
-			m.td = *va.Addr().Interface().(*time.Duration)
-			k := stringOrNumberKind(!m.isNumeric() || xe.Tokens.Last.NeedObjectName() || mo.Flags.Get(jsonflags.StringifyNumbers))
+			m.td, _ = reflect.TypeAssert[time.Duration](va.Value)
+			k := stringOrNumberKind(!m.isNumeric() || xe.Tokens.Last.NeedObjectName() || mo.Flags.Get(jsonflags.StringifyNumbers|jsonflags.StringTag))
 			if err := xe.AppendRaw(k, true, m.appendMarshal); err != nil {
 				if !isSyntacticError(err) && !export.IsIOError(err) {
 					err = newMarshalErrorBefore(enc, t, err)
@@ -72,20 +78,27 @@ func makeTimeArshaler(fncs *arshaler, t reflect.Type) *arshaler {
 		fncs.unmarshal = func(dec *jsontext.Decoder, va addressableValue, uo *jsonopts.Struct) error {
 			xd := export.Decoder(dec)
 			var u durationArshaler
-			if uo.Format != "" && uo.FormatDepth == xd.Tokens.Depth() {
+			if uo.Flags.Has(jsonflags.FormatTag) {
 				if !u.initFormat(uo.Format) {
-					return newInvalidFormatError(dec, t, uo)
+					return newInvalidFormatError(dec, t)
 				}
 			} else if uo.Flags.Get(jsonflags.FormatDurationAsNano) {
 				return unmarshalNano(dec, va, uo)
 			} else {
 				// TODO(https://go.dev/issue/71631): Decide on default duration representation.
-				return newUnmarshalErrorBeforeWithSkipping(dec, uo, t, errors.New("no default representation (see https://go.dev/issue/71631); specify an explicit format"))
+				var workaround string
+				if uo.Flags.Get(jsonflags.FormatTagSupported) {
+					workaround = "; specify an explicit format"
+				}
+				return newUnmarshalErrorBeforeWithSkipping(dec, t, errors.New("no default representation"+workaround))
+			}
+			if uo.Flags.Get(jsonflags.StringTag) && !u.isNumeric() && !uo.Flags.Get(jsonflags.ReportErrorsWithLegacySemantics) {
+				return newUnmarshalErrorBeforeWithSkipping(dec, t, errInvalidStringTag)
 			}
 
-			stringify := !u.isNumeric() || xd.Tokens.Last.NeedObjectName() || uo.Flags.Get(jsonflags.StringifyNumbers)
+			stringify := !u.isNumeric() || xd.Tokens.Last.NeedObjectName() || uo.Flags.Get(jsonflags.StringifyNumbers|jsonflags.StringTag)
 			var flags jsonwire.ValueFlags
-			td := va.Addr().Interface().(*time.Duration)
+			td, _ := reflect.TypeAssert[*time.Duration](va.Addr())
 			val, err := xd.ReadValue(&flags)
 			if err != nil {
 				return err
@@ -123,15 +136,17 @@ func makeTimeArshaler(fncs *arshaler, t reflect.Type) *arshaler {
 		fncs.marshal = func(enc *jsontext.Encoder, va addressableValue, mo *jsonopts.Struct) (err error) {
 			xe := export.Encoder(enc)
 			var m timeArshaler
-			if mo.Format != "" && mo.FormatDepth == xe.Tokens.Depth() {
+			if mo.Flags.Has(jsonflags.FormatTag) {
 				if !m.initFormat(mo.Format) {
-					return newInvalidFormatError(enc, t, mo)
+					return newInvalidFormatError(enc, t)
 				}
 			}
+			if mo.Flags.Get(jsonflags.StringTag) && !m.isNumeric() && !mo.Flags.Get(jsonflags.ReportErrorsWithLegacySemantics) {
+				return newMarshalErrorBefore(enc, t, errInvalidStringTag)
+			}
 
-			// TODO(https://go.dev/issue/62121): Use reflect.Value.AssertTo.
-			m.tt = *va.Addr().Interface().(*time.Time)
-			k := stringOrNumberKind(!m.isNumeric() || xe.Tokens.Last.NeedObjectName() || mo.Flags.Get(jsonflags.StringifyNumbers))
+			m.tt, _ = reflect.TypeAssert[time.Time](va.Value)
+			k := stringOrNumberKind(!m.isNumeric() || xe.Tokens.Last.NeedObjectName() || mo.Flags.Get(jsonflags.StringifyNumbers|jsonflags.StringTag))
 			if err := xe.AppendRaw(k, !m.hasCustomFormat(), m.appendMarshal); err != nil {
 				if mo.Flags.Get(jsonflags.ReportErrorsWithLegacySemantics) {
 					return internal.NewMarshalerError(va.Addr().Interface(), err, "MarshalJSON") // unlike unmarshal, always wrapped
@@ -146,17 +161,20 @@ func makeTimeArshaler(fncs *arshaler, t reflect.Type) *arshaler {
 		fncs.unmarshal = func(dec *jsontext.Decoder, va addressableValue, uo *jsonopts.Struct) (err error) {
 			xd := export.Decoder(dec)
 			var u timeArshaler
-			if uo.Format != "" && uo.FormatDepth == xd.Tokens.Depth() {
+			if uo.Flags.Has(jsonflags.FormatTag) {
 				if !u.initFormat(uo.Format) {
-					return newInvalidFormatError(dec, t, uo)
+					return newInvalidFormatError(dec, t)
 				}
 			} else if uo.Flags.Get(jsonflags.ParseTimeWithLooseRFC3339) {
 				u.looseRFC3339 = true
 			}
+			if uo.Flags.Get(jsonflags.StringTag) && !u.isNumeric() && !uo.Flags.Get(jsonflags.ReportErrorsWithLegacySemantics) {
+				return newUnmarshalErrorBeforeWithSkipping(dec, t, errInvalidStringTag)
+			}
 
-			stringify := !u.isNumeric() || xd.Tokens.Last.NeedObjectName() || uo.Flags.Get(jsonflags.StringifyNumbers)
+			stringify := !u.isNumeric() || xd.Tokens.Last.NeedObjectName() || uo.Flags.Get(jsonflags.StringifyNumbers|jsonflags.StringTag)
 			var flags jsonwire.ValueFlags
-			tt := va.Addr().Interface().(*time.Time)
+			tt, _ := reflect.TypeAssert[*time.Time](va.Addr())
 			val, err := xd.ReadValue(&flags)
 			if err != nil {
 				return err
@@ -467,7 +485,7 @@ func appendDurationISO8601(b []byte, d time.Duration) []byte {
 }
 
 // daysPerYear is the exact average number of days in a year according to
-// the Gregorian calender, which has an extra day each year that is
+// the Gregorian calendar, which has an extra day each year that is
 // a multiple of 4, unless it is evenly divisible by 100 but not by 400.
 // This does not take into account leap seconds, which are not deterministic.
 const daysPerYear = 365.2425
@@ -496,7 +514,7 @@ var errInaccurateDateUnits = errors.New("inaccurate year, month, week, or day un
 //     between the integer part and fraction part of a number,
 //     as specified in ISO 8601-1:2019, section 3.2.6.
 //     While ISO 8601 recommends comma as the default separator,
-//     most formatters uses a period.
+//     most formatters use a period.
 //
 //   - Leading zeros are ignored. This is not required by ISO 8601,
 //     but also not forbidden by the standard. Many parsers support this.
@@ -514,7 +532,7 @@ var errInaccurateDateUnits = errors.New("inaccurate year, month, week, or day un
 // We follow JavaScript's grammar as JSON itself is derived from JavaScript.
 // The Temporal.Duration.toJSON method is guaranteed to produce an output
 // that can be parsed by this function so long as arithmetic in JavaScript
-// do not use a largestUnit value higher than "hours" (which is the default).
+// does not use a largestUnit value higher than "hours" (which is the default).
 // Even if it does, this will do a best-effort parsing with inaccurate units,
 // but report [errInaccurateDateUnits].
 func parseDurationISO8601(b []byte) (time.Duration, error) {
@@ -541,7 +559,7 @@ func parseDurationISO8601(b []byte) (time.Duration, error) {
 		}
 
 		// Parse the number.
-		// A fraction allowed for the accurate units in the last part.
+		// A fraction is allowed for the accurate units in the last part.
 		whole, frac, ok := cutBytes(number, '.', ',')
 		if ok {
 			sawFrac = true

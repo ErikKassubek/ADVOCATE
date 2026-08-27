@@ -47,30 +47,6 @@ func _cgo_panic(a *struct{ cstr *byte }) {
 	_runtime_cgo_panic_internal(a.cstr)
 }
 
-//go:cgo_import_static x_cgo_init
-//go:linkname x_cgo_init x_cgo_init
-//go:linkname _cgo_init _cgo_init
-var x_cgo_init byte
-var _cgo_init = &x_cgo_init
-
-//go:cgo_import_static x_cgo_thread_start
-//go:linkname x_cgo_thread_start x_cgo_thread_start
-//go:linkname _cgo_thread_start _cgo_thread_start
-var x_cgo_thread_start byte
-var _cgo_thread_start = &x_cgo_thread_start
-
-// Creates a new system thread without updating any Go state.
-//
-// This method is invoked during shared library loading to create a new OS
-// thread to perform the runtime initialization. This method is similar to
-// _cgo_sys_thread_start except that it doesn't update any Go state.
-
-//go:cgo_import_static x_cgo_sys_thread_create
-//go:linkname x_cgo_sys_thread_create x_cgo_sys_thread_create
-//go:linkname _cgo_sys_thread_create _cgo_sys_thread_create
-var x_cgo_sys_thread_create byte
-var _cgo_sys_thread_create = &x_cgo_sys_thread_create
-
 // Indicates whether a dummy thread key has been created or not.
 //
 // When calling go exported function from C, we register a destructor
@@ -98,15 +74,6 @@ func set_crosscall2()
 //go:linkname _set_crosscall2 runtime.set_crosscall2
 var _set_crosscall2 = set_crosscall2
 
-// Store the g into the thread-specific value.
-// So that pthread_key_destructor will dropm when the thread is exiting.
-
-//go:cgo_import_static x_cgo_bindm
-//go:linkname x_cgo_bindm x_cgo_bindm
-//go:linkname _cgo_bindm _cgo_bindm
-var x_cgo_bindm byte
-var _cgo_bindm = &x_cgo_bindm
-
 // Notifies that the runtime has been initialized.
 //
 // We currently block at every CGO entry point (via _cgo_wait_runtime_init_done)
@@ -121,13 +88,30 @@ var _cgo_bindm = &x_cgo_bindm
 var x_cgo_notify_runtime_init_done byte
 var _cgo_notify_runtime_init_done = &x_cgo_notify_runtime_init_done
 
-// Sets the traceback context function. See runtime.SetCgoTraceback.
+// Sets the traceback, context, and symbolizer functions. See
+// runtime.SetCgoTraceback.
 
-//go:cgo_import_static x_cgo_set_context_function
-//go:linkname x_cgo_set_context_function x_cgo_set_context_function
-//go:linkname _cgo_set_context_function _cgo_set_context_function
-var x_cgo_set_context_function byte
-var _cgo_set_context_function = &x_cgo_set_context_function
+//go:cgo_import_static x_cgo_set_traceback_functions
+//go:linkname x_cgo_set_traceback_functions x_cgo_set_traceback_functions
+//go:linkname _cgo_set_traceback_functions _cgo_set_traceback_functions
+var x_cgo_set_traceback_functions byte
+var _cgo_set_traceback_functions = &x_cgo_set_traceback_functions
+
+// Call the traceback function registered with x_cgo_set_traceback_functions.
+
+//go:cgo_import_static x_cgo_call_traceback_function
+//go:linkname x_cgo_call_traceback_function x_cgo_call_traceback_function
+//go:linkname _cgo_call_traceback_function _cgo_call_traceback_function
+var x_cgo_call_traceback_function byte
+var _cgo_call_traceback_function = &x_cgo_call_traceback_function
+
+// Call the symbolizer function registered with x_cgo_set_symbolizer_functions.
+
+//go:cgo_import_static x_cgo_call_symbolizer_function
+//go:linkname x_cgo_call_symbolizer_function x_cgo_call_symbolizer_function
+//go:linkname _cgo_call_symbolizer_function _cgo_call_symbolizer_function
+var x_cgo_call_symbolizer_function byte
+var _cgo_call_symbolizer_function = &x_cgo_call_symbolizer_function
 
 // Calls a libc function to execute background work injected via libc
 // interceptors, such as processing pending signals under the thread
@@ -141,12 +125,3 @@ var _cgo_yield unsafe.Pointer
 
 //go:cgo_export_static _cgo_topofstack
 //go:cgo_export_dynamic _cgo_topofstack
-
-// x_cgo_getstackbound gets the thread's C stack size and
-// set the G's stack bound based on the stack size.
-
-//go:cgo_import_static x_cgo_getstackbound
-//go:linkname x_cgo_getstackbound x_cgo_getstackbound
-//go:linkname _cgo_getstackbound _cgo_getstackbound
-var x_cgo_getstackbound byte
-var _cgo_getstackbound = &x_cgo_getstackbound

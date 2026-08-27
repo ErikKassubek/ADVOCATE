@@ -1,27 +1,26 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_partial_deadlock.go
 // Brief: Detect partial deadlocks while running
 //
 // Author: Erik Kassubek
-// Created: 2025-08-01
 //
 // License: BSD-3-Clause
 
 package runtime
 
-var blockedConcurrencyReasons = []WaitReason{
-	WaitReasonChanReceiveNilChan,
-	WaitReasonChanSendNilChan,
-	WaitReasonSelect,
-	WaitReasonSelectNoCases,
-	WaitReasonChanReceive,
-	WaitReasonChanSend,
-	WaitReasonSyncCondWait,
-	WaitReasonSyncMutexLock,
-	WaitReasonSyncRWMutexRLock,
-	WaitReasonSyncRWMutexLock,
-	WaitReasonSyncWaitGroupWait,
+var blockedConcurrencyReasons = []waitReason{
+	waitReasonChanReceiveNilChan,
+	waitReasonChanSendNilChan,
+	waitReasonSelect,
+	waitReasonSelectNoCases,
+	waitReasonChanReceive,
+	waitReasonChanSend,
+	waitReasonSyncCondWait,
+	waitReasonSyncMutexLock,
+	waitReasonSyncRWMutexRLock,
+	waitReasonSyncRWMutexLock,
+	waitReasonSyncWaitGroupWait,
 }
 
 type AdvocateG struct {
@@ -66,29 +65,29 @@ func ForEachAdvocateG(fn func(adGp *AdvocateG)) {
 //
 // Returns:
 //   - string: the string representation of wr
-func GetWaitingReasonString(wr WaitReason) string {
+func GetWaitingReasonString(wr waitReason) string {
 	switch wr {
-	case WaitReasonChanReceiveNilChan:
+	case waitReasonChanReceiveNilChan:
 		return "chan:recvOnNil"
-	case WaitReasonChanSendNilChan:
+	case waitReasonChanSendNilChan:
 		return "chan:sendOnNil"
-	case WaitReasonSelect:
+	case waitReasonSelect:
 		return "select:select"
-	case WaitReasonSelectNoCases:
+	case waitReasonSelectNoCases:
 		return "select:withoutCases"
-	case WaitReasonChanReceive:
+	case waitReasonChanReceive:
 		return "chan:revc"
-	case WaitReasonChanSend:
+	case waitReasonChanSend:
 		return "chan:send"
-	case WaitReasonSyncCondWait:
+	case waitReasonSyncCondWait:
 		return "cond:wait"
-	case WaitReasonSyncMutexLock:
+	case waitReasonSyncMutexLock:
 		return "mutex:lock"
-	case WaitReasonSyncRWMutexRLock:
+	case waitReasonSyncRWMutexRLock:
 		return "rwmutex:rlock"
-	case WaitReasonSyncRWMutexLock:
+	case waitReasonSyncRWMutexLock:
 		return "rwmutex:lock"
-	case WaitReasonSyncWaitGroupWait:
+	case waitReasonSyncWaitGroupWait:
 		return "waitGroup:wait"
 	}
 	return "unknown:unknown"

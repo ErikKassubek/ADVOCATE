@@ -202,7 +202,7 @@ type EncodeHeadersParam struct {
 	DefaultUserAgent string
 }
 
-// EncodeHeadersParam is the result of EncodeHeaders.
+// EncodeHeadersResult is the result of EncodeHeaders.
 type EncodeHeadersResult struct {
 	HasBody     bool
 	HasTrailers bool
@@ -550,7 +550,7 @@ type ServerRequestResult struct {
 
 	// If the request should be rejected, this is a short string suitable for passing
 	// to the http2 package's CountError function.
-	// It might be a bit odd to return errors this way rather than returing an error,
+	// It might be a bit odd to return errors this way rather than returning an error,
 	// but this ensures we don't forget to include a CountError reason.
 	InvalidReason string
 }
@@ -599,6 +599,14 @@ func NewServerRequest(rp ServerRequestParam) ServerRequestResult {
 		url_ = &url.URL{Host: rp.Authority}
 		requestURI = rp.Authority // mimic HTTP/1 server behavior
 	} else {
+		// "[The :path] pseudo-header field MUST NOT be empty [...]"
+		// https://www.rfc-editor.org/rfc/rfc9113.html#section-8.3.1-2.4.2
+		if rp.Path == "" || (rp.Path[0] != '/' && rp.Path != "*") {
+			return ServerRequestResult{
+				InvalidReason: "bad_path",
+			}
+		}
+
 		var err error
 		url_, err = url.ParseRequestURI(rp.Path)
 		if err != nil {

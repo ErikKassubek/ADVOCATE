@@ -22,9 +22,11 @@ package asn1
 import (
 	"errors"
 	"fmt"
+	"internal/saferio"
 	"math"
 	"math/big"
 	"reflect"
+	"runtime"
 	"slices"
 	"strconv"
 	"strings"
@@ -628,7 +630,7 @@ func parseTagAndLength(bytes []byte, initOffset int) (ret tagAndLength, offset i
 // parseSequenceOf is used for SEQUENCE OF and SET OF values. It tries to parse
 // a number of ASN.1 values from the given byte slice and returns them as a
 // slice of Go values of the given type.
-func parseSequenceOf(bytes []byte, sliceType reflect.Type, elemType reflect.Type) (ret reflect.Value, err error) {
+func parseSequenceOf(bytes []byte, sliceType reflect.Type, elemType reflect.Type, depth int) (ret reflect.Value, err error) {
 	matchAny, expectedTag, compoundType, ok := getUniversalType(elemType)
 	if !ok {
 		err = StructuralError{"unknown Go type for slice"}
@@ -666,11 +668,18 @@ func parseSequenceOf(bytes []byte, sliceType reflect.Type, elemType reflect.Type
 		offset += t.length
 		numElements++
 	}
-	ret = reflect.MakeSlice(sliceType, numElements, numElements)
+	elemSize := uint64(elemType.Size())
+	safeCap := saferio.SliceCapWithSize(elemSize, uint64(numElements))
+	if safeCap < 0 {
+		err = SyntaxError{fmt.Sprintf("%s slice too big: %d elements of %d bytes", elemType.Kind(), numElements, elemSize)}
+		return
+	}
+	ret = reflect.MakeSlice(sliceType, 0, safeCap)
 	params := fieldParameters{}
 	offset := 0
 	for i := 0; i < numElements; i++ {
-		offset, err = parseField(ret.Index(i), bytes, offset, params)
+		ret = reflect.Append(ret, reflect.Zero(elemType))
+		offset, err = parseField(ret.Index(i), bytes, offset, params, depth)
 		if err != nil {
 			return
 		}
@@ -698,7 +707,15 @@ func invalidLength(offset, length, sliceLength int) bool {
 // parseField is the main parsing function. Given a byte slice and an offset
 // into the array, it will try to parse a suitable ASN.1 value out and store it
 // in the given Value.
-func parseField(v reflect.Value, bytes []byte, initOffset int, params fieldParameters) (offset int, err error) {
+func parseField(v reflect.Value, bytes []byte, initOffset int, params fieldParameters, depth int) (offset int, err error) {
+	depth++
+	const (
+		maxDecodeDepth     = 10000
+		maxDecodeDepthWasm = 5000 // go.dev/issue/56498
+	)
+	if depth > maxDecodeDepth || runtime.GOARCH == "wasm" && depth > maxDecodeDepthWasm {
+		return initOffset, StructuralError{"nesting depth exceeded"}
+	}
 	offset = initOffset
 	fieldType := v.Type()
 
@@ -969,7 +986,7 @@ func parseField(v reflect.Value, bytes []byte, initOffset int, params fieldParam
 			if i == 0 && field.Type == rawContentsType {
 				continue
 			}
-			innerOffset, err = parseField(val.Field(i), innerBytes, innerOffset, parseFieldParameters(field.Tag.Get("asn1")))
+			innerOffset, err = parseField(val.Field(i), innerBytes, innerOffset, parseFieldParameters(field.Tag.Get("asn1")), depth)
 			if err != nil {
 				return
 			}
@@ -985,7 +1002,7 @@ func parseField(v reflect.Value, bytes []byte, initOffset int, params fieldParam
 			reflect.Copy(val, reflect.ValueOf(innerBytes))
 			return
 		}
-		newSlice, err1 := parseSequenceOf(innerBytes, sliceType, sliceType.Elem())
+		newSlice, err1 := parseSequenceOf(innerBytes, sliceType, sliceType.Elem(), depth)
 		if err1 == nil {
 			val.Set(newSlice)
 		}
@@ -1157,7 +1174,7 @@ func UnmarshalWithParams(b []byte, val any, params string) (rest []byte, err err
 	if v.Kind() != reflect.Pointer || v.IsNil() {
 		return nil, &invalidUnmarshalError{reflect.TypeOf(val)}
 	}
-	offset, err := parseField(v.Elem(), b, 0, parseFieldParameters(params))
+	offset, err := parseField(v.Elem(), b, 0, parseFieldParameters(params), 0)
 	if err != nil {
 		return nil, err
 	}

@@ -203,12 +203,19 @@ func noEscapePtr[T any](p *T) *T {
 // Not all cgocallback frames are actually cgocallback,
 // so not all have these arguments. Mark them uintptr so that the GC
 // does not misinterpret memory when the arguments are not present.
-// cgocallback is not called from Go, only from crosscall2.
+// cgocallback is not called from Go, only from crosscall2 in runtime/cgo.
 // This in turn calls cgocallbackg, which is where we'll find
 // pointer-declared arguments.
 //
 // When fn is nil (frame is saved g), call dropm instead,
 // this is used when the C thread is exiting.
+//
+// cgocallback should be an internal detail,
+// but widely used packages access it using linkname.
+// Notable members of the hall of shame include:
+//   - github.com/ebitengine/purego
+//
+//go:linkname cgocallback
 func cgocallback(fn, frame, ctxt uintptr)
 
 func gogo(buf *gobuf)
@@ -260,6 +267,7 @@ func breakpoint()
 // only in a very limited callee of reflectcall, the stackArgs are copied, and
 // regArgs is only used in the reflectcall frame.
 //
+//go:linknamestd reflectcall
 //go:noescape
 func reflectcall(stackArgsType *_type, fn, stackArgs unsafe.Pointer, stackArgsSize, stackRetOffset, frameSize uint32, regArgs *abi.RegArgs)
 
@@ -274,7 +282,16 @@ func reflectcall(stackArgsType *_type, fn, stackArgs unsafe.Pointer, stackArgsSi
 // See go.dev/issue/67401.
 //
 //go:linkname procyield
-func procyield(cycles uint32)
+//go:nosplit
+func procyield(cycles uint32) {
+	if cycles == 0 {
+		return
+	}
+	procyieldAsm(cycles)
+}
+
+// procyieldAsm is the assembly implementation of procyield.
+func procyieldAsm(cycles uint32)
 
 type neverCallThisFunction struct{}
 
@@ -325,6 +342,7 @@ func morestack()
 func morestack_noctxt()
 
 func rt0_go()
+func rt0_lib_go()
 
 // in asm_*.s
 // not called directly; definitions here supply type information for traceback.
@@ -382,9 +400,6 @@ func divRoundUp(n, a uintptr) uintptr {
 	return (n + a - 1) / a
 }
 
-// checkASM reports whether assembly runtime checks have passed.
-func checkASM() bool
-
 func memequal_varlen(a, b unsafe.Pointer) bool
 
 // bool2int returns 0 if x is false or 1 if x is true.
@@ -399,6 +414,10 @@ func bool2int(x bool) int {
 // (e.g., an INT3 on x86). A crash in abort is recognized by the
 // signal handler, which will attempt to tear down the runtime
 // immediately.
+//
+// Also called from runtime test.
+//
+//go:linkname abort
 func abort()
 
 // Called from compiled code; declared for vet; do NOT call from Go.

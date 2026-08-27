@@ -102,6 +102,10 @@ NONE
 < itab
 < reflectOffs;
 
+# Typelinks
+NONE
+< typelinks;
+
 # Synctest
 hchan,
   notifyList,
@@ -138,6 +142,7 @@ allg,
   reflectOffs,
   timer,
   traceStrings,
+  typelinks,
   userArenaState,
   vgetrandom
 # Above MALLOC are things that can allocate memory.
@@ -193,6 +198,12 @@ defer,
 # Below WB is the write barrier implementation.
 < wbufSpans;
 
+# xRegState allocator
+sched < xRegAlloc;
+
+# spanSPMCs allocator and list
+WB, sched < spanSPMCs;
+
 # Span allocator
 stackLarge,
   stackpool,
@@ -205,7 +216,8 @@ stackLarge,
 # an mspanSpecial lock, and they're part of the malloc implementation.
 # Pinner bits might be freed by the span allocator.
 mheap, mspanSpecial < mheapSpecial;
-mheap, mheapSpecial < globalAlloc;
+# Fixallocs
+mheap, mheapSpecial, xRegAlloc, spanSPMCs < globalAlloc;
 
 # Execution tracer events (with a P)
 hchan,
@@ -313,7 +325,7 @@ func generateGo(w io.Writer, g *dag.Graph) {
 
 package runtime
 
-type lockRank int
+type lockRank int64
 
 `)
 

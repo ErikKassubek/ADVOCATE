@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_time.go
 // Brief: Get the timer
 //
 // Author: Erik Kassubek
-// Created: 2024-12-04
 //
 // License: BSD-3-Clause
 

@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace.go
 // Brief: Functionality for the trace
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -34,7 +33,8 @@ const (
 	OperationRWMutexRUnlock  Operation = "rwmutexrunlock"
 	OperationRWMutexTryRLock Operation = "rwmutexTryrlock"
 
-	OperationOnceDo Operation = "onceDo"
+	OperationOnceDo    Operation = "onceDo"
+	OperationAllocOnce Operation = "allocOnce"
 
 	OperationWaitgroupAddDone Operation = "wgAdddone"
 	OperationWaitgroupWait    Operation = "wgWait"
@@ -116,6 +116,8 @@ func getOperationObjectString(op Operation) string {
 		return "Replay"
 	case OperationControllIf, OperationControllSwitch:
 		return "Controll"
+	case OperationAllocChan, OperationAllocMutex, OperationAllocCond, OperationAllocOnce, OperationAllocWg:
+		return "Alloc"
 	}
 	return "Unknown"
 }
@@ -357,5 +359,3 @@ func AdvocateWriteTraceToFile() {
 
 	RemoveActive(g.id)
 }
-
-// ADVOCATE-FILE-END

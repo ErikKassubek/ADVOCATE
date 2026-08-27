@@ -19,9 +19,6 @@ func RangeExprType(t *types.Type) *types.Type {
 	return t
 }
 
-func typecheckrangeExpr(n *ir.RangeStmt) {
-}
-
 // type check assignment.
 // if this assignment is the definition of a var on the left side,
 // fill in the var's type.
@@ -227,7 +224,7 @@ func normalizeGoDeferCall(pos src.XPos, op ir.Op, call ir.Node, init *ir.Nodes) 
 	}
 
 	// Create a new wrapper function without parameters or results.
-	wrapperFn := ir.NewClosureFunc(pos, pos, op, types.NewSignature(nil, nil, nil), ir.CurFunc, Target)
+	wrapperFn := ir.NewClosureFunc(pos, pos, op, types.NewSignature(nil, nil, nil), ir.CurFunc, Target, 0)
 	wrapperFn.DeclareParams(true)
 	wrapperFn.SetWrapper(true)
 
@@ -319,7 +316,7 @@ func normalizeGoDeferCall(pos src.XPos, op ir.Op, call ir.Node, init *ir.Nodes) 
 		argps = append(argps, &call.Fun.(*ir.SelectorExpr).X) // must be first for OCHECKNIL; see below
 		visitList(call.Args)
 
-	case ir.OAPPEND, ir.ODELETE, ir.OPRINT, ir.OPRINTLN, ir.ORECOVERFP:
+	case ir.OAPPEND, ir.ODELETE, ir.OPRINT, ir.OPRINTLN, ir.ORECOVER:
 		call := call.(*ir.CallExpr)
 		visitList(call.Args)
 		visit(&call.RType)

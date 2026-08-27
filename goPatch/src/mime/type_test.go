@@ -102,6 +102,34 @@ func TestTypeByExtensionCase(t *testing.T) {
 	}
 }
 
+// Regression: setExtensionType must pass the parsed type (justType) to FormatMediaType
+// when defaulting charset for text/*. Passing the full MIME string breaks formatting
+// when the string already contains parameters (e.g. "text/foo; bar=baz"), and
+// FormatMediaType returns "".
+func TestAddExtensionType_TextMIMEWithParamsDefaultCharset(t *testing.T) {
+	cleanup := setMimeInit(func() {
+		clearMimeTypes()
+	})
+	defer cleanup()
+
+	const ext = ".regtxt"
+	const in = "text/x-reg; myparam=myvalue" // text/*, extra param, no charset
+	if err := AddExtensionType(ext, in); err != nil {
+		t.Fatal(err)
+	}
+	got := TypeByExtension(ext)
+	if got == "" {
+		t.Fatal("TypeByExtension: got empty string; want non-empty formatted text/* with default charset")
+	}
+	const wantSubstr = "charset=utf-8"
+	if !strings.Contains(got, wantSubstr) {
+		t.Fatalf("TypeByExtension(%q) = %q; want substring %q", ext, got, wantSubstr)
+	}
+	if !strings.HasPrefix(got, "text/x-reg") {
+		t.Fatalf("TypeByExtension(%q) = %q; want prefix text/x-reg", ext, got)
+	}
+}
+
 func TestExtensionsByType(t *testing.T) {
 	cleanup := setMimeInit(func() {
 		clearMimeTypes()
@@ -208,7 +236,52 @@ func TestExtensionsByType2(t *testing.T) {
 		typ  string
 		want []string
 	}{
-		{typ: "image/jpeg", want: []string{".jpeg", ".jpg"}},
+		{typ: "application/postscript", want: []string{".ai", ".eps", ".ps"}},
+		{typ: "application/vnd.android.package-archive", want: []string{".apk"}},
+		{typ: "image/apng", want: []string{".apng"}},
+		{typ: "image/avif", want: []string{".avif"}},
+		{typ: "application/octet-stream", want: []string{".bin", ".com", ".exe"}},
+		{typ: "image/bmp", want: []string{".bmp"}},
+		{typ: "text/css; charset=utf-8", want: []string{".css"}},
+		{typ: "text/csv; charset=utf-8", want: []string{".csv"}},
+		{typ: "application/msword", want: []string{".doc"}},
+		{typ: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", want: []string{".docx"}},
+		{typ: "text/html; charset=utf-8", want: []string{".ehtml", ".htm", ".html", ".shtml"}},
+		{typ: "message/rfc822", want: []string{".eml"}},
+		{typ: "audio/flac", want: []string{".flac"}},
+		{typ: "image/gif", want: []string{".gif"}},
+		{typ: "application/gzip", want: []string{".gz"}},
+		{typ: "image/vnd.microsoft.icon", want: []string{".ico"}},
+		{typ: "text/calendar; charset=utf-8", want: []string{".ics"}},
+		{typ: "image/jpeg", want: []string{".jfif", ".jpeg", ".jpg", ".pjp", ".pjpeg"}},
+		{typ: "text/javascript; charset=utf-8", want: []string{".js", ".mjs"}},
+		{typ: "application/json", want: []string{".json"}},
+		{typ: "audio/mp4", want: []string{".m4a"}},
+		{typ: "audio/mpeg", want: []string{".mp3"}},
+		{typ: "video/mp4", want: []string{".mp4"}},
+		{typ: "audio/ogg", want: []string{".oga", ".ogg", ".opus"}},
+		{typ: "video/ogg", want: []string{".ogv"}},
+		{typ: "application/pdf", want: []string{".pdf"}},
+		{typ: "image/png", want: []string{".png"}},
+		{typ: "application/vnd.ms-powerpoint", want: []string{".ppt"}},
+		{typ: "application/vnd.openxmlformats-officedocument.presentationml.presentation", want: []string{".pptx"}},
+		{typ: "application/rdf+xml", want: []string{".rdf"}},
+		{typ: "application/rtf", want: []string{".rtf"}},
+		{typ: "image/svg+xml", want: []string{".svg"}},
+		{typ: "text/plain; charset=utf-8", want: []string{".text", ".txt"}},
+		{typ: "image/tiff", want: []string{".tif", ".tiff"}},
+		{typ: "text/vtt; charset=utf-8", want: []string{".vtt"}},
+		{typ: "application/wasm", want: []string{".wasm"}},
+		{typ: "audio/wav", want: []string{".wav"}},
+		{typ: "audio/webm", want: []string{".weba"}},
+		{typ: "video/webm", want: []string{".webm"}},
+		{typ: "image/webp", want: []string{".webp"}},
+		{typ: "text/xml; charset=utf-8", want: []string{".xbl", ".xml", ".xsl"}},
+		{typ: "image/x-xbitmap", want: []string{".xbm"}},
+		{typ: "application/xhtml+xml", want: []string{".xht", ".xhtml"}},
+		{typ: "application/vnd.ms-excel", want: []string{".xls"}},
+		{typ: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", want: []string{".xlsx"}},
+		{typ: "application/zip", want: []string{".zip"}},
 	}
 
 	for _, tt := range tests {

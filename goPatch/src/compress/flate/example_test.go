@@ -144,14 +144,14 @@ func Example_dictionary() {
 	// </book>
 	//
 	// Substrings matched by the dictionary are marked with #:
-	// #####################
-	// ######
-	// 	############title###########The Go Programming Language"/#
-	// 	############authors###########Alan Donovan and Brian Kernighan"/#
-	// 	############published###########2015-10-26"/#
-	// 	############isbn###########978-0134190440"/#
-	// 	######...</#####
-	// </#####
+	//#####################
+	//######
+	//	############title" content="The Go Programming Language"/#
+	//	############authors" content="Alan Donovan and Brian Kernighan"/#
+	//	############published" content="2015-10-26"/#
+	//	############isbn" content="978-0134190440"/#
+	//	######...</#####
+	//</book>
 }
 
 // DEFLATE is suitable for transmitting compressed data across the network.
@@ -175,7 +175,7 @@ func Example_synchronization() {
 		}
 
 		b := make([]byte, 256)
-		for _, m := range strings.Fields("A long time ago in a galaxy far, far away...") {
+		for m := range strings.FieldsSeq("A long time ago in a galaxy far, far away...") {
 			// We use a simple framing format where the first byte is the
 			// message length, followed the message itself.
 			b[0] = uint8(copy(b[1:], m))

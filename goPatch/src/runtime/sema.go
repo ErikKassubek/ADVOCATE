@@ -92,22 +92,22 @@ func sync_runtime_Semrelease(addr *uint32, handoff bool, skipframes int) {
 
 //go:linkname internal_sync_runtime_SemacquireMutex internal/sync.runtime_SemacquireMutex
 func internal_sync_runtime_SemacquireMutex(addr *uint32, lifo bool, skipframes int) {
-	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, WaitReasonSyncMutexLock)
+	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, waitReasonSyncMutexLock)
 }
 
 //go:linkname sync_runtime_SemacquireRWMutexR sync.runtime_SemacquireRWMutexR
 func sync_runtime_SemacquireRWMutexR(addr *uint32, lifo bool, skipframes int) {
-	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, WaitReasonSyncRWMutexRLock)
+	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, waitReasonSyncRWMutexRLock)
 }
 
 //go:linkname sync_runtime_SemacquireRWMutex sync.runtime_SemacquireRWMutex
 func sync_runtime_SemacquireRWMutex(addr *uint32, lifo bool, skipframes int) {
-	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, WaitReasonSyncRWMutexLock)
+	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, waitReasonSyncRWMutexLock)
 }
 
 //go:linkname sync_runtime_SemacquireWaitGroup sync.runtime_SemacquireWaitGroup
 func sync_runtime_SemacquireWaitGroup(addr *uint32, synctestDurable bool) {
-	reason := WaitReasonSyncWaitGroupWait
+	reason := waitReasonSyncWaitGroupWait
 	if synctestDurable {
 		reason = waitReasonSynctestWaitGroupWait
 	}
@@ -143,7 +143,7 @@ func semacquire(addr *uint32) {
 	semacquire1(addr, false, 0, 0, waitReasonSemacquire)
 }
 
-func semacquire1(addr *uint32, lifo bool, profile semaProfileFlags, skipframes int, reason WaitReason) {
+func semacquire1(addr *uint32, lifo bool, profile semaProfileFlags, skipframes int, reason waitReason) {
 	gp := getg()
 	if gp != gp.m.curg {
 		throw("semacquire not on the G stack")
@@ -303,7 +303,10 @@ func cansemacquire(addr *uint32) bool {
 // queue adds s to the blocked goroutines in semaRoot.
 func (root *semaRoot) queue(addr *uint32, s *sudog, lifo bool) {
 	s.g = getg()
-	s.elem = unsafe.Pointer(addr)
+	s.elem.set(unsafe.Pointer(addr))
+	// Storing this pointer so that we can trace the semaphore address
+	// from the blocked goroutine when checking for goroutine leaks.
+	s.g.waiting = s
 	s.next = nil
 	s.prev = nil
 	s.waiters = 0
@@ -311,7 +314,7 @@ func (root *semaRoot) queue(addr *uint32, s *sudog, lifo bool) {
 	var last *sudog
 	pt := &root.treap
 	for t := *pt; t != nil; t = *pt {
-		if t.elem == unsafe.Pointer(addr) {
+		if uintptr(unsafe.Pointer(addr)) == t.elem.uintptr() {
 			// Already have addr in list.
 			if lifo {
 				// Substitute s in t's place in treap.
@@ -357,7 +360,7 @@ func (root *semaRoot) queue(addr *uint32, s *sudog, lifo bool) {
 			return
 		}
 		last = t
-		if uintptr(unsafe.Pointer(addr)) < uintptr(t.elem) {
+		if uintptr(unsafe.Pointer(addr)) < t.elem.uintptr() {
 			pt = &t.prev
 		} else {
 			pt = &t.next
@@ -402,11 +405,13 @@ func (root *semaRoot) queue(addr *uint32, s *sudog, lifo bool) {
 func (root *semaRoot) dequeue(addr *uint32) (found *sudog, now, tailtime int64) {
 	ps := &root.treap
 	s := *ps
+
 	for ; s != nil; s = *ps {
-		if s.elem == unsafe.Pointer(addr) {
+		if uintptr(unsafe.Pointer(addr)) == s.elem.uintptr() {
 			goto Found
 		}
-		if uintptr(unsafe.Pointer(addr)) < uintptr(s.elem) {
+
+		if uintptr(unsafe.Pointer(addr)) < s.elem.uintptr() {
 			ps = &s.prev
 		} else {
 			ps = &s.next
@@ -470,8 +475,10 @@ Found:
 		}
 		tailtime = s.acquiretime
 	}
+	// Goroutine is no longer blocked. Clear the waiting pointer.
+	s.g.waiting = nil
 	s.parent = nil
-	s.elem = nil
+	s.elem.set(nil)
 	s.next = nil
 	s.prev = nil
 	s.ticket = 0
@@ -590,6 +597,10 @@ func notifyListWait(l *notifyList, t uint32) {
 	// Enqueue itself.
 	s := acquireSudog()
 	s.g = getg()
+	// Storing this pointer so that we can trace the condvar address
+	// from the blocked goroutine when checking for goroutine leaks.
+	s.elem.set(unsafe.Pointer(l))
+	s.g.waiting = s
 	s.ticket = t
 	s.releasetime = 0
 	t0 := int64(0)
@@ -603,10 +614,14 @@ func notifyListWait(l *notifyList, t uint32) {
 		l.tail.next = s
 	}
 	l.tail = s
-	goparkunlock(&l.lock, WaitReasonSyncCondWait, traceBlockCondWait, 3)
+	goparkunlock(&l.lock, waitReasonSyncCondWait, traceBlockCondWait, 3)
 	if t0 != 0 {
 		blockevent(s.releasetime-t0, 2)
 	}
+	// Goroutine is no longer blocked. Clear up its waiting pointer,
+	// and clean up the sudog before releasing it.
+	s.g.waiting = nil
+	s.elem.set(nil)
 	releaseSudog(s)
 }
 

@@ -58,7 +58,7 @@ func TestMain(m *testing.M) {
 }
 
 func testMain(m *testing.M) int {
-	if testing.Short() && os.Getenv("GO_BUILDER_NAME") == "" {
+	if testing.Short() && testenv.Builder() == "" {
 		globalSkip = func(t testing.TB) { t.Skip("short mode and $GO_BUILDER_NAME not set") }
 		return m.Run()
 	}
@@ -102,14 +102,14 @@ func testMain(m *testing.M) int {
 	bin = cmdToRun("./testp")
 
 	ccOut := goEnv("CC")
-	cc = []string{string(ccOut)}
+	cc = []string{ccOut}
 
 	out := goEnv("GOGCCFLAGS")
 	quote := '\000'
 	start := 0
 	lastSpace := true
 	backslash := false
-	s := string(out)
+	s := out
 	for i, c := range s {
 		if quote == '\000' && unicode.IsSpace(c) {
 			if !lastSpace {
@@ -502,7 +502,7 @@ func TestInstall(t *testing.T) {
 
 func TestEarlySignalHandler(t *testing.T) {
 	switch GOOS {
-	case "darwin", "ios":
+	case "ios":
 		switch GOARCH {
 		case "arm64":
 			t.Skipf("skipping on %s/%s; see https://golang.org/issue/13701", GOOS, GOARCH)
@@ -1351,7 +1351,7 @@ func TestDeepStack(t *testing.T) {
 }
 
 func BenchmarkCgoCallbackMainThread(b *testing.B) {
-	// Benchmark for calling into Go fron C main thread.
+	// Benchmark for calling into Go from C main thread.
 	// See issue #68587.
 	//
 	// It uses a subprocess, which is a C binary that calls

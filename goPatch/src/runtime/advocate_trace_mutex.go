@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace_mutex.go
 // Brief: Functionality for mutex
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -37,7 +36,7 @@ type AdvocateTraceMutex struct {
 var lastRWOp = make(map[uint64]int64) // routine -> tCom
 var lastRWOpLock mutex
 
-// AdvocateMutexPre adds a mutex lock to the trace
+// AdvocateMutexReq adds a mutex lock to the trace
 //
 // Parameter:
 //   - mem unsafe.Pointer: memory address
@@ -46,7 +45,7 @@ var lastRWOpLock mutex
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateMutexPre(mem unsafe.Pointer, id uint64, op Operation) int {
+func AdvocateMutexReq(mem unsafe.Pointer, id uint64, op Operation) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -73,13 +72,13 @@ func AdvocateMutexPre(mem unsafe.Pointer, id uint64, op Operation) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateMutexPost adds the end counter to an operation of the trace.
+// AdvocateMutexCom adds the end counter to an operation of the trace.
 // For try use AdvocateMutexTryPost.
 //
 // Parameters:
 //   - index: index of the operation in the trace
 //   - suc: wether the lock was successfull for try, otherwise true
-func AdvocateMutexPost(index int, suc bool) {
+func AdvocateMutexCom(index int, suc bool) {
 	if AdvocateTracingDisabled {
 		return
 	}

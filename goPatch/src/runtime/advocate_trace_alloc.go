@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace_new_elem.go
 // Brief: Functionality to record a make
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -64,6 +63,8 @@ func AdvocateAlloc(objType string, qSize int) uint64 {
 		op = OperationAllocCond
 	case "W":
 		op = OperationAllocWg
+	case "O":
+		op = OperationAllocOnce
 	}
 
 	res := AdvocateTraceResource{id: id, addr: nil}

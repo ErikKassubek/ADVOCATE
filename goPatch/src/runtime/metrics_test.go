@@ -471,7 +471,7 @@ func BenchmarkReadMetricsLatency(b *testing.B) {
 	b.ReportMetric(float64(latencies[len(latencies)*99/100]), "p99-ns")
 }
 
-var readMetricsSink [1024]interface{}
+var readMetricsSink [1024]any
 
 func TestReadMetricsCumulative(t *testing.T) {
 	// Set up the set of metrics marked cumulative.
@@ -499,6 +499,10 @@ func TestReadMetricsCumulative(t *testing.T) {
 		defer wg.Done()
 		for {
 			// Add more things here that could influence metrics.
+			for i := 0; i < 10; i++ {
+				runtime.AddCleanup(new(*int), func(_ struct{}) {}, struct{}{})
+				runtime.SetFinalizer(new(*int), func(_ **int) {})
+			}
 			for i := 0; i < len(readMetricsSink); i++ {
 				readMetricsSink[i] = make([]byte, 1024)
 				select {
@@ -785,8 +789,9 @@ func TestCPUMetricsSleep(t *testing.T) {
 }
 
 // Call f() and verify that the correct STW metrics increment. If isGC is true,
-// fn triggers a GC STW. Otherwise, fn triggers an other STW.
-func testSchedPauseMetrics(t *testing.T, fn func(t *testing.T), isGC bool) {
+// fn triggers a GC STW. If isOther is true, fn triggers an other STW. If both
+// are false, fn does not trigger any STW.
+func testSchedPauseMetrics(t *testing.T, fn func(t *testing.T), isGC, isOther bool) {
 	m := []metrics.Sample{
 		{Name: "/sched/pauses/stopping/gc:seconds"},
 		{Name: "/sched/pauses/stopping/other:seconds"},
@@ -828,13 +833,6 @@ func testSchedPauseMetrics(t *testing.T, fn func(t *testing.T), isGC bool) {
 		if got := sampleCount(totalGC); got <= baselineTotalGC {
 			t.Errorf("/sched/pauses/total/gc:seconds sample count %d did not increase from baseline of %d", got, baselineTotalGC)
 		}
-
-		if got := sampleCount(stoppingOther); got != baselineStartOther {
-			t.Errorf("/sched/pauses/stopping/other:seconds sample count %d changed from baseline of %d", got, baselineStartOther)
-		}
-		if got := sampleCount(totalOther); got != baselineTotalOther {
-			t.Errorf("/sched/pauses/stopping/other:seconds sample count %d changed from baseline of %d", got, baselineTotalOther)
-		}
 	} else {
 		if got := sampleCount(stoppingGC); got != baselineStartGC {
 			t.Errorf("/sched/pauses/stopping/gc:seconds sample count %d changed from baseline of %d", got, baselineStartGC)
@@ -842,22 +840,44 @@ func testSchedPauseMetrics(t *testing.T, fn func(t *testing.T), isGC bool) {
 		if got := sampleCount(totalGC); got != baselineTotalGC {
 			t.Errorf("/sched/pauses/total/gc:seconds sample count %d changed from baseline of %d", got, baselineTotalGC)
 		}
+	}
 
+	if isOther {
 		if got := sampleCount(stoppingOther); got <= baselineStartOther {
 			t.Errorf("/sched/pauses/stopping/other:seconds sample count %d did not increase from baseline of %d", got, baselineStartOther)
 		}
 		if got := sampleCount(totalOther); got <= baselineTotalOther {
-			t.Errorf("/sched/pauses/stopping/other:seconds sample count %d did not increase from baseline of %d", got, baselineTotalOther)
+			t.Errorf("/sched/pauses/total/other:seconds sample count %d did not increase from baseline of %d", got, baselineTotalOther)
+		}
+	} else {
+		if got := sampleCount(stoppingOther); got != baselineStartOther {
+			t.Errorf("/sched/pauses/stopping/other:seconds sample count %d changed from baseline of %d", got, baselineStartOther)
+		}
+		if got := sampleCount(totalOther); got != baselineTotalOther {
+			t.Errorf("/sched/pauses/total/other:seconds sample count %d changed from baseline of %d", got, baselineTotalOther)
 		}
 	}
 }
 
 func TestSchedPauseMetrics(t *testing.T) {
 	tests := []struct {
-		name string
-		isGC bool
-		fn   func(t *testing.T)
+		name   string
+		isGC   bool
+		isNone bool // no STW at all
+		fn     func(t *testing.T)
 	}{
+		{
+			name:   "runtime/metrics.Read",
+			isNone: true,
+			fn: func(t *testing.T) {
+				descs := metrics.All()
+				allSamples := make([]metrics.Sample, len(descs))
+				for i := range allSamples {
+					allSamples[i].Name = descs[i].Name
+				}
+				metrics.Read(allSamples)
+			},
+		},
 		{
 			name: "runtime.GC",
 			isGC: true,
@@ -942,7 +962,8 @@ func TestSchedPauseMetrics(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			testSchedPauseMetrics(t, tc.fn, tc.isGC)
+			isOther := !tc.isGC && !tc.isNone
+			testSchedPauseMetrics(t, tc.fn, tc.isGC, isOther)
 		})
 	}
 }
@@ -1200,6 +1221,7 @@ func TestRuntimeLockMetricsAndProfile(t *testing.T) {
 						minTicks[role][n] = runtime.Cputicks() - t1
 						break
 					}
+					runtime.Usleep(uint32(1 + delayMicros/8))
 				}
 				runtime.Unlock(mu)
 				needContention.Store(int64(n - 1))
@@ -1511,4 +1533,72 @@ func TestMetricHeapUnusedLargeObjectOverflow(t *testing.T) {
 	}
 	done <- struct{}{}
 	wg.Wait()
+}
+
+func TestReadMetricsCleanups(t *testing.T) {
+	runtime.GC()                                                // End any in-progress GC.
+	runtime.BlockUntilEmptyCleanupQueue(int64(1 * time.Second)) // Flush any queued cleanups.
+
+	var before [2]metrics.Sample
+	before[0].Name = "/gc/cleanups/queued:cleanups"
+	before[1].Name = "/gc/cleanups/executed:cleanups"
+	after := before
+
+	metrics.Read(before[:])
+
+	const N = 10
+	for i := 0; i < N; i++ {
+		runtime.AddCleanup(new(*int), func(_ struct{}) {}, struct{}{})
+	}
+
+	runtime.GC()
+	runtime.BlockUntilEmptyCleanupQueue(int64(1 * time.Second))
+
+	metrics.Read(after[:])
+
+	if v0, v1 := before[0].Value.Uint64(), after[0].Value.Uint64(); v0+N != v1 {
+		t.Errorf("expected %s difference to be exactly %d, got %d -> %d", before[0].Name, N, v0, v1)
+	}
+	if v0, v1 := before[1].Value.Uint64(), after[1].Value.Uint64(); v0+N != v1 {
+		t.Errorf("expected %s difference to be exactly %d, got %d -> %d", before[1].Name, N, v0, v1)
+	}
+}
+
+func TestReadMetricsFinalizers(t *testing.T) {
+	runtime.GC()                                                  // End any in-progress GC.
+	runtime.BlockUntilEmptyFinalizerQueue(int64(1 * time.Second)) // Flush any queued finalizers.
+
+	var before [2]metrics.Sample
+	before[0].Name = "/gc/finalizers/queued:finalizers"
+	before[1].Name = "/gc/finalizers/executed:finalizers"
+	after := before
+
+	metrics.Read(before[:])
+
+	const N = 10
+	for i := 0; i < N; i++ {
+		runtime.SetFinalizer(new(*int), func(_ **int) {})
+	}
+
+	runtime.GC()
+	runtime.GC()
+	runtime.BlockUntilEmptyFinalizerQueue(int64(1 * time.Second))
+
+	metrics.Read(after[:])
+
+	if v0, v1 := before[0].Value.Uint64(), after[0].Value.Uint64(); v0+N != v1 {
+		t.Errorf("expected %s difference to be exactly %d, got %d -> %d", before[0].Name, N, v0, v1)
+	}
+	if v0, v1 := before[1].Value.Uint64(), after[1].Value.Uint64(); v0+N != v1 {
+		t.Errorf("expected %s difference to be exactly %d, got %d -> %d", before[1].Name, N, v0, v1)
+	}
+}
+
+func TestReadMetricsSched(t *testing.T) {
+	// This test is run in a subprocess to prevent other tests from polluting the metrics.
+	output := runTestProg(t, "testprog", "SchedMetrics")
+	want := "OK\n"
+	if output != want {
+		t.Fatalf("output:\n%s\n\nwanted:\n%s", output, want)
+	}
 }

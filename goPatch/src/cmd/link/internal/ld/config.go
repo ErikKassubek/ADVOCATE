@@ -34,7 +34,7 @@ func (mode *BuildMode) Set(s string) error {
 		return fmt.Errorf("invalid buildmode: %q", s)
 	case "exe":
 		switch buildcfg.GOOS + "/" + buildcfg.GOARCH {
-		case "darwin/arm64", "windows/arm", "windows/arm64": // On these platforms, everything is PIE
+		case "darwin/arm64", "windows/arm64": // On these platforms, everything is PIE
 			*mode = BuildModePIE
 		default:
 			*mode = BuildModeExe
@@ -213,15 +213,7 @@ func determineLinkMode(ctxt *Link) {
 		}
 	}
 
-	switch ctxt.LinkMode {
-	case LinkInternal:
-		if extNeeded {
-			Exitf("internal linking requested %sbut external linking required: %s", via, extReason)
-		}
-	case LinkExternal:
-		switch {
-		case buildcfg.GOARCH == "ppc64" && buildcfg.GOOS == "linux":
-			Exitf("external linking not supported for %s/ppc64", buildcfg.GOOS)
-		}
+	if ctxt.LinkMode == LinkInternal && extNeeded {
+		Exitf("internal linking requested %sbut external linking required: %s", via, extReason)
 	}
 }

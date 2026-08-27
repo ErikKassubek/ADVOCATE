@@ -12,6 +12,7 @@ import (
 	"internal/goos"
 	"internal/runtime/atomic"
 	"internal/runtime/gc"
+	"internal/runtime/maps"
 	"internal/runtime/sys"
 	"unsafe"
 )
@@ -57,9 +58,6 @@ const CrashStackImplemented = crashStackImplemented
 
 const TracebackInnerFrames = tracebackInnerFrames
 const TracebackOuterFrames = tracebackOuterFrames
-
-var MapKeys = keys
-var MapValues = values
 
 var LockPartialOrder = lockPartialOrder
 
@@ -214,7 +212,7 @@ var (
 	IfaceHash  = ifaceHash
 )
 
-var UseAeshash = &useAeshash
+var UseAeshash = &maps.UseAeshash
 
 func MemclrBytes(b []byte) {
 	s := (*slice)(unsafe.Pointer(&b))
@@ -241,6 +239,12 @@ func SetEnvs(e []string) { envs = e }
 
 const PtrSize = goarch.PtrSize
 
+const ClobberdeadPtr = clobberdeadPtr
+
+func Clobberfree() bool {
+	return debug.clobberfree != 0
+}
+
 var ForceGCPeriod = &forcegcperiod
 
 // SetTracebackEnv is like runtime/debug.SetTraceback, but it raises
@@ -251,7 +255,6 @@ func SetTracebackEnv(level string) {
 	traceback_env = traceback_cache
 }
 
-var ReadUnaligned32 = readUnaligned32
 var ReadUnaligned64 = readUnaligned64
 
 func CountPagesInUse() (pagesInUse, counted uintptr) {
@@ -270,6 +273,10 @@ func CountPagesInUse() (pagesInUse, counted uintptr) {
 	return
 }
 
+func Blocksampled(cycles, rate int64) bool { return blocksampled(cycles, rate) }
+
+func Cheaprand() uint32         { return cheaprand() }
+func Cheaprand64() int64        { return cheaprand64() }
 func Fastrand() uint32          { return uint32(rand()) }
 func Fastrand64() uint64        { return rand() }
 func Fastrandn(n uint32) uint32 { return randn(n) }
@@ -417,7 +424,8 @@ func ReadMemStatsSlow() (base, slow MemStats) {
 			slow.HeapReleased += uint64(pg) * pageSize
 		}
 		for _, p := range allp {
-			pg := sys.OnesCount64(p.pcache.scav)
+			// Only count scav bits for pages in the cache
+			pg := sys.OnesCount64(p.pcache.cache & p.pcache.scav)
 			slow.HeapReleased += uint64(pg) * pageSize
 		}
 
@@ -443,6 +451,16 @@ func ShrinkStackAndVerifyFramePointers() {
 	// If our new stack contains frame pointers into the old stack, this will
 	// crash because the old stack has been poisoned.
 	FPCallers(make([]uintptr, 1024))
+}
+
+type StackPoisonCopyRestore int
+
+func (s StackPoisonCopyRestore) Restore() { stackPoisonCopy = int(s) }
+
+func StackPoisonCopy() StackPoisonCopyRestore {
+	before := stackPoisonCopy
+	stackPoisonCopy = 1
+	return StackPoisonCopyRestore(before)
 }
 
 // BlockOnSystemStack switches to the system stack, prints "x\n" to
@@ -542,18 +560,23 @@ func MapNextArenaHint() (start, end uintptr, ok bool) {
 	if !ok {
 		// We were unable to get the requested reservation.
 		// Release what we did get and fail.
-		sysFreeOS(got, physPageSize)
+		sysUnreserve(got, physPageSize)
 	}
 	return
 }
 
-func GetNextArenaHint() uintptr {
-	return mheap_.arenaHints.addr
+func NextArenaHint() (uintptr, bool) {
+	if mheap_.arenaHints == nil {
+		return 0, false
+	}
+	return mheap_.arenaHints.addr, true
 }
 
 type G = g
 
 type Sudog = sudog
+
+type XRegPerG = xRegPerG
 
 func Getg() *G {
 	return getg()
@@ -632,6 +655,34 @@ func RunGetgThreadSwitchTest() {
 		panic("g1 != g3")
 	}
 }
+
+// Expose freegc for testing.
+func Freegc(p unsafe.Pointer, size uintptr, noscan bool) {
+	freegc(p, size, noscan)
+}
+
+// Expose gcAssistBytes for the current g for testing.
+func AssistCredit() int64 {
+	assistG := getg()
+	if assistG.m.curg != nil {
+		assistG = assistG.m.curg
+	}
+	return assistG.gcAssistBytes
+}
+
+// Expose gcBlackenEnabled for testing.
+func GcBlackenEnable() bool {
+	// Note we do a non-atomic load here.
+	// Some checks against gcBlackenEnabled (e.g., in mallocgc)
+	// are currently done via non-atomic load for performance reasons,
+	// but other checks are done via atomic load (e.g., in mgcmark.go),
+	// so interpreting this value in a test may be subtle.
+	return gcBlackenEnabled != 0
+}
+
+const SizeSpecializedMallocEnabled = sizeSpecializedMallocEnabled
+
+const RuntimeFreegcEnabled = runtimeFreegcEnabled
 
 const (
 	PageSize         = pageSize
@@ -1050,18 +1101,20 @@ func FreePageAlloc(pp *PageAlloc) {
 	// Free all the mapped space for the summary levels.
 	if pageAlloc64Bit != 0 {
 		for l := 0; l < summaryLevels; l++ {
-			sysFreeOS(unsafe.Pointer(&p.summary[l][0]), uintptr(cap(p.summary[l]))*pallocSumBytes)
+			// This isn't quite right, as some of this memory may
+			// be Ready instead of Reserved. The mappedReady and
+			// testSysStat adjustments below correct for the
+			// difference.
+			sysUnreserve(unsafe.Pointer(&p.summary[l][0]), uintptr(cap(p.summary[l]))*pallocSumBytes)
 		}
 	} else {
 		resSize := uintptr(0)
 		for _, s := range p.summary {
 			resSize += uintptr(cap(s)) * pallocSumBytes
 		}
-		sysFreeOS(unsafe.Pointer(&p.summary[0][0]), alignUp(resSize, physPageSize))
+		// See sysUnreserve comment above.
+		sysUnreserve(unsafe.Pointer(&p.summary[0][0]), alignUp(resSize, physPageSize))
 	}
-
-	// Free extra data structures.
-	sysFreeOS(unsafe.Pointer(&p.scav.index.chunks[0]), uintptr(cap(p.scav.index.chunks))*unsafe.Sizeof(atomicScavChunkData{}))
 
 	// Subtract back out whatever we mapped for the summaries.
 	// sysUsed adds to p.sysStat and memstats.mappedReady no matter what
@@ -1069,6 +1122,12 @@ func FreePageAlloc(pp *PageAlloc) {
 	// way to figure out how much we actually mapped.
 	gcController.mappedReady.Add(-int64(p.summaryMappedReady))
 	testSysStat.add(-int64(p.summaryMappedReady))
+
+	// Free extra data structures.
+	//
+	// TODO(prattmic): As above, some of this may be Ready, so we should
+	// manually adjust mappedReady and testSysStat?
+	sysUnreserve(unsafe.Pointer(&p.scav.index.chunks[0]), uintptr(cap(p.scav.index.chunks))*unsafe.Sizeof(atomicScavChunkData{}))
 
 	// Free the mapped space for chunks.
 	for i := range p.chunks {
@@ -1120,12 +1179,14 @@ func CheckScavengedBitsCleared(mismatches []BitsMismatch) (n int, ok bool) {
 
 		// Lock so that we can safely access the bitmap.
 		lock(&mheap_.lock)
+
 	chunkLoop:
 		for i := mheap_.pages.start; i < mheap_.pages.end; i++ {
 			chunk := mheap_.pages.tryChunkOf(i)
 			if chunk == nil {
 				continue
 			}
+			cb := chunkBase(i)
 			for j := 0; j < pallocChunkPages/64; j++ {
 				// Run over each 64-bit bitmap section and ensure
 				// scavenged is being cleared properly on allocation.
@@ -1140,7 +1201,7 @@ func CheckScavengedBitsCleared(mismatches []BitsMismatch) (n int, ok bool) {
 						break chunkLoop
 					}
 					mismatches[n] = BitsMismatch{
-						Base: chunkBase(i) + uintptr(j)*64*pageSize,
+						Base: cb + uintptr(j)*64*pageSize,
 						Got:  got,
 						Want: want,
 					}
@@ -1152,6 +1213,37 @@ func CheckScavengedBitsCleared(mismatches []BitsMismatch) (n int, ok bool) {
 
 		getg().m.mallocing--
 	})
+
+	if randomizeHeapBase && len(mismatches) > 0 {
+		// When goexperiment.RandomizedHeapBase64 is set we use a series of
+		// padding pages to generate randomized heap base address which have
+		// both the alloc and scav bits set. Because of this we expect exactly
+		// one arena will have mismatches, so check for that explicitly and
+		// remove the mismatches if that property holds. If we see more than one
+		// arena with this property, that is an indication something has
+		// actually gone wrong, so return the mismatches.
+		//
+		// We do this, instead of ignoring the mismatches in the chunkLoop, because
+		// it's not easy to determine which arena we added the padding pages to
+		// programmatically, without explicitly recording the base address somewhere
+		// in a global variable (which we'd rather not do as the address of that variable
+		// is likely to be somewhat predictable, potentially defeating the purpose
+		// of our randomization).
+		affectedArenas := map[arenaIdx]bool{}
+		for _, mismatch := range mismatches {
+			if mismatch.Base > 0 {
+				affectedArenas[arenaIndex(mismatch.Base)] = true
+			}
+		}
+		if len(affectedArenas) == 1 {
+			ok = true
+			// zero the mismatches
+			for i := range n {
+				mismatches[i] = BitsMismatch{}
+			}
+		}
+	}
+
 	return
 }
 
@@ -1254,30 +1346,6 @@ func MSpanCountAlloc(ms *MSpan, bits []byte) int {
 	result := s.countAlloc()
 	s.gcmarkBits = nil
 	return result
-}
-
-type MSpanQueue mSpanQueue
-
-func (q *MSpanQueue) Size() int {
-	return (*mSpanQueue)(q).n
-}
-
-func (q *MSpanQueue) Push(s *MSpan) {
-	(*mSpanQueue)(q).push((*mspan)(s))
-}
-
-func (q *MSpanQueue) Pop() *MSpan {
-	s := (*mSpanQueue)(q).pop()
-	return (*MSpan)(s)
-}
-
-func (q *MSpanQueue) TakeAll(p *MSpanQueue) {
-	(*mSpanQueue)(q).takeAll((*mSpanQueue)(p))
-}
-
-func (q *MSpanQueue) PopN(n int) MSpanQueue {
-	p := (*mSpanQueue)(q).popN(n)
-	return (MSpanQueue)(p)
 }
 
 const (
@@ -1423,7 +1491,7 @@ func (c *GCController) Revise(d GCControllerReviseDelta) {
 
 func (c *GCController) EndCycle(bytesMarked uint64, assistTime, elapsed int64, gomaxprocs int) {
 	c.assistTime.Store(assistTime)
-	c.endCycle(elapsed, gomaxprocs, false)
+	c.endCycle(elapsed, gomaxprocs)
 	c.resetLive(bytesMarked)
 	c.commit(false)
 }
@@ -1463,7 +1531,14 @@ func Releasem() {
 	releasem(getg().m)
 }
 
-var Timediv = timediv
+// GoschedIfBusy is an explicit preemption check to call back
+// into the scheduler. This is useful for tests that run code
+// which spend most of their time as non-preemptible, as it
+// can be placed right after becoming preemptible again to ensure
+// that the scheduler gets a chance to preempt the goroutine.
+func GoschedIfBusy() {
+	goschedIfBusy()
+}
 
 type PIController struct {
 	piController
@@ -1759,7 +1834,7 @@ func NewUserArena() *UserArena {
 func (a *UserArena) New(out *any) {
 	i := efaceOf(out)
 	typ := i._type
-	if typ.Kind_&abi.KindMask != abi.Pointer {
+	if typ.Kind() != abi.Pointer {
 		panic("new result of non-ptr type")
 	}
 	typ = (*ptrtype)(unsafe.Pointer(typ)).Elem
@@ -1926,4 +2001,134 @@ func (t *TraceStackTable) Reset() {
 
 func TraceStack(gp *G, tab *TraceStackTable) {
 	traceStack(0, gp, (*traceStackTable)(tab))
+}
+
+var X86HasAVX = &x86HasAVX
+
+var DebugDecorateMappings = &debug.decoratemappings
+
+func SetVMANameSupported() bool { return setVMANameSupported() }
+
+type ListHead struct {
+	l listHead
+}
+
+func (head *ListHead) Init(off uintptr) {
+	head.l.init(off)
+}
+
+type ListNode struct {
+	l listNode
+}
+
+func (head *ListHead) Push(p unsafe.Pointer) {
+	head.l.push(p)
+}
+
+func (head *ListHead) Pop() unsafe.Pointer {
+	return head.l.pop()
+}
+
+func (head *ListHead) Remove(p unsafe.Pointer) {
+	head.l.remove(p)
+}
+
+type ListHeadManual struct {
+	l listHeadManual
+}
+
+func (head *ListHeadManual) Init(off uintptr) {
+	head.l.init(off)
+}
+
+type ListNodeManual struct {
+	l listNodeManual
+}
+
+func (head *ListHeadManual) Push(p unsafe.Pointer) {
+	head.l.push(p)
+}
+
+func (head *ListHeadManual) Pop() unsafe.Pointer {
+	return head.l.pop()
+}
+
+func (head *ListHeadManual) Remove(p unsafe.Pointer) {
+	head.l.remove(p)
+}
+
+func Hexdumper(base uintptr, wordBytes int, mark func(addr uintptr, start func()), data ...[]byte) string {
+	buf := make([]byte, 0, 2048)
+	getg().writebuf = buf
+	h := hexdumper{addr: base, addrBytes: 4, wordBytes: uint8(wordBytes)}
+	if mark != nil {
+		h.mark = func(addr uintptr, m hexdumpMarker) {
+			mark(addr, m.start)
+		}
+	}
+	for _, d := range data {
+		h.write(d)
+	}
+	h.close()
+	n := len(getg().writebuf)
+	getg().writebuf = nil
+	if n == cap(buf) {
+		panic("Hexdumper buf too small")
+	}
+	return string(buf[:n])
+}
+
+func HexdumpWords(p, bytes uintptr) string {
+	buf := make([]byte, 0, 2048)
+	getg().writebuf = buf
+	hexdumpWords(p, bytes, nil)
+	n := len(getg().writebuf)
+	getg().writebuf = nil
+	if n == cap(buf) {
+		panic("HexdumpWords buf too small")
+	}
+	return string(buf[:n])
+}
+
+// DumpPrintQuoted provides access to print(quoted()) for the tests in
+// runtime/print_quoted_test.go, allowing us to test that implementation.
+func DumpPrintQuoted(s string) string {
+	gp := getg()
+	gp.writebuf = make([]byte, 0, 1<<20)
+	print(quoted(s))
+	buf := gp.writebuf
+	gp.writebuf = nil
+
+	return string(buf)
+}
+
+// DumpPrint returns the output of print(v).
+func DumpPrint[T any](v T) string {
+	gp := getg()
+	gp.writebuf = make([]byte, 0, 2048)
+	print(v)
+	buf := gp.writebuf
+	gp.writebuf = nil
+
+	return string(buf)
+}
+
+var (
+	Float64Bytes    = float64Bytes
+	Float32Bytes    = float32Bytes
+	Complex128Bytes = complex128Bytes
+	Complex64Bytes  = complex64Bytes
+)
+
+func GetScanAlloc() uintptr {
+	c := getMCache(getg().m)
+	return c.scanAlloc
+}
+
+func MallocGC(size uintptr, typ *abi.Type, needzero bool) unsafe.Pointer {
+	return mallocgc(size, typ, needzero)
+}
+
+func FuncNamePiecesForPrint(name string) (string, string, string, string, string) {
+	return funcNamePiecesForPrint(name)
 }

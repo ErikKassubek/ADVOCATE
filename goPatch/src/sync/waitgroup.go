@@ -15,22 +15,6 @@ import (
 	// ADVOCATE-END
 )
 
-// ADVOCATE-START
-//
-//go:linkname AdvocateAllocWG runtime.AdvocateAllocWG
-func AdvocateAllocWG(ptr unsafe.Pointer) {
-	if runtime.AdvocateTracingDisabled {
-		return
-	}
-	w := (*WaitGroup)(ptr)
-	if w.id != 0 {
-		return
-	}
-	w.id = runtime.AdvocateAlloc("W", 0)
-}
-
-// ADVOCATE-END
-
 // A WaitGroup is a counting semaphore typically used to wait
 // for a group of goroutines or tasks to finish.
 //
@@ -79,6 +63,22 @@ type WaitGroup struct {
 	id uint64 // id for the waitgroup
 	// ADVOCATE-END
 }
+
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocWG runtime.AdvocateAllocWG
+func AdvocateAllocWG(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	w := (*WaitGroup)(ptr)
+	if w.id != 0 {
+		return
+	}
+	w.id = runtime.AdvocateAlloc("W", 0)
+}
+
+// ADVOCATE-END
 
 // waitGroupBubbleFlag indicates that a WaitGroup is associated with a synctest bubble.
 const waitGroupBubbleFlag = 0x8000_0000
@@ -169,7 +169,7 @@ func (wg *WaitGroup) Add(delta int) {
 	}
 	if v > 0 || w == 0 {
 		// ADVOCATE-START
-		runtime.AdvocateWaitGroupPost(index)
+		runtime.AdvocateWaitGroupCom(index)
 		// ADVOCATE-END
 		return
 	}
@@ -193,7 +193,7 @@ func (wg *WaitGroup) Add(delta int) {
 	}
 
 	// ADVOCATE-START
-	runtime.AdvocateWaitGroupPost(index)
+	runtime.AdvocateWaitGroupCom(index)
 	// ADVOCATE-END
 }
 
@@ -208,6 +208,7 @@ func (wg *WaitGroup) Add(delta int) {
 // [the Go memory model]: https://go.dev/ref/mem
 func (wg *WaitGroup) Done() {
 	// ADVOCATE-NOTE: is recorded in wg.Adds
+
 	wg.Add(-1)
 }
 
@@ -219,7 +220,7 @@ func (wg *WaitGroup) Wait() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			_ = runtime.AdvocateWaitGroupWait(unsafe.Pointer(wg), wg.id)
+			_ = runtime.AdvocateWaitGroupWaitReq(unsafe.Pointer(wg), wg.id)
 			runtime.BlockForever()
 		}
 	}
@@ -228,13 +229,12 @@ func (wg *WaitGroup) Wait() {
 	// The wait will run until the waitgroup counte is zero. Therefor it
 	// blocks the routine and it is nessesary to record the successful
 	// finish of the wait with a post.
-	advocateIndex := runtime.AdvocateWaitGroupWait(unsafe.Pointer(wg), wg.id)
+	advocateIndex := runtime.AdvocateWaitGroupWaitReq(unsafe.Pointer(wg), wg.id)
 	// ADVOCATE-END
 
 	if race.Enabled {
 		race.Disable()
 	}
-
 	for {
 		state := wg.state.Load()
 		v := int32(state >> 32)
@@ -254,7 +254,7 @@ func (wg *WaitGroup) Wait() {
 			}
 
 			// ADVOCATE-START
-			runtime.AdvocateWaitGroupPost(advocateIndex)
+			runtime.AdvocateWaitGroupCom(advocateIndex)
 			//ADVOCATE-END
 
 			return
@@ -283,16 +283,17 @@ func (wg *WaitGroup) Wait() {
 				}
 			}
 			runtime_SemacquireWaitGroup(&wg.sema, synctestDurable)
-			if wg.state.Load() != 0 {
-				panic("sync: WaitGroup is reused before previous Wait has returned")
-			}
+			isReset := wg.state.Load() != 0
 			if race.Enabled {
 				race.Enable()
 				race.Acquire(unsafe.Pointer(wg))
 			}
+			if isReset {
+				panic("sync: WaitGroup is reused before previous Wait has returned")
+			}
 
 			// ADVOCATE-START
-			runtime.AdvocateWaitGroupPost(advocateIndex)
+			runtime.AdvocateWaitGroupCom(advocateIndex)
 			//ADVOCATE-END
 
 			return
@@ -319,7 +320,25 @@ func (wg *WaitGroup) Wait() {
 func (wg *WaitGroup) Go(f func()) {
 	wg.Add(1)
 	go func() {
-		defer wg.Done()
+		defer func() {
+			if x := recover(); x != nil {
+				// f panicked, which will be fatal because
+				// this is a new goroutine.
+				//
+				// Calling Done will unblock Wait in the main goroutine,
+				// allowing it to race with the fatal panic and
+				// possibly even exit the process (os.Exit(0))
+				// before the panic completes.
+				//
+				// This is almost certainly undesirable,
+				// so instead avoid calling Done and simply panic.
+				panic(x)
+			}
+
+			// f completed normally, or abruptly using goexit.
+			// Either way, decrement the semaphore.
+			wg.Done()
+		}()
 		f()
 	}()
 }

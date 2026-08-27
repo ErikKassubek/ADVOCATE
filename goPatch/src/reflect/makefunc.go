@@ -8,6 +8,7 @@ package reflect
 
 import (
 	"internal/abi"
+	"internal/goarch"
 	"unsafe"
 )
 
@@ -44,11 +45,12 @@ type makeFuncImpl struct {
 // The Examples section of the documentation includes an illustration
 // of how to use MakeFunc to build a swap function for different types.
 func MakeFunc(typ Type, fn func(args []Value) (results []Value)) Value {
+	t := typ.common()
+	typ = toType(t) // for #80332, ensure t's exported methods are not shadowed
 	if typ.Kind() != Func {
 		panic("reflect: call of MakeFunc with non-Func type")
 	}
 
-	t := typ.common()
 	ftyp := (*funcType)(unsafe.Pointer(t))
 
 	code := abi.FuncPCABI0(makeFuncStub)
@@ -164,13 +166,18 @@ func moveMakeFuncArgPtrs(ctxt *makeFuncCtxt, args *abi.RegArgs) {
 	for i, arg := range args.Ints {
 		// Avoid write barriers! Because our write barrier enqueues what
 		// was there before, we might enqueue garbage.
+		// Also avoid bounds checks, we don't have the stack space for it.
+		// (Normally the prove pass removes them, but for -N builds we
+		// use too much stack.)
+		// ptr := &args.Ptrs[i] (but cast from *unsafe.Pointer to *uintptr)
+		ptr := (*uintptr)(add(unsafe.Pointer(unsafe.SliceData(args.Ptrs[:])), uintptr(i)*goarch.PtrSize, "always in [0:IntArgRegs]"))
 		if ctxt.regPtrs.Get(i) {
-			*(*uintptr)(unsafe.Pointer(&args.Ptrs[i])) = arg
+			*ptr = arg
 		} else {
 			// We *must* zero this space ourselves because it's defined in
 			// assembly code and the GC will scan these pointers. Otherwise,
 			// there will be garbage here.
-			*(*uintptr)(unsafe.Pointer(&args.Ptrs[i])) = 0
+			*ptr = 0
 		}
 	}
 }

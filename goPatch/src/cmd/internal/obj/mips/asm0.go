@@ -1172,7 +1172,7 @@ func (c *ctxt0) asmout(p *obj.Prog, o *Optab, out []uint32) {
 	}
 	switch o.type_ {
 	default:
-		c.ctxt.Diag("unknown type %d %v", o.type_)
+		c.ctxt.Diag("unknown type %d", o.type_)
 		prasm(p)
 
 	case 0: /* pseudo ops */
@@ -1507,6 +1507,9 @@ func (c *ctxt0) asmout(p *obj.Prog, o *Optab, out []uint32) {
 		r := p.To.Reg
 		if r == obj.REG_NONE {
 			r = o.param
+		}
+		if p.From.Reg == REGTMP {
+			c.ctxt.Diag("cannot store REGTMP to large offset (REGTMP needed for address materialization): %v", p)
 		}
 		v := c.regoff(&p.To)
 		o1 = OP_IRR(c.opirr(ALUI), uint32((v+1<<15)>>16), REGZERO, REGTMP)

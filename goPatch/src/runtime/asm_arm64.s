@@ -7,6 +7,58 @@
 #include "tls_arm64.h"
 #include "funcdata.h"
 #include "textflag.h"
+#include "cgo/abi_arm64.h"
+
+// _rt0_arm64 is common startup code for most arm64 systems when using
+// internal linking. This is the entry point for the program from the
+// kernel for an ordinary -buildmode=exe program. The stack holds the
+// number of arguments and the C-style argv.
+TEXT _rt0_arm64(SB),NOSPLIT,$0
+	MOVD	0(RSP), R0	// argc
+	ADD	$8, RSP, R1	// argv
+	JMP	runtime·rt0_go(SB)
+
+// main is common startup code for most amd64 systems when using
+// external linking. The C startup code will call the symbol "main"
+// passing argc and argv in the usual C ABI registers R0 and R1.
+TEXT main(SB),NOSPLIT,$0
+	JMP	runtime·rt0_go(SB)
+
+// _rt0_arm64_lib is common startup code for most arm64 systems when
+// using -buildmode=c-archive or -buildmode=c-shared. The linker will
+// arrange to invoke this function as a global constructor (for
+// c-archive) or when the shared library is loaded (for c-shared).
+// We expect argc and argv to be passed in the usual C ABI registers
+// R0 and R1.
+TEXT _rt0_arm64_lib(SB),NOSPLIT,$184
+	// Preserve callee-save registers.
+	SAVE_R19_TO_R28(24)
+	SAVE_F8_TO_F15(104)
+
+	// Initialize g as null in case of using g later e.g. sigaction in cgo_sigaction.go
+	MOVD	ZR, g
+
+	MOVD	R0, _rt0_arm64_lib_argc<>(SB)
+	MOVD	R1, _rt0_arm64_lib_argv<>(SB)
+
+	MOVD	$runtime·libInit(SB), R4
+	BL	(R4)
+
+	// Restore callee-save registers.
+	RESTORE_R19_TO_R28(24)
+	RESTORE_F8_TO_F15(104)
+	RET
+
+TEXT runtime·rt0_lib_go<ABIInternal>(SB),NOSPLIT,$0
+	MOVD	_rt0_arm64_lib_argc<>(SB), R0
+	MOVD	_rt0_arm64_lib_argv<>(SB), R1
+	MOVD	$runtime·rt0_go(SB),R4
+	B	(R4)
+
+DATA _rt0_arm64_lib_argc<>(SB)/8, $0
+GLOBL _rt0_arm64_lib_argc<>(SB),NOPTR, $8
+DATA _rt0_arm64_lib_argv<>(SB)/8, $0
+GLOBL _rt0_arm64_lib_argv<>(SB),NOPTR, $8
 
 #ifdef GOARM64_LSE
 DATA no_lse_msg<>+0x00(SB)/64, $"This program can only run on ARM64 processors with LSE support.\n"
@@ -36,6 +88,14 @@ TEXT runtime·rt0_go(SB),NOSPLIT|TOPFRAME,$0
 	SUB	$32, RSP
 	MOVW	R0, 8(RSP) // argc
 	MOVD	R1, 16(RSP) // argv
+
+	// This is typically the entry point for Go programs.
+	// Call stack unwinding must not proceed past this frame.
+	// Set the frame pointer register to 0 so that frame pointer-based unwinders
+	// (which don't use debug info for performance reasons)
+	// won't attempt to unwind past this function.
+	// See go.dev/issue/63630
+	MOVD	$0, R29
 
 #ifdef TLS_darwin
 	// Initialize TLS.
@@ -176,6 +236,13 @@ TEXT runtime·asminit(SB),NOSPLIT|NOFRAME,$0-0
 	RET
 
 TEXT runtime·mstart(SB),NOSPLIT|TOPFRAME,$0
+	// This is the root frame of new Go-created OS threads.
+	// Call stack unwinding must not proceed past this frame.
+	// Set the frame pointer register to 0 so that frame pointer-based unwinders
+	// (which don't use debug info for performance reasons)
+	// won't attempt to unwind past this function.
+	// See go.dev/issue/63630
+	MOVD	$0, R29
 	BL	runtime·mstart0(SB)
 	RET // not reached
 
@@ -213,6 +280,17 @@ TEXT gogo<>(SB), NOSPLIT|NOFRAME, $0
 // Fn must never return. It should gogo(&g->sched)
 // to keep running g.
 TEXT runtime·mcall<ABIInternal>(SB), NOSPLIT|NOFRAME, $0-8
+#ifdef GOEXPERIMENT_runtimesecret
+	MOVW	g_secret(g), R26
+	CBZ 	R26, nosecret
+	// Use R26 as a secondary link register
+	// We purposefully don't erase it in secretEraseRegistersMcall
+	MOVD	LR, R26
+	BL 	runtime·secretEraseRegistersMcall(SB)
+	MOVD	R26, LR
+
+nosecret:
+#endif
 	MOVD	R0, R26				// context
 
 	// Save caller state in g->sched
@@ -253,6 +331,13 @@ TEXT runtime·systemstack_switch(SB), NOSPLIT, $0-0
 
 // func systemstack(fn func())
 TEXT runtime·systemstack(SB), NOSPLIT, $0-8
+#ifdef GOEXPERIMENT_runtimesecret
+	MOVW	g_secret(g), R3
+	CBZ		R3, nosecret
+	BL 		·secretEraseRegisters(SB)
+
+nosecret:
+#endif
 	MOVD	fn+0(FP), R3	// R3 = fn
 	MOVD	R3, R26		// context
 	MOVD	g_m(g), R4	// R4 = m
@@ -381,6 +466,16 @@ TEXT runtime·morestack(SB),NOSPLIT|NOFRAME,$0-0
 	MOVD	RSP, R0
 	MOVD	R0, (m_morebuf+gobuf_sp)(R8)	// f's caller's RSP
 	MOVD	g, (m_morebuf+gobuf_g)(R8)
+
+	// If in secret mode, erase registers on transition
+	// from G stack to M stack,
+#ifdef GOEXPERIMENT_runtimesecret
+	MOVW	g_secret(g), R4
+	CBZ 	R4, nosecret
+	BL	·secretEraseRegisters(SB)
+	MOVD	g_m(g), R8
+nosecret:
+#endif
 
 	// Call newstack on m->g0's stack.
 	MOVD	m_g0(R8), g
@@ -579,397 +674,61 @@ CALLFN(·call268435456, 268435456)
 CALLFN(·call536870912, 536870912)
 CALLFN(·call1073741824, 1073741824)
 
-// func memhash32(p unsafe.Pointer, h uintptr) uintptr
-TEXT runtime·memhash32<ABIInternal>(SB),NOSPLIT|NOFRAME,$0-24
-	MOVB	runtime·useAeshash(SB), R10
-	CBZ	R10, noaes
-	MOVD	$runtime·aeskeysched+0(SB), R3
+// The Arm architecture provides a user space accessible counter-timer which
+// is incremented at a fixed but machine-specific rate. Software can (spin)
+// wait until the counter-timer reaches some desired value.
+//
+// Armv8.7-A introduced the WFET (FEAT_WFxT) instruction, which allows the
+// processor to enter a low power state for a set time, or until an event is
+// received.
+//
+// However, WFET is not used here because it is only available on newer hardware,
+// and we aim to maintain compatibility with older Armv8-A platforms that do not
+// support this feature.
+//
+// As a fallback, we can instead use the ISB instruction to decrease processor
+// activity and thus power consumption between checks of the counter-timer.
+// Note that we do not depend on the latency of the ISB instruction which is
+// implementation specific. Actual delay comes from comparing against a fresh
+// read of the counter-timer value.
+//
+// Read more in this Arm blog post:
+// https://community.arm.com/arm-community-blogs/b/architectures-and-processors-blog/posts/multi-threaded-applications-arm
 
-	VEOR	V0.B16, V0.B16, V0.B16
-	VLD1	(R3), [V2.B16]
-	VLD1	(R0), V0.S[1]
-	VMOV	R1, V0.S[0]
-
-	AESE	V2.B16, V0.B16
-	AESMC	V0.B16, V0.B16
-	AESE	V2.B16, V0.B16
-	AESMC	V0.B16, V0.B16
-	AESE	V2.B16, V0.B16
-
-	VMOV	V0.D[0], R0
-	RET
-noaes:
-	B	runtime·memhash32Fallback<ABIInternal>(SB)
-
-// func memhash64(p unsafe.Pointer, h uintptr) uintptr
-TEXT runtime·memhash64<ABIInternal>(SB),NOSPLIT|NOFRAME,$0-24
-	MOVB	runtime·useAeshash(SB), R10
-	CBZ	R10, noaes
-	MOVD	$runtime·aeskeysched+0(SB), R3
-
-	VEOR	V0.B16, V0.B16, V0.B16
-	VLD1	(R3), [V2.B16]
-	VLD1	(R0), V0.D[1]
-	VMOV	R1, V0.D[0]
-
-	AESE	V2.B16, V0.B16
-	AESMC	V0.B16, V0.B16
-	AESE	V2.B16, V0.B16
-	AESMC	V0.B16, V0.B16
-	AESE	V2.B16, V0.B16
-
-	VMOV	V0.D[0], R0
-	RET
-noaes:
-	B	runtime·memhash64Fallback<ABIInternal>(SB)
-
-// func memhash(p unsafe.Pointer, h, size uintptr) uintptr
-TEXT runtime·memhash<ABIInternal>(SB),NOSPLIT|NOFRAME,$0-32
-	MOVB	runtime·useAeshash(SB), R10
-	CBZ	R10, noaes
-	B	aeshashbody<>(SB)
-noaes:
-	B	runtime·memhashFallback<ABIInternal>(SB)
-
-// func strhash(p unsafe.Pointer, h uintptr) uintptr
-TEXT runtime·strhash<ABIInternal>(SB),NOSPLIT|NOFRAME,$0-24
-	MOVB	runtime·useAeshash(SB), R10
-	CBZ	R10, noaes
-	LDP	(R0), (R0, R2)	// string data / length
-	B	aeshashbody<>(SB)
-noaes:
-	B	runtime·strhashFallback<ABIInternal>(SB)
-
-// R0: data
-// R1: seed data
-// R2: length
-// At return, R0 = return value
-TEXT aeshashbody<>(SB),NOSPLIT|NOFRAME,$0
-	VEOR	V30.B16, V30.B16, V30.B16
-	VMOV	R1, V30.D[0]
-	VMOV	R2, V30.D[1] // load length into seed
-
-	MOVD	$runtime·aeskeysched+0(SB), R4
-	VLD1.P	16(R4), [V0.B16]
-	AESE	V30.B16, V0.B16
-	AESMC	V0.B16, V0.B16
-	CMP	$16, R2
-	BLO	aes0to15
-	BEQ	aes16
-	CMP	$32, R2
-	BLS	aes17to32
-	CMP	$64, R2
-	BLS	aes33to64
-	CMP	$128, R2
-	BLS	aes65to128
-	B	aes129plus
-
-aes0to15:
-	CBZ	R2, aes0
-	VEOR	V2.B16, V2.B16, V2.B16
-	TBZ	$3, R2, less_than_8
-	VLD1.P	8(R0), V2.D[0]
-
-less_than_8:
-	TBZ	$2, R2, less_than_4
-	VLD1.P	4(R0), V2.S[2]
-
-less_than_4:
-	TBZ	$1, R2, less_than_2
-	VLD1.P	2(R0), V2.H[6]
-
-less_than_2:
-	TBZ	$0, R2, done
-	VLD1	(R0), V2.B[14]
-done:
-	AESE	V0.B16, V2.B16
-	AESMC	V2.B16, V2.B16
-	AESE	V0.B16, V2.B16
-	AESMC	V2.B16, V2.B16
-	AESE	V0.B16, V2.B16
-	AESMC	V2.B16, V2.B16
-
-	VMOV	V2.D[0], R0
-	RET
-
-aes0:
-	VMOV	V0.D[0], R0
-	RET
-
-aes16:
-	VLD1	(R0), [V2.B16]
-	B	done
-
-aes17to32:
-	// make second seed
-	VLD1	(R4), [V1.B16]
-	AESE	V30.B16, V1.B16
-	AESMC	V1.B16, V1.B16
-	SUB	$16, R2, R10
-	VLD1.P	(R0)(R10), [V2.B16]
-	VLD1	(R0), [V3.B16]
-
-	AESE	V0.B16, V2.B16
-	AESMC	V2.B16, V2.B16
-	AESE	V1.B16, V3.B16
-	AESMC	V3.B16, V3.B16
-
-	AESE	V0.B16, V2.B16
-	AESMC	V2.B16, V2.B16
-	AESE	V1.B16, V3.B16
-	AESMC	V3.B16, V3.B16
-
-	AESE	V0.B16, V2.B16
-	AESE	V1.B16, V3.B16
-
-	VEOR	V3.B16, V2.B16, V2.B16
-
-	VMOV	V2.D[0], R0
-	RET
-
-aes33to64:
-	VLD1	(R4), [V1.B16, V2.B16, V3.B16]
-	AESE	V30.B16, V1.B16
-	AESMC	V1.B16, V1.B16
-	AESE	V30.B16, V2.B16
-	AESMC	V2.B16, V2.B16
-	AESE	V30.B16, V3.B16
-	AESMC	V3.B16, V3.B16
-	SUB	$32, R2, R10
-
-	VLD1.P	(R0)(R10), [V4.B16, V5.B16]
-	VLD1	(R0), [V6.B16, V7.B16]
-
-	AESE	V0.B16, V4.B16
-	AESMC	V4.B16, V4.B16
-	AESE	V1.B16, V5.B16
-	AESMC	V5.B16, V5.B16
-	AESE	V2.B16, V6.B16
-	AESMC	V6.B16, V6.B16
-	AESE	V3.B16, V7.B16
-	AESMC	V7.B16, V7.B16
-
-	AESE	V0.B16, V4.B16
-	AESMC	V4.B16, V4.B16
-	AESE	V1.B16, V5.B16
-	AESMC	V5.B16, V5.B16
-	AESE	V2.B16, V6.B16
-	AESMC	V6.B16, V6.B16
-	AESE	V3.B16, V7.B16
-	AESMC	V7.B16, V7.B16
-
-	AESE	V0.B16, V4.B16
-	AESE	V1.B16, V5.B16
-	AESE	V2.B16, V6.B16
-	AESE	V3.B16, V7.B16
-
-	VEOR	V6.B16, V4.B16, V4.B16
-	VEOR	V7.B16, V5.B16, V5.B16
-	VEOR	V5.B16, V4.B16, V4.B16
-
-	VMOV	V4.D[0], R0
-	RET
-
-aes65to128:
-	VLD1.P	64(R4), [V1.B16, V2.B16, V3.B16, V4.B16]
-	VLD1	(R4), [V5.B16, V6.B16, V7.B16]
-	AESE	V30.B16, V1.B16
-	AESMC	V1.B16, V1.B16
-	AESE	V30.B16, V2.B16
-	AESMC	V2.B16, V2.B16
-	AESE	V30.B16, V3.B16
-	AESMC	V3.B16, V3.B16
-	AESE	V30.B16, V4.B16
-	AESMC	V4.B16, V4.B16
-	AESE	V30.B16, V5.B16
-	AESMC	V5.B16, V5.B16
-	AESE	V30.B16, V6.B16
-	AESMC	V6.B16, V6.B16
-	AESE	V30.B16, V7.B16
-	AESMC	V7.B16, V7.B16
-
-	SUB	$64, R2, R10
-	VLD1.P	(R0)(R10), [V8.B16, V9.B16, V10.B16, V11.B16]
-	VLD1	(R0), [V12.B16, V13.B16, V14.B16, V15.B16]
-	AESE	V0.B16,	 V8.B16
-	AESMC	V8.B16,  V8.B16
-	AESE	V1.B16,	 V9.B16
-	AESMC	V9.B16,  V9.B16
-	AESE	V2.B16, V10.B16
-	AESMC	V10.B16,  V10.B16
-	AESE	V3.B16, V11.B16
-	AESMC	V11.B16,  V11.B16
-	AESE	V4.B16, V12.B16
-	AESMC	V12.B16,  V12.B16
-	AESE	V5.B16, V13.B16
-	AESMC	V13.B16,  V13.B16
-	AESE	V6.B16, V14.B16
-	AESMC	V14.B16,  V14.B16
-	AESE	V7.B16, V15.B16
-	AESMC	V15.B16,  V15.B16
-
-	AESE	V0.B16,	 V8.B16
-	AESMC	V8.B16,  V8.B16
-	AESE	V1.B16,	 V9.B16
-	AESMC	V9.B16,  V9.B16
-	AESE	V2.B16, V10.B16
-	AESMC	V10.B16,  V10.B16
-	AESE	V3.B16, V11.B16
-	AESMC	V11.B16,  V11.B16
-	AESE	V4.B16, V12.B16
-	AESMC	V12.B16,  V12.B16
-	AESE	V5.B16, V13.B16
-	AESMC	V13.B16,  V13.B16
-	AESE	V6.B16, V14.B16
-	AESMC	V14.B16,  V14.B16
-	AESE	V7.B16, V15.B16
-	AESMC	V15.B16,  V15.B16
-
-	AESE	V0.B16,	 V8.B16
-	AESE	V1.B16,	 V9.B16
-	AESE	V2.B16, V10.B16
-	AESE	V3.B16, V11.B16
-	AESE	V4.B16, V12.B16
-	AESE	V5.B16, V13.B16
-	AESE	V6.B16, V14.B16
-	AESE	V7.B16, V15.B16
-
-	VEOR	V12.B16, V8.B16, V8.B16
-	VEOR	V13.B16, V9.B16, V9.B16
-	VEOR	V14.B16, V10.B16, V10.B16
-	VEOR	V15.B16, V11.B16, V11.B16
-	VEOR	V10.B16, V8.B16, V8.B16
-	VEOR	V11.B16, V9.B16, V9.B16
-	VEOR	V9.B16, V8.B16, V8.B16
-
-	VMOV	V8.D[0], R0
-	RET
-
-aes129plus:
-	PRFM (R0), PLDL1KEEP
-	VLD1.P	64(R4), [V1.B16, V2.B16, V3.B16, V4.B16]
-	VLD1	(R4), [V5.B16, V6.B16, V7.B16]
-	AESE	V30.B16, V1.B16
-	AESMC	V1.B16, V1.B16
-	AESE	V30.B16, V2.B16
-	AESMC	V2.B16, V2.B16
-	AESE	V30.B16, V3.B16
-	AESMC	V3.B16, V3.B16
-	AESE	V30.B16, V4.B16
-	AESMC	V4.B16, V4.B16
-	AESE	V30.B16, V5.B16
-	AESMC	V5.B16, V5.B16
-	AESE	V30.B16, V6.B16
-	AESMC	V6.B16, V6.B16
-	AESE	V30.B16, V7.B16
-	AESMC	V7.B16, V7.B16
-	ADD	R0, R2, R10
-	SUB	$128, R10, R10
-	VLD1.P	64(R10), [V8.B16, V9.B16, V10.B16, V11.B16]
-	VLD1	(R10), [V12.B16, V13.B16, V14.B16, V15.B16]
-	SUB	$1, R2, R2
-	LSR	$7, R2, R2
-
-aesloop:
-	AESE	V8.B16,	 V0.B16
-	AESMC	V0.B16,  V0.B16
-	AESE	V9.B16,	 V1.B16
-	AESMC	V1.B16,  V1.B16
-	AESE	V10.B16, V2.B16
-	AESMC	V2.B16,  V2.B16
-	AESE	V11.B16, V3.B16
-	AESMC	V3.B16,  V3.B16
-	AESE	V12.B16, V4.B16
-	AESMC	V4.B16,  V4.B16
-	AESE	V13.B16, V5.B16
-	AESMC	V5.B16,  V5.B16
-	AESE	V14.B16, V6.B16
-	AESMC	V6.B16,  V6.B16
-	AESE	V15.B16, V7.B16
-	AESMC	V7.B16,  V7.B16
-
-	VLD1.P	64(R0), [V8.B16, V9.B16, V10.B16, V11.B16]
-	AESE	V8.B16,	 V0.B16
-	AESMC	V0.B16,  V0.B16
-	AESE	V9.B16,	 V1.B16
-	AESMC	V1.B16,  V1.B16
-	AESE	V10.B16, V2.B16
-	AESMC	V2.B16,  V2.B16
-	AESE	V11.B16, V3.B16
-	AESMC	V3.B16,  V3.B16
-
-	VLD1.P	64(R0), [V12.B16, V13.B16, V14.B16, V15.B16]
-	AESE	V12.B16, V4.B16
-	AESMC	V4.B16,  V4.B16
-	AESE	V13.B16, V5.B16
-	AESMC	V5.B16,  V5.B16
-	AESE	V14.B16, V6.B16
-	AESMC	V6.B16,  V6.B16
-	AESE	V15.B16, V7.B16
-	AESMC	V7.B16,  V7.B16
-	SUB	$1, R2, R2
-	CBNZ	R2, aesloop
-
-	AESE	V8.B16,	 V0.B16
-	AESMC	V0.B16,  V0.B16
-	AESE	V9.B16,	 V1.B16
-	AESMC	V1.B16,  V1.B16
-	AESE	V10.B16, V2.B16
-	AESMC	V2.B16,  V2.B16
-	AESE	V11.B16, V3.B16
-	AESMC	V3.B16,  V3.B16
-	AESE	V12.B16, V4.B16
-	AESMC	V4.B16,  V4.B16
-	AESE	V13.B16, V5.B16
-	AESMC	V5.B16,  V5.B16
-	AESE	V14.B16, V6.B16
-	AESMC	V6.B16,  V6.B16
-	AESE	V15.B16, V7.B16
-	AESMC	V7.B16,  V7.B16
-
-	AESE	V8.B16,	 V0.B16
-	AESMC	V0.B16,  V0.B16
-	AESE	V9.B16,	 V1.B16
-	AESMC	V1.B16,  V1.B16
-	AESE	V10.B16, V2.B16
-	AESMC	V2.B16,  V2.B16
-	AESE	V11.B16, V3.B16
-	AESMC	V3.B16,  V3.B16
-	AESE	V12.B16, V4.B16
-	AESMC	V4.B16,  V4.B16
-	AESE	V13.B16, V5.B16
-	AESMC	V5.B16,  V5.B16
-	AESE	V14.B16, V6.B16
-	AESMC	V6.B16,  V6.B16
-	AESE	V15.B16, V7.B16
-	AESMC	V7.B16,  V7.B16
-
-	AESE	V8.B16,	 V0.B16
-	AESE	V9.B16,	 V1.B16
-	AESE	V10.B16, V2.B16
-	AESE	V11.B16, V3.B16
-	AESE	V12.B16, V4.B16
-	AESE	V13.B16, V5.B16
-	AESE	V14.B16, V6.B16
-	AESE	V15.B16, V7.B16
-
-	VEOR	V0.B16, V1.B16, V0.B16
-	VEOR	V2.B16, V3.B16, V2.B16
-	VEOR	V4.B16, V5.B16, V4.B16
-	VEOR	V6.B16, V7.B16, V6.B16
-	VEOR	V0.B16, V2.B16, V0.B16
-	VEOR	V4.B16, V6.B16, V4.B16
-	VEOR	V4.B16, V0.B16, V0.B16
-
-	VMOV	V0.D[0], R0
-	RET
-
-TEXT runtime·procyield(SB),NOSPLIT,$0-0
+TEXT runtime·procyieldAsm(SB),NOSPLIT,$0-0
 	MOVWU	cycles+0(FP), R0
-again:
-	YIELD
-	SUBW	$1, R0
-	CBNZ	R0, again
+	CBZ	 R0, done
+	//Prevent speculation of subsequent counter/timer reads and memory accesses.
+	ISB     $15
+	// If the delay is very short, just return.
+	// Hardcode 18ns as the first ISB delay.
+	CMP     $18, R0
+	BLS     done
+	// Adjust for overhead of initial ISB.
+	SUB     $18, R0, R0
+	// Convert the delay from nanoseconds to counter/timer ticks.
+	// Read the counter/timer frequency.
+	// delay_ticks = (delay * CNTFRQ_EL0) / 1e9
+	// With the below simplifications and adjustments,
+	// we are usually within 2% of the correct value:
+	// delay_ticks = (delay + delay / 16) * CNTFRQ_EL0 >> 30
+	MRS     CNTFRQ_EL0, R1
+	ADD     R0>>4, R0, R0
+	MUL     R1, R0, R0
+	LSR     $30, R0, R0
+	CBZ     R0, done
+	// start = current counter/timer value
+	MRS     CNTVCT_EL0, R2
+delay:
+	// Delay using ISB for all ticks.
+	ISB     $15
+	// Substract and compare to handle counter roll-over.
+	// counter_read() - start < delay_ticks
+	MRS     CNTVCT_EL0, R1
+	SUB     R2, R1, R1
+	CMP     R0, R1
+	BCC     delay
+done:
 	RET
 
 // Save state of caller into g->sched,
@@ -1007,12 +766,7 @@ TEXT ·asmcgocall_no_g(SB),NOSPLIT,$0-16
 // aligned appropriately for the gcc ABI.
 // See cgocall.go for more details.
 TEXT ·asmcgocall(SB),NOSPLIT,$0-20
-	MOVD	fn+0(FP), R1
-	MOVD	arg+8(FP), R0
-
-	MOVD	RSP, R2		// save original stack pointer
 	CBZ	g, nosave
-	MOVD	g, R4
 
 	// Figure out if we need to switch to m->g0 stack.
 	// We get called to create new OS threads too, and those
@@ -1025,6 +779,23 @@ TEXT ·asmcgocall(SB),NOSPLIT,$0-20
 	MOVD	m_g0(R8), R3
 	CMP	R3, g
 	BEQ	nosave
+
+	// running on a user stack. Figure out if we're running
+	// secret code and clear our registers if so.
+#ifdef GOEXPERIMENT_runtimesecret
+	MOVW 	g_secret(g), R5
+	CBZ		R5, nosecret
+	BL 	·secretEraseRegisters(SB)
+	// restore g0 back into R3
+	MOVD	g_m(g), R3
+	MOVD	m_g0(R3), R3
+
+nosecret:
+#endif
+	MOVD	fn+0(FP), R1
+	MOVD	arg+8(FP), R0
+	MOVD	RSP, R2
+	MOVD	g, R4
 
 	// Switch to system stack.
 	MOVD	R0, R9	// gosave_systemstack_switch<> and save_g might clobber R0
@@ -1068,11 +839,10 @@ nosave:
 	// This code is like the above sequence but without saving/restoring g
 	// and without worrying about the stack moving out from under us
 	// (because we're on a system stack, not a goroutine stack).
-	// The above code could be used directly if already on a system stack,
-	// but then the only path through this code would be a rare case on Solaris.
-	// Using this code for all "already on system stack" calls exercises it more,
-	// which should help keep it correct.
-	MOVD	RSP, R13
+	MOVD	fn+0(FP), R1
+	MOVD	arg+8(FP), R0
+	MOVD	RSP, R2
+	MOVD 	R2, R13
 	SUB	$16, R13
 	MOVD	R13, RSP
 	MOVD	$0, R4
@@ -1165,23 +935,24 @@ havem:
 	MOVD	(g_sched+gobuf_sp)(g), R4 // prepare stack as R4
 	MOVD	(g_sched+gobuf_pc)(g), R5
 	MOVD	R5, -48(R4)
-	MOVD	(g_sched+gobuf_bp)(g), R5
-	MOVD	R5, -56(R4)
+	MOVD	(g_sched+gobuf_bp)(g), R6
+	MOVD	R6, -56(R4)
+
 	// Gather our arguments into registers.
-	MOVD	fn+0(FP), R1
-	MOVD	frame+8(FP), R2
-	MOVD	ctxt+16(FP), R3
-	MOVD	$-48(R4), R0 // maintain 16-byte SP alignment
-	MOVD	R0, RSP	// switch stack
-	MOVD	R1, 8(RSP)
-	MOVD	R2, 16(RSP)
-	MOVD	R3, 24(RSP)
-	MOVD	$runtime·cgocallbackg(SB), R0
-	CALL	(R0) // indirect call to bypass nosplit check. We're on a different stack now.
+	MOVD	fn+0(FP), R0
+	MOVD	frame+8(FP), R1
+	MOVD	ctxt+16(FP), R2
+
+	SUB	$48, R4		// Allocate the same frame size on the g stack
+	MOVD	R4, RSP		// switch stack
+	MOVD	$runtime·cgocallbackg<ABIInternal>(SB), R11
+	CALL	(R11) // indirect call to bypass nosplit check. We're on a different stack now.
 
 	// Restore g->sched (== m->curg->sched) from saved values.
 	MOVD	0(RSP), R5
 	MOVD	R5, (g_sched+gobuf_pc)(g)
+	MOVD	-8(RSP), R6
+	MOVD	R6, (g_sched+gobuf_bp)(g)
 	MOVD	RSP, R4
 	ADD	$48, R4, R4
 	MOVD	R4, (g_sched+gobuf_sp)(g)
@@ -1277,11 +1048,6 @@ TEXT runtime·addmoduledata(SB),NOSPLIT,$0-0
 	MOVD	R0, runtime·lastmoduledatap(SB)
 	MOVD	8(RSP), R27
 	ADD	$0x10, RSP
-	RET
-
-TEXT ·checkASM(SB),NOSPLIT,$0-1
-	MOVW	$1, R3
-	MOVB	R3, ret+0(FP)
 	RET
 
 // gcWriteBarrier informs the GC about heap pointer writes.
@@ -1574,70 +1340,22 @@ TEXT runtime·debugCallPanicked(SB),NOSPLIT,$16-16
 	BREAK
 	RET
 
-// Note: these functions use a special calling convention to save generated code space.
-// Arguments are passed in registers, but the space for those arguments are allocated
-// in the caller's stack frame. These stubs write the args into that stack space and
-// then tail call to the corresponding runtime handler.
-// The tail call makes these stubs disappear in backtraces.
-//
-// Defined as ABIInternal since the compiler generates ABIInternal
-// calls to it directly and it does not use the stack-based Go ABI.
-TEXT runtime·panicIndex<ABIInternal>(SB),NOSPLIT,$0-16
-	JMP	runtime·goPanicIndex<ABIInternal>(SB)
-TEXT runtime·panicIndexU<ABIInternal>(SB),NOSPLIT,$0-16
-	JMP	runtime·goPanicIndexU<ABIInternal>(SB)
-TEXT runtime·panicSliceAlen<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R1, R0
-	MOVD	R2, R1
-	JMP	runtime·goPanicSliceAlen<ABIInternal>(SB)
-TEXT runtime·panicSliceAlenU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R1, R0
-	MOVD	R2, R1
-	JMP	runtime·goPanicSliceAlenU<ABIInternal>(SB)
-TEXT runtime·panicSliceAcap<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R1, R0
-	MOVD	R2, R1
-	JMP	runtime·goPanicSliceAcap<ABIInternal>(SB)
-TEXT runtime·panicSliceAcapU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R1, R0
-	MOVD	R2, R1
-	JMP	runtime·goPanicSliceAcapU<ABIInternal>(SB)
-TEXT runtime·panicSliceB<ABIInternal>(SB),NOSPLIT,$0-16
-	JMP	runtime·goPanicSliceB<ABIInternal>(SB)
-TEXT runtime·panicSliceBU<ABIInternal>(SB),NOSPLIT,$0-16
-	JMP	runtime·goPanicSliceBU<ABIInternal>(SB)
-TEXT runtime·panicSlice3Alen<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R2, R0
-	MOVD	R3, R1
-	JMP	runtime·goPanicSlice3Alen<ABIInternal>(SB)
-TEXT runtime·panicSlice3AlenU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R2, R0
-	MOVD	R3, R1
-	JMP	runtime·goPanicSlice3AlenU<ABIInternal>(SB)
-TEXT runtime·panicSlice3Acap<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R2, R0
-	MOVD	R3, R1
-	JMP	runtime·goPanicSlice3Acap<ABIInternal>(SB)
-TEXT runtime·panicSlice3AcapU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R2, R0
-	MOVD	R3, R1
-	JMP	runtime·goPanicSlice3AcapU<ABIInternal>(SB)
-TEXT runtime·panicSlice3B<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R1, R0
-	MOVD	R2, R1
-	JMP	runtime·goPanicSlice3B<ABIInternal>(SB)
-TEXT runtime·panicSlice3BU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R1, R0
-	MOVD	R2, R1
-	JMP	runtime·goPanicSlice3BU<ABIInternal>(SB)
-TEXT runtime·panicSlice3C<ABIInternal>(SB),NOSPLIT,$0-16
-	JMP	runtime·goPanicSlice3C<ABIInternal>(SB)
-TEXT runtime·panicSlice3CU<ABIInternal>(SB),NOSPLIT,$0-16
-	JMP	runtime·goPanicSlice3CU<ABIInternal>(SB)
-TEXT runtime·panicSliceConvert<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVD	R2, R0
-	MOVD	R3, R1
-	JMP	runtime·goPanicSliceConvert<ABIInternal>(SB)
+TEXT runtime·panicBounds<ABIInternal>(SB),NOSPLIT,$144-0
+	NO_LOCAL_POINTERS
+	// Save all 16 int registers that could have an index in them.
+	// They may be pointers, but if they are they are dead.
+	STP	(R0, R1), 24(RSP)
+	STP	(R2, R3), 40(RSP)
+	STP	(R4, R5), 56(RSP)
+	STP	(R6, R7), 72(RSP)
+	STP	(R8, R9), 88(RSP)
+	STP	(R10, R11), 104(RSP)
+	STP	(R12, R13), 120(RSP)
+	STP	(R14, R15), 136(RSP)
+	MOVD	LR, R0		// PC immediately after call to panicBounds
+	ADD	$24, RSP, R1	// pointer to save area
+	CALL	runtime·panicBounds64<ABIInternal>(SB)
+	RET
 
 TEXT ·getfp<ABIInternal>(SB),NOSPLIT|NOFRAME,$0
 	MOVD R29, R0

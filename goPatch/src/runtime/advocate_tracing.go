@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace.go
 // Brief: Functionality for tracing
 //
 // Author: Erik Kassubek
-// Created: 2024-04-10
 //
 // License: BSD-3-Clause
 

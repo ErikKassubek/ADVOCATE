@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"go/build/constraint"
 	"io"
 	"io/fs"
 	"log"
@@ -380,7 +381,7 @@ func findgoversion() string {
 		if i := strings.Index(b, "\n"); i >= 0 {
 			rest := b[i+1:]
 			b = chomp(b[:i])
-			for _, line := range strings.Split(rest, "\n") {
+			for line := range strings.SplitSeq(rest, "\n") {
 				f := strings.Fields(line)
 				if len(f) == 0 {
 					continue
@@ -418,12 +419,7 @@ func findgoversion() string {
 		return chomp(readfile(path))
 	}
 
-	// Show a nicer error message if this isn't a Git repo.
-	if !isGitRepo() {
-		fatalf("FAILED: not a Git repo; must put a VERSION file in $GOROOT")
-	}
-
-	// Otherwise, use Git.
+	// Otherwise, use Git or jj.
 	//
 	// Include 1.x base version, hash, and date in the version.
 	// Make sure it includes the substring "devel", but otherwise
@@ -442,7 +438,16 @@ func findgoversion() string {
 		fatalf("internal/goversion/goversion.go does not contain 'const Version = ...'")
 	}
 	version := fmt.Sprintf("go1.%s-devel_", m[1])
-	version += chomp(run(goroot, CheckExit, "git", "log", "-n", "1", "--format=format:%h %cd", "HEAD"))
+	switch {
+	case isGitRepo():
+		version += chomp(run(goroot, CheckExit, "git", "log", "-n", "1", "--format=format:%h %cd", "HEAD"))
+	case isJJRepo():
+		const jjTemplate = `commit_id.short(10) ++ " " ++ committer.timestamp().format("%c %z")`
+		version += chomp(run(goroot, CheckExit, "jj", "--no-pager", "--color=never", "log", "--no-graph", "-r", "@", "-T", jjTemplate))
+	default:
+		// Show a nicer error message if this isn't a Git or jj repo.
+		fatalf("FAILED: not a Git or jj repo; must put a VERSION file in $GOROOT")
+	}
 
 	// Cache version.
 	writefile(version, path, 0)
@@ -487,6 +492,16 @@ func isGitRepo() bool {
 		gitDir = filepath.Join(goroot, gitDir)
 	}
 	return isdir(gitDir)
+}
+
+// isJJRepo reports whether the working directory is inside a jj repository.
+func isJJRepo() bool {
+	// Don't check the error from jj, similarly to what we do in isGitRepo.
+	jjDir := chomp(run(goroot, 0, "jj", "--no-pager", "--color=never", "root"))
+	if !filepath.IsAbs(jjDir) {
+		jjDir = filepath.Join(goroot, jjDir)
+	}
+	return isdir(jjDir)
 }
 
 /*
@@ -624,14 +639,9 @@ func mustLinkExternal(goos, goarch string, cgoEnabled bool) bool {
 			// Internally linking cgo is incomplete on some architectures.
 			// https://golang.org/issue/14449
 			return true
-		case "arm64":
-			if goos == "windows" {
-				// windows/arm64 internal linking is not implemented.
-				return true
-			}
 		case "ppc64":
-			// Big Endian PPC64 cgo internal linking is not implemented for aix or linux.
-			if goos == "aix" || goos == "linux" {
+			// Big Endian PPC64 cgo internal linking is not implemented for aix.
+			if goos == "aix" {
 				return true
 			}
 		}
@@ -914,6 +924,7 @@ func runInstall(pkg string, ch chan struct{}) {
 		"-D", "GOARCH_" + goarch,
 		"-D", "GOOS_GOARCH_" + goos + "_" + goarch,
 		"-p", pkg,
+		"-std",
 	}
 	if goarch == "mips" || goarch == "mipsle" {
 		// Define GOMIPS_value from gomips.
@@ -1137,7 +1148,7 @@ func shouldbuild(file, pkg string) bool {
 	}
 
 	// Check file contents for //go:build lines.
-	for _, p := range strings.Split(readfile(file), "\n") {
+	for p := range strings.SplitSeq(readfile(file), "\n") {
 		p = strings.TrimSpace(p)
 		if p == "" {
 			continue
@@ -1157,11 +1168,12 @@ func shouldbuild(file, pkg string) bool {
 			break
 		}
 		if strings.HasPrefix(p, "//go:build ") {
-			matched, err := matchexpr(p[len("//go:build "):])
+			c, err := constraint.Parse(p)
 			if err != nil {
-				errprintf("%s: %v", file, err)
+				errprintf("%s: parsing //go:build line: %v", file, err)
+				return false
 			}
-			return matched
+			return c.Eval(matchtag)
 		}
 	}
 
@@ -1397,7 +1409,7 @@ var (
 	binExesIncludedInDistpack = []string{"cmd/go", "cmd/gofmt"}
 
 	// Keep in sync with the filter in cmd/distpack/pack.go.
-	toolsIncludedInDistpack = []string{"cmd/asm", "cmd/cgo", "cmd/compile", "cmd/cover", "cmd/link", "cmd/preprofile", "cmd/vet"}
+	toolsIncludedInDistpack = []string{"cmd/asm", "cmd/cgo", "cmd/compile", "cmd/cover", "cmd/fix", "cmd/link", "cmd/preprofile", "cmd/vet"}
 
 	// We could install all tools in "cmd", but is unnecessary because we will
 	// remove them in distpack, so instead install the tools that will actually
@@ -1785,7 +1797,7 @@ var cgoEnabled = map[string]bool{
 	"linux/arm":       true,
 	"linux/arm64":     true,
 	"linux/loong64":   true,
-	"linux/ppc64":     false,
+	"linux/ppc64":     true,
 	"linux/ppc64le":   true,
 	"linux/mips":      true,
 	"linux/mipsle":    true,
@@ -1810,7 +1822,6 @@ var cgoEnabled = map[string]bool{
 	"openbsd/amd64":   true,
 	"openbsd/arm":     true,
 	"openbsd/arm64":   true,
-	"openbsd/mips64":  true,
 	"openbsd/ppc64":   false,
 	"openbsd/riscv64": true,
 	"plan9/386":       false,
@@ -1819,7 +1830,6 @@ var cgoEnabled = map[string]bool{
 	"solaris/amd64":   true,
 	"windows/386":     true,
 	"windows/amd64":   true,
-	"windows/arm":     false,
 	"windows/arm64":   true,
 }
 
@@ -1828,9 +1838,8 @@ var cgoEnabled = map[string]bool{
 // get filtered out of cgoEnabled for 'dist list'.
 // See go.dev/issue/56679.
 var broken = map[string]bool{
-	"linux/sparc64":  true, // An incomplete port. See CL 132155.
-	"openbsd/mips64": true, // Broken: go.dev/issue/58110.
-	"windows/arm":    true, // Broken: go.dev/issue/68552.
+	"freebsd/riscv64": true, // Broken: go.dev/issue/76475.
+	"linux/sparc64":   true, // An incomplete port. See CL 132155.
 }
 
 // List of platforms which are first class ports. See go.dev/issue/38874.
@@ -2017,7 +2026,7 @@ func cmdlist() {
 }
 
 func setNoOpt() {
-	for _, gcflag := range strings.Split(gogcflags, " ") {
+	for gcflag := range strings.SplitSeq(gogcflags, " ") {
 		if gcflag == "-N" || gcflag == "-l" {
 			noOpt = true
 			break

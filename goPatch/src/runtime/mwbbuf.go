@@ -215,7 +215,7 @@ func wbBufFlush1(pp *p) {
 	// pointers we greyed. We use the buffer itself to temporarily
 	// record greyed pointers.
 	//
-	// TODO: Should scanobject/scanblock just stuff pointers into
+	// TODO: Should scanObject/scanblock just stuff pointers into
 	// the wbBuf? Then this would become the sole greying path.
 	//
 	// TODO: We could avoid shading any of the "new" pointers in
@@ -237,7 +237,9 @@ func wbBufFlush1(pp *p) {
 			// path to reduce the rate of flushes?
 			continue
 		}
-		if tryDeferToSpanScan(ptr, gcw) {
+		// ADVOCATE-START
+		if tryDeferToSpanScan(ptr, gcw, 0) {
+			// ADVOCATE-END
 			continue
 		}
 		obj, span, objIndex := findObject(ptr, 0, 0)

@@ -797,16 +797,6 @@ func TestResetResult(t *testing.T) {
 // consistently indicates whether a value can be read from the channel.
 // Issue #69312.
 func testStopResetResult(t *testing.T, testStop bool) {
-	for _, name := range []string{"0", "1", "2"} {
-		t.Run("asynctimerchan="+name, func(t *testing.T) {
-			testStopResetResultGODEBUG(t, testStop, name)
-		})
-	}
-}
-
-func testStopResetResultGODEBUG(t *testing.T, testStop bool, godebug string) {
-	t.Setenv("GODEBUG", "asynctimerchan="+godebug)
-
 	stopOrReset := func(timer *Timer) bool {
 		if testStop {
 			return timer.Stop()
@@ -937,7 +927,6 @@ func BenchmarkParallelTimerLatency(b *testing.B) {
 		wg.Add(timerCount)
 		atomic.StoreInt32(&count, 0)
 		for j := 0; j < timerCount; j++ {
-			j := j
 			expectedWakeup := Now().Add(delay)
 			AfterFunc(delay, func() {
 				late := Since(expectedWakeup)
@@ -1011,7 +1000,6 @@ func BenchmarkStaggeredTickerLatency(b *testing.B) {
 					var wg sync.WaitGroup
 					wg.Add(tickerCount)
 					for j := 0; j < tickerCount; j++ {
-						j := j
 						doWork(delay / Duration(gmp))
 						expectedWakeup := Now().Add(delay)
 						ticker := NewTicker(delay)

@@ -1,10 +1,9 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_replay.go
 // Brief: Advocate Replay
 //
 // Author: Erik Kassubek
-// Created: 2024-12-10
 //
 // License: BSD-3-Clause
 

@@ -7,7 +7,7 @@ We want to avoid this. We therefore directly integrate the [recording](recording
 and [replay](replay.md) creating an modified go runtime.
 
 The runtime can be found in the [goPatch](../goPatch/) folder.
-It is currently based on go1.25.1
+It is currently based on go1.27.0
 
 Before we can use this runtime, we first need to build the runtime.
 This can be done by running [this](../goPatch/src/make.bash) script,
@@ -34,9 +34,9 @@ All modifications have been annotated with ADVOCATE-START and ADVOCATE-END.
 
 ### Added files
 
-- [src/advocate/advocate_fuzzing.go](../goPatch/src/advocate/advocate_fuzzing.go)
-- [src/advocate/advocate_replay.go](../goPatch/src/advocate/advocate_replay.go)
-- [src/advocate/advocate_tracing.go](../goPatch/src/advocate/advocate_tracing.go)
+- [src/advocatego/advocate_fuzzing.go](../goPatch/src/advocatego/advocate_fuzzing.go)
+- [src/advocatego/advocate_replay.go](../goPatch/src/advocatego/advocate_replay.go)
+- [src/advocatego/advocate_tracing.go](../goPatch/src/advocatego/advocate_tracing.go)
 - [src/runtime/advocate_exit.go](../goPatch/src/runtime/advocate_exit.go)
 - [src/runtime/advocate_fuzzing.go](../goPatch/src/runtime/advocate_fuzzing.go)
 - [src/runtime/advocate_ids.go](../goPatch/src/runtime/advocate_ids.go)
@@ -56,6 +56,8 @@ All modifications have been annotated with ADVOCATE-START and ADVOCATE-END.
 - [src/runtime/advocate_tracing.go](../goPatch/src/runtime/advocate_tracing.go)
 - [src/runtime/advocate_util.go](../goPatch/src/runtime/advocate_util.go)
 - [src/runtime/advocate_wait.go](../goPatch/src/runtime/advocate_wait.go)
+- [src/sync/atomic/advocate_atomic.go](../goPatch/src/sync/atomic/advocate_atomic.go)
+- [src/sync/atomic/advocate_atomic_type.go](../goPatch/src/sync/atomic/advocate_atomic_type.go)
 - [src/cmd/compile/internal/walk/advocate.go](../goPatch/src/cmd/compile/internal/ssawalken/advocate.go)
 
 ### Modified files
@@ -73,6 +75,12 @@ Modifications in files are marked with
 - [src/runtime/chan.go](../goPatch/src/runtime/chan.go)
 - [src/runtime/select.go](../goPatch/src/runtime/select.go)
 - [src/runtime/panic.go](../goPatch/src/runtime/panic.go)
+- [src/runtime/mgcmark.go](../goPatch/src/runtime/mgcmark.go)
+- [src/runtime/mgcmark_greenteagc.go](../goPatch/src/runtime/mgcmark_greenteagc.go)
+- [src/runtime/mgcmark_nogreenteagc.go](../goPatch/src/runtime/mgcmark_nogreenteagc.go)
+- [src/runtime/mwbbuf.go](../goPatch/src/runtime/mwbbuf.go)
+- [src/runtime/malloc.go](../goPatch/src/runtime/malloc.go)
+- [src/runtime/mheap.go](../goPatch/src/runtime/mheap.go)
 - [src/sync/cond.go](../goPatch/src/sync/cond.go)
 - [src/sync/mutex.go](../goPatch/src/sync/mutex.go)
 - [src/sync/rwmutex.go](../goPatch/src/sync/rwmutex.go)
@@ -84,6 +92,7 @@ Modifications in files are marked with
 - [src/sync/atomic/doc.go](../goPatch/src/sync/atomic/doc.go)
 - [src/sync/atomic/type.go](../goPatch/src/sync/atomic/type.go)
 - [src/testing/testing.go](../goPatch/src/testing/testing.go)
+- [src/go/doc/testdata/testing.go](../goPatch/src/go/doc/testdata/testing.go)
 - [src/cmd/compile/internal/ssagen/intrinsics.go](../goPatch/src/cmd/compile/internal/ssagen/intrinsics.go)
 - [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go)
 - [src/cmd/compile/internal/walk/walk.go](../goPatch/src/cmd/compile/internal/walk/walk.go)
@@ -92,5 +101,6 @@ Modifications in files are marked with
 - [src/cmd/compile/internal/base/flag.go](../goPatch/src/cmd/compile/internal/base/flag.go)
 - [src/cmd/compile/internal/pkginit/init.go](../goPatch/src/cmd/compile/internal/pkginit/init.go)
 - [src/cmd/go/internal/load/pkg.go](../goPatch/src/cmd/go/internal/load/pkg.go)
+- [src/cmd/link/internal/loader/loader.go](../goPatch/src/cmd/link/internal/loader/loader.go)
 - [src/cmd/compile/internal/types2/resolver.go](../goPatch/src/cmd/compile/internal/types2/resolver.go)
-- [src/go/doc/testdata/testing.go](../goPatch/src/go/doc/testdata/testing.go)
+- [src/internal/sync/mutex.go](../goPatch/src/internal/sync/mutex.go)

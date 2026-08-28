@@ -10,10 +10,8 @@
 package s_blocking
 
 import (
-	"advocate/static/static/code"
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 	"go/token"
 )
 
@@ -30,16 +28,16 @@ func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, 
 	}
 
 	if forward {
-		log.Debug("FORWARD RECV")
-		for _, res := range iwi.Resource[0] {
-			pos := res.Alloc().Pos()
-			l, err := code.GetLineContent(pos)
-			if err != nil {
-				log.Error(err)
-			} else {
-				log.Debug2("Pos: ", l)
-			}
-		}
+		// TODO: implement
+		// log.Debug("FORWARD RECV")
+		// for _, res := range sendForward {
+		// 	l, err := code.GetLineContent(pos)
+		// 	if err != nil {
+		// 		log.Error(err)
+		// 	} else {
+		// 		log.Debug2("Pos: ", l)
+		// 	}
+		// }
 	}
 
 	if receivedValue == nil {

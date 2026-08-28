@@ -122,7 +122,7 @@ func (this *Trace) AddTraceElementMutex(routine int, tReq string,
 		rw:          rwBool,
 		op:          opMInt,
 		suc:         sucBool,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -366,7 +366,7 @@ func (this *ElementMutex) StringGui() string {
 	} else {
 		res += ",f"
 	}
-	res += "," + this.Pos().String()
+	res += "\n" + this.Pos().Short()
 	return res
 }
 

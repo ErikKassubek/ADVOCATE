@@ -11,7 +11,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/consts"
 	"advocate/utils/flags"
 	"advocate/utils/types"
 	"errors"
@@ -88,8 +87,8 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef
 		name:        name,
 		ssaName:     funcNameToSSANane(name),
 		t:           tInt,
-		posDef:      newPosition(fileDef, lineDef),
-		posCall:     newPosition(fileCall, lineCall),
+		posDef:      NewPosition(fileDef, lineDef),
+		posCall:     NewPosition(fileCall, lineCall),
 		function:    getLastCall(routine),
 	}
 
@@ -155,8 +154,8 @@ func (this *ElementFunc) Line() int {
 	return this.posCall.line
 }
 
-func (this *ElementFunc) GetPosDef() string {
-	return fmt.Sprintf("%s%s%d", this.posCall.file, consts.PosSep, this.posCall.line)
+func (this *ElementFunc) PosDef() Position {
+	return this.posDef
 }
 
 // ========================================================
@@ -193,7 +192,7 @@ func (this *ElementFunc) IsSameElement(elem Element) bool {
 // ========================================================
 
 func (this *ElementFunc) String() string {
-	return fmt.Sprintf("F,%d,%s,%s,%s", this.t, this.name, this.GetPosDef(), this.Pos())
+	return fmt.Sprintf("F,%d,%s,%s,%s", this.t, this.name, this.PosDef(), this.Pos())
 }
 
 // String returns the simple string representation of the element with leading routine
@@ -209,7 +208,7 @@ func (this *ElementFunc) StringDebug() string {
 }
 
 func (this *ElementFunc) StringGui() string {
-	return fmt.Sprintf("F,%s,%s,%s", this.name, this.GetPosDef(), this.Pos())
+	return fmt.Sprintf("F,%s,%s\n%s", this.name, this.PosDef().Short(), this.Pos().Short())
 }
 
 // ========================================================

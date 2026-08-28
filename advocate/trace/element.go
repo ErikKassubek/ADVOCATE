@@ -12,7 +12,10 @@ package trace
 import (
 	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
+	"advocate/utils/flags"
 	"fmt"
+	"path/filepath"
+	"strings"
 )
 
 // ========================================================
@@ -364,8 +367,16 @@ type Position struct {
 	line int
 }
 
-func newPosition(file string, line int) Position {
+func NewPosition(file string, line int) Position {
 	return Position{file, line}
+}
+
+func (this Position) File() string {
+	return this.file
+}
+
+func (this Position) Line() int {
+	return this.line
 }
 
 func (this Position) copy() Position {
@@ -376,4 +387,21 @@ func (this Position) copy() Position {
 
 func (this Position) String() string {
 	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
+}
+
+func (this Position) Short() string {
+	pp := filepath.Dir(flags.ProgPath)
+	if strings.HasSuffix(flags.ProgPath, ".go") {
+		pp = filepath.Dir(pp)
+	}
+	shortFile := strings.TrimPrefix(this.file, pp)
+
+	if shortFile != this.file {
+		shortFile = "." + shortFile
+	} else if strings.Contains(shortFile, "/goPatch/") {
+		shortFile = "goPatch/" + strings.Split(shortFile, "/goPatch/")[1]
+	}
+	res := fmt.Sprintf("%s%s%d", shortFile, consts.PosSep, this.line)
+
+	return res
 }

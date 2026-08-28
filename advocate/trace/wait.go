@@ -114,7 +114,7 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 		op:          opWOp,
 		delta:       deltaInt,
 		val:         valInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -364,7 +364,7 @@ func (this *ElementWait) StringGui() string {
 	}
 
 	res += strconv.Itoa(this.delta) + "," + strconv.Itoa(this.val)
-	res += "," + this.Pos().String()
+	res += "\n" + this.Pos().Short()
 	return res
 }
 

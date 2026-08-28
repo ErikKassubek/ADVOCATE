@@ -4,7 +4,6 @@
 // Brief: Create trace viewer
 //
 // Author: Erik Kassubek
-// Created: 2026-06-22
 //
 // License: BSD-3-Clause
 
@@ -13,6 +12,8 @@
 package gui
 
 import (
+	"advocate/advoc/toolchain"
+	"advocate/analysis/a_base"
 	"advocate/trace"
 	"advocate/utils/io"
 	"advocate/utils/types"
@@ -38,6 +39,7 @@ func (this *window) openTraceViewer() {
 	tv.window = this.app.NewWindow("Trace")
 
 	tv.pathSelector = createPathSelector("Trace", &tv.path, tv.updateTrace, tv.window)
+
 	tv.closeButton = createButton("Close", tv.window.Close)
 
 	tv.traceViewer = createTraceViewer(0, 0)
@@ -53,6 +55,12 @@ func (this *window) openTraceViewer() {
 	tv.window.SetContent(content)
 
 	tv.window.Resize(fyne.NewSize(1728, 972))
+
+	if toolchain.LastMovedTraceDest != "" {
+		tv.pathSelector.setPath(toolchain.LastMovedTraceDest)
+		tv.updateTrace(toolchain.LastMovedTraceDest)
+	}
+
 	tv.window.Show()
 }
 
@@ -62,6 +70,8 @@ func (this *traceViewer) updateTrace(dir string) {
 		win.writeErr("Could not read trace: ", err)
 		return
 	}
+
+	this.trace = &a_base.MainTrace
 
 	elems := this.trace.AsRequestCommit()
 	this.trace.NormalizeRequestCommit()
@@ -94,7 +104,7 @@ func (this *traceViewer) updateTrace(dir string) {
 		request := false
 
 		if elem.Request() {
-			elem_name += "?"
+			// elem_name += "?"
 			request = true
 			reqCom[rout] = append(reqCom[rout], types.NewPair(row, 0))
 			inOp[rout] = true
@@ -110,7 +120,7 @@ func (this *traceViewer) updateTrace(dir string) {
 			}
 		}
 
-		this.AddEntry(rout, row, elem_name, removeTop, request)
+		this.AddEntry(rout, row, elem_name, request, removeTop)
 	}
 
 	// add sides between request and commit
@@ -129,9 +139,9 @@ func (this *traceViewer) updateTrace(dir string) {
 	this.rebuild()
 }
 
-func (this *traceViewer) AddEntry(rout, row int, text string, removeTop, request bool) {
+func (this *traceViewer) AddEntry(rout, row int, text string, request, commit bool) {
 	noBox := false
-	this.traceViewer.AddCell(rout, row, text, noBox, removeTop, request)
+	this.traceViewer.AddCell(rout, row, text, noBox, request, commit)
 }
 
 func (this *traceViewer) rebuild() {

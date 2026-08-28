@@ -19,6 +19,7 @@ import (
 // if ONLYONE is true, it will only search for one possible unblocking operaiton.
 // if ONLYONE is false, it will try to find all
 const ONLYONE = true
+const FORWARD = true
 
 type potenitalUnblock struct {
 	routine     int
@@ -180,13 +181,13 @@ func parseAllPaths(inst s_ssa.Instruction, rout int) ([]s_ssa.Instruction, *inst
 	case *s_ssa.InstructionSelect:
 		return ParseSelectAll(inst, rout, nil)
 	case *s_ssa.InstructionSend:
-		resInst, resIWI = ParseSend(inst, rout, nil)
+		resInst, resIWI = ParseSend(inst, rout, nil, FORWARD)
 	case *s_ssa.InstructionSlice:
 		resInst, resIWI = ParseSlice(inst, rout, nil)
 	case *s_ssa.InstructionStore:
 		resInst, resIWI = ParseStore(inst, rout, nil)
 	case *s_ssa.InstructionUnOp:
-		resInst, resIWI = ParseUnOp(inst, rout, nil)
+		resInst, resIWI = ParseUnOp(inst, rout, nil, FORWARD)
 	}
 
 	return []s_ssa.Instruction{resInst}, resIWI

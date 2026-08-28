@@ -25,6 +25,7 @@ func determineResouceToSSAAtTermination() {
 	// get the first relevant value in init
 	f := data.Ssa().InitFunc()
 	b := f.Blocks()[1]
+
 	for _, inst := range b.Instrs() {
 		if inst.InTrace() {
 			blocking.nextPerRout[1] = inst
@@ -226,13 +227,13 @@ func parse(inst s_ssa.Instruction, rout int, elem trace.Element) (s_ssa.Instruct
 	case *s_ssa.InstructionSelect:
 		return ParseSelect(inst, rout, elem)
 	case *s_ssa.InstructionSend:
-		return ParseSend(inst, rout, elem)
+		return ParseSend(inst, rout, elem, !FORWARD)
 	case *s_ssa.InstructionSlice:
 		return ParseSlice(inst, rout, elem)
 	case *s_ssa.InstructionStore:
 		return ParseStore(inst, rout, elem)
 	case *s_ssa.InstructionUnOp:
-		return ParseUnOp(inst, rout, elem)
+		return ParseUnOp(inst, rout, elem, !FORWARD)
 	default:
 		return inst.Next(), nil
 	}

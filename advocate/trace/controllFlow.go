@@ -88,7 +88,7 @@ func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, cho
 		numCases:    nc,
 		chosenCase:  cc,
 		op:          o,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		function:    getLastCall(routine),
 	}
 
@@ -273,7 +273,7 @@ func (this *ElementControllFlow) StringGui() string {
 	default:
 		panic("Invalid op in Controll Flow Element")
 	}
-	return fmt.Sprintf("I,%s,%d,%d,%s", opStr, this.numCases, this.chosenCase, this.Pos())
+	return fmt.Sprintf("I,%s,%d,%d\n%s", opStr, this.numCases, this.chosenCase, this.Pos().Short())
 }
 
 // String returns the simple string representation of the element with leading routine

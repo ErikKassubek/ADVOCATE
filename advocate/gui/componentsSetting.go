@@ -4,7 +4,6 @@
 // Brief: Settings
 //
 // Author: Erik Kassubek
-// Created: 2026-06-01
 //
 // License: BSD-3-Clause
 

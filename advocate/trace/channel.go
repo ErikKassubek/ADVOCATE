@@ -4,7 +4,6 @@
 // Brief: Struct and functions for channel operations in the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -149,7 +148,7 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 		oID:         oIDInt,
 		qSize:       qSizeInt,
 		qCount:      qCountInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		selIndex:    -1,
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
@@ -448,7 +447,7 @@ func (this *ElementChannel) StringDebug() string {
 func (this *ElementChannel) StringGui() string {
 	opString := string(string(this.op)[1])
 
-	return fmt.Sprintf("C,%d,%s,%s", this.objId, opString, this.Pos())
+	return fmt.Sprintf("C,%d,%s\n%s", this.objId, opString, this.Pos().Short())
 }
 
 // ========================================================

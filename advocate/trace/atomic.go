@@ -96,7 +96,7 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 		t:           tPostInt,
 		objId:       idInt,
 		op:          opAInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -263,7 +263,7 @@ func (this *ElementAtomic) StringDebug() string {
 func (this *ElementAtomic) StringGui() string {
 	opString := string(string(this.op)[1])
 
-	return fmt.Sprintf("A,%d,%s,%s", this.objId, opString, this.Pos())
+	return fmt.Sprintf("A,%d,%s\n%s", this.objId, opString, this.Pos().Short())
 }
 
 // ========================================================

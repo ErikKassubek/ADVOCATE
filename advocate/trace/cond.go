@@ -91,7 +91,7 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 		tCom:        tPostInt,
 		objId:       idInt,
 		op:          op,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -322,7 +322,7 @@ func (this *ElementCond) StringDebug() string {
 func (this *ElementCond) StringGui() string {
 	opString := string(string(this.op)[1])
 
-	return fmt.Sprintf("D,%d,%s,%s", this.objId, opString, this.Pos())
+	return fmt.Sprintf("D,%d,%s\n%s", this.objId, opString, this.Pos().Short())
 }
 
 // ========================================================

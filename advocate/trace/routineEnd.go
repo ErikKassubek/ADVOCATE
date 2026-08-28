@@ -136,7 +136,7 @@ func (this *ElementRoutineEnd) Committed() bool {
 // Returns:
 //   - position: the position
 func (this *ElementRoutineEnd) Pos() Position {
-	return newPosition("", 0)
+	return NewPosition("", 0)
 }
 
 // File is a dummy function to implement the traceElement interface

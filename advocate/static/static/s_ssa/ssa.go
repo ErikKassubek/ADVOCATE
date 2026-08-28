@@ -35,34 +35,32 @@ func (this *Data) buildSsa(pkgs []*packages.Package) {
 //     e.g. main vs test.
 //     If onlyOne is set, print only the first
 func (this *Data) PrintSsa(onlyOne bool) {
-	seen := make(map[string]bool)
+	seen := make(map[*ssa.Function]bool)
+
+	var printFn func(*ssa.Function)
+	printFn = func(fn *ssa.Function) {
+		if fn == nil {
+			return
+		}
+
+		if onlyOne {
+			if seen[fn] {
+				return
+			}
+			seen[fn] = true
+		}
+
+		fmt.Printf("\n============ %s ============\n", fn.String())
+		fn.WriteTo(os.Stdout)
+
+		for _, anon := range fn.AnonFuncs {
+			printFn(anon)
+		}
+	}
 
 	for _, pkg := range this.ssaPkgs {
 		if pkg == nil {
 			continue
-		}
-
-		if onlyOne {
-
-			path := pkg.Pkg.Path()
-			if seen[path] {
-				continue
-			}
-			seen[path] = true
-		}
-
-		var printFn func(*ssa.Function)
-		printFn = func(fn *ssa.Function) {
-			if fn == nil {
-				return
-			}
-
-			fmt.Printf("\n============ %s ============\n", fn.String())
-			fn.WriteTo(os.Stdout)
-
-			for _, anon := range fn.AnonFuncs {
-				printFn(anon)
-			}
 		}
 
 		for _, mem := range pkg.Members {

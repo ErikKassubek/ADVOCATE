@@ -116,6 +116,7 @@ To get an overview over the possible modes and arguments, you can run
 ### Mode: Gui
 
 This modes starts a graphical interface allowing you to run all other modes.
+No other flags are required. 
 
 This is not available, if advocate was build with `-tags nogui`.
 

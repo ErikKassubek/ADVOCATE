@@ -101,7 +101,7 @@ func (this *ElementReplay) Committed() bool {
 // Returns:
 //   - position: the position
 func (this *ElementReplay) Pos() Position {
-	return newPosition("", 0)
+	return NewPosition("", 0)
 }
 
 // File returns the file of the element

@@ -11,6 +11,7 @@ package s_ssa
 
 import (
 	"advocate/trace"
+	"advocate/utils/log"
 	"strings"
 )
 
@@ -41,6 +42,8 @@ func (this *Data) TraceFuncToSSAFunc(f *trace.ElementFunc) *Function {
 			return fu
 		}
 	}
+
+	log.Debug2(f.Name())
 
 	return nil
 }

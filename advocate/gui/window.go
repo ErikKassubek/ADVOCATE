@@ -4,7 +4,6 @@
 // Brief: Create main window
 //
 // Author: Erik Kassubek
-// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 
@@ -111,6 +110,8 @@ func (this *window) createComponents() {
 	this.modeSelect = createModeSelect() // must be created last
 
 	this.cancelButton.disable()
+
+	this.projSelector.setPath(flags.ProgPath)
 }
 
 func (this *window) showAndRun() {

@@ -89,7 +89,7 @@ func (this *Trace) AddTraceElementOnce(routine int, tReq string,
 		tCom:        tComInt,
 		objId:       idInt,
 		suc:         sucBool,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -316,7 +316,7 @@ func (this *ElementOnce) StringGui() string {
 	} else {
 		res += "f"
 	}
-	res += "," + this.Pos().String()
+	res += "\n" + this.Pos().Short()
 	return res
 }
 

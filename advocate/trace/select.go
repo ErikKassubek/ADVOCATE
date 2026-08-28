@@ -100,7 +100,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 		tPost:               tComInt,
 		objId:               idInt,
 		chosenIndex:         chosenIndexInt,
-		pos:                 newPosition(file, line),
+		pos:                 NewPosition(file, line),
 		ci:                  newConcInfo(),
 		casesWithPosPartner: make([]int, 0),
 		function:            getLastCall(routine),
@@ -173,7 +173,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 			qSize:       cOSize,
 			sel:         &elem,
 			selIndex:    len(caseList),
-			pos:         newPosition(file, line),
+			pos:         NewPosition(file, line),
 			ci:          newConcInfo(),
 		}
 
@@ -516,7 +516,7 @@ func (this *ElementSelect) StringGui() string {
 		}
 	}
 	res += "," + strconv.Itoa(this.chosenIndex)
-	res += "," + this.Pos().String()
+	res += "\n" + this.Pos().Short()
 	return res
 }
 

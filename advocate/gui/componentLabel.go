@@ -4,7 +4,6 @@
 // Brief: input components
 //
 // Author: Erik Kassubek
-// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 
@@ -40,7 +39,7 @@ func createSectionLabel(text string) *componentSectionLabel {
 	}
 }
 
-func createBoxedLabel(text string, noBox, removeTop, request bool) fyne.CanvasObject {
+func createBoxedLabel(text string, noBox, request, commit bool) fyne.CanvasObject {
 
 	label := widget.NewLabel(text)
 
@@ -49,12 +48,12 @@ func createBoxedLabel(text string, noBox, removeTop, request bool) fyne.CanvasOb
 	}
 
 	return container.NewStack(
-		createBorder(removeTop, request),
+		createBorder(request, commit),
 		label,
 	)
 }
 
-func createBorder(removeTop, request bool) fyne.CanvasObject {
+func createBorder(request, commit bool) fyne.CanvasObject {
 	top := canvas.NewLine(color.White)
 	bottom := canvas.NewLine(color.White)
 	left := canvas.NewLine(color.White)
@@ -62,7 +61,7 @@ func createBorder(removeTop, request bool) fyne.CanvasObject {
 
 	objects := []fyne.CanvasObject{}
 
-	if !removeTop {
+	if !commit {
 		objects = append(objects, top)
 	}
 
@@ -75,7 +74,7 @@ func createBorder(removeTop, request bool) fyne.CanvasObject {
 	border := container.NewWithoutLayout(objects...)
 
 	border.Layout = &borderLayout{
-		removeTop:    removeTop,
+		removeTop:    commit,
 		removeBottom: request,
 	}
 

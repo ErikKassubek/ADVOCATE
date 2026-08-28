@@ -94,7 +94,7 @@ func (this *ElementReturn) Committed() bool {
 // ========================================================
 
 func (this *ElementReturn) Pos() Position {
-	return newPosition("", 0)
+	return NewPosition("", 0)
 }
 
 func (this *ElementReturn) File() string {

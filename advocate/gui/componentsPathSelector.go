@@ -4,7 +4,6 @@
 // Brief: Create main/test selector
 //
 // Author: Erik Kassubek
-// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 
@@ -87,6 +86,11 @@ func createPathSelector(label string, valToSet *string, onChange func(path strin
 
 func (this *componentPathSelector) getPath() string {
 	return this.path
+}
+
+func (this *componentPathSelector) setPath(path string) {
+	this.path = path
+	this.selectedPathLabel.SetText(path)
 }
 
 func (this *componentPathSelector) disable() {

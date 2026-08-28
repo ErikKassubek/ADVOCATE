@@ -12,9 +12,13 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"fmt"
 )
 
 func ParseIf(inst *s_ssa.InstructionIf, rout int, elem trace.Element) (i s_ssa.Instruction, info *instructionWithInfo) {
+	fmt.Println(inst.String(), "(", inst.Function().Name(), ")")
+	fmt.Println(elem.String())
+
 	e := elem.(*trace.ElementControllFlow)
 
 	switch elem.Type(true) {

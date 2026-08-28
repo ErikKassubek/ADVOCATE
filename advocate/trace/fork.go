@@ -4,7 +4,6 @@
 // Brief: Struct and functions for fork operations in the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -70,7 +69,7 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 		ElementBase: this.newElementBase(routine),
 		t:           tPostInt,
 		objId:       idInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -240,7 +239,7 @@ func (this *ElementFork) StringDebug() string {
 //   - string: The simple gui representation of the element
 func (this *ElementFork) StringGui() string {
 	return "G" + "," + strconv.Itoa(this.objId) +
-		"," + this.Pos().String()
+		"\n" + this.Pos().Short()
 }
 
 // ========================================================

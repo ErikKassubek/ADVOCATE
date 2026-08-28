@@ -10,6 +10,7 @@ package s_ssa
 
 import (
 	"fmt"
+	"strings"
 
 	"golang.org/x/tools/go/ssa"
 )
@@ -92,7 +93,8 @@ func isInit(fn *ssa.Function) bool {
 	return fn.Name() == "init" &&
 		fn.Signature.Recv() == nil &&
 		fn.Pkg != nil &&
-		fn.Pkg.Pkg.Name() == "main"
+		fn.Pkg.Pkg.Name() == "main" &&
+		!strings.HasSuffix(fn.String(), ".test.init")
 }
 
 func (this *Function) Blocks() []*Block {

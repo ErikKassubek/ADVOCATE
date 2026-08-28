@@ -4,7 +4,6 @@
 // Brief: Entry point for graphical interface
 //
 // Author: Erik Kassubek
-// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 

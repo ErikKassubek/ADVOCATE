@@ -95,7 +95,7 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 		objId:       idInt,
 		elemType:    et,
 		num:         numInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -332,7 +332,7 @@ func (this *ElementAlloc) StringDebug() string {
 // Returns:
 //   - string: The gui string representation of the element
 func (this *ElementAlloc) StringGui() string {
-	return fmt.Sprintf("N,%d,%s,%d,%s", this.objId, string(this.elemType), this.num, this.Pos())
+	return fmt.Sprintf("N,%d,%s,%d\n%s", this.objId, string(this.elemType), this.num, this.Pos().Short())
 }
 
 // ========================================================

@@ -4,7 +4,6 @@
 // Brief: Create main/test selector
 //
 // Author: Erik Kassubek
-// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 
@@ -49,8 +48,8 @@ func creatMainTestSelector() *componentMainTestSelect {
 
 	csmt.mainTestSel = widget.NewSelect(
 		[]string{
-			unitTest,
 			mainFunc,
+			unitTest,
 		},
 		func(value string) {
 			if value == mainFunc {
@@ -98,7 +97,7 @@ func creatMainTestSelector() *componentMainTestSelect {
 
 	csmt.creatMainTestSelectorContainer()
 
-	csmt.mainTestSel.SetSelected(unitTest)
+	csmt.mainTestSel.SetSelected(mainFunc)
 	csmt.allOneSel.SetSelected(allTests)
 
 	if len(csmt.testNameSel.Options) == 0 {

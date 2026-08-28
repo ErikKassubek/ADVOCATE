@@ -10,20 +10,21 @@
 package code
 
 import (
+	"advocate/trace"
 	"bufio"
 	"fmt"
 	"os"
 )
 
-func GetLineContent(path string, line int) (string, error) {
-	f, err := os.Open(path)
+func GetLineContent(pos trace.Position) (string, error) {
+	f, err := os.Open(pos.File())
 	if err != nil {
 		return "", err
 	}
 
 	scanner := bufio.NewScanner(f)
 	for current := 1; scanner.Scan(); current++ {
-		if current == line {
+		if current == pos.Line() {
 			return scanner.Text(), nil
 		}
 	}
@@ -32,5 +33,5 @@ func GetLineContent(path string, line int) (string, error) {
 		return "", err
 	}
 
-	return "", fmt.Errorf("line %d not found in %s", line, path)
+	return "", fmt.Errorf("line %d not found in %s", pos.Line(), pos.File())
 }

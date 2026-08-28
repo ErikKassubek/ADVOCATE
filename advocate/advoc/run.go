@@ -109,6 +109,7 @@ func Run() error {
 		flags.DeleteTraces = false
 		err = modeToolchain(modeMainTest, record, analysis, !replay)
 		err = s_blocking.BuildStaticBlockingAnalysis()
+
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
 		log.Error("Select one mode from  'analysis', 'fuzzing', 'replay', 'record' or gui (only if -tags nogui not set)")

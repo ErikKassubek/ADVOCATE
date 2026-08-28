@@ -117,7 +117,7 @@ To get an overview over the possible modes and arguments, you can run
 
 This modes starts a graphical interface allowing you to run all other modes.
 
-This is not available, if advocate was build with `-tags gui`.
+This is not available, if advocate was build with `-tags nogui`.
 
 ### Mode: Recording
 

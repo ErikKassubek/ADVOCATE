@@ -277,6 +277,14 @@ func (this *ElementWait) IsWait() bool {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementWait) CanBeRequest() bool {
+	return this.op == WaitWait
+}
+
+// ========================================================
 // MARK: Equal
 // ========================================================
 
@@ -331,16 +339,6 @@ func (this *ElementWait) String() string {
 	return res
 }
 
-// ========================================================
-// MARK: Function
-// ========================================================
-
-func (this *ElementWait) Function() *ElementFunc {
-	return this.function
-}
-
-// String returns the simple string representation of the element with leading routine
-//
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementWait) StringDebug() string {
@@ -349,6 +347,35 @@ func (this *ElementWait) StringDebug() string {
 		routine = "   *"
 	}
 	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the simple string representation of the element
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementWait) StringGui() string {
+	res := "W,"
+	res += strconv.Itoa(this.objId) + ","
+	switch this.op {
+	case WaitAdd, WaitDone:
+		res += "A,"
+	case WaitWait:
+		res += "W,"
+	}
+
+	res += strconv.Itoa(this.delta) + "," + strconv.Itoa(this.val)
+	res += "," + this.Pos().String()
+	return res
+}
+
+// String returns the simple string representation of the element with leading routine
+
+// ========================================================
+// MARK: Function
+// ========================================================
+
+func (this *ElementWait) Function() *ElementFunc {
+	return this.function
 }
 
 // ========================================================

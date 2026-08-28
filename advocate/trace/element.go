@@ -43,8 +43,13 @@ type Element interface {
 	IsEqual(elem Element) bool
 	IsSameElement(elem Element) bool
 
+	Request() bool
+	CanBeRequest() bool
+	SetRequest(req bool)
+
 	String() string
 	StringDebug() string
+	StringGui() string
 
 	Function() *ElementFunc
 
@@ -72,6 +77,13 @@ func IsOp(elem Element) bool {
 	return true
 }
 
+func isReqStr(elem Element) string {
+	if elem.Request() {
+		return "R"
+	}
+	return "C"
+}
+
 // ========================================================
 // MARK: Base
 // ========================================================
@@ -83,6 +95,8 @@ type ElementBase struct {
 	routine   *Routine
 
 	init bool
+
+	request bool // can only be true if trace.request is true
 }
 
 func (this *Trace) newElementBase(routID int) ElementBase {
@@ -117,6 +131,18 @@ func (this *ElementBase) RoutineID() int {
 
 func (this *ElementBase) TraceIndex() (int, int) {
 	return this.routineId, this.index
+}
+
+func (this *ElementBase) Request() bool {
+	return this.request
+}
+
+func (this *ElementBase) SetRequest(req bool) {
+	this.request = req
+}
+
+func (this *ElementBase) CanBeRequest() bool {
+	return false
 }
 
 // GetTraceID sets the trace id

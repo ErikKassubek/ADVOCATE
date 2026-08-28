@@ -166,6 +166,8 @@ func PrintHelpMode(mode string) {
 		printHelpRecord()
 	case "replay":
 		printHelpReplay()
+	case "gui":
+		printHelpGui()
 	default:
 		fmt.Printf("Unknown mode '%s'\n\n", mode)
 		printHeader()
@@ -182,11 +184,13 @@ func printHeader() {
 	fmt.Println("\treplay")
 	fmt.Println("\tanalysis")
 	fmt.Println("\tfuzzing")
+	fmt.Println("\tgui")
 	fmt.Println("")
 	fmt.Println("With 'record', the execution of a program or test can be recorded into a trace.")
 	fmt.Println("With 'replay', a program or test can be forced to follow the execution schedule specified in a trace.")
 	fmt.Println("With 'analyzer', a program or test can be recorded and then analyzed to find potential bugs. For some bugs, a rewrite and replay mechanism has been implemented to confirm the potential bugs.")
 	fmt.Println("With 'fuzzing', different fuzzing approaches can be run on a program or test.")
+	fmt.Println("With 'gui', a graphical mode is started. Requires fyne dependencies. Not available if '-tags nogui' is set.")
 	fmt.Print("\n\n")
 	fmt.Println("For more information about the mode and there functionality, see the doc folder in the repository.")
 	fmt.Println("For information on how to prepare the required runtime, see the usage file linked in the README")
@@ -434,4 +438,14 @@ func printHelpFuzzing() {
 	fmt.Println(deleteTrace.toString(false))
 	fmt.Println(settings.toString(false))
 	fmt.Println(cancelTestIfFound.toString(false))
+}
+
+func printHelpGui() {
+	fmt.Println("Mode: gui")
+	fmt.Println("")
+
+	fmt.Println("Requires fyne dependencies. Not available if '-tags nogui' is set.")
+	fmt.Println("")
+
+	printFlagHeader()
 }

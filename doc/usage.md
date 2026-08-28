@@ -53,6 +53,17 @@ go build
 command. This will create an `advocate` executable, which will be used to
 run all recordings, replays, analysis and fuzzing.
 
+Advocate uses [fyne](https://fyne.io/) for its gui. To build advocate, the required dependencies for fyne must be installed. 
+See [here](https://docs.fyne.io/started/quick/) for details.
+
+If you do not want to install the dependencies, you can disable the gui by building the program with 
+
+```shell
+go build -tags nogui
+```
+
+In this case fyne is not required.
+
 
 ## Docker
 
@@ -88,6 +99,7 @@ Note that the -path argument has already been set and does not need to be set ag
 All modes of advocates are started and controlled using the [advocate](../advocate/)
 program. This program implements multiple modes:
 
+- [Gui](#mode-gui)
 - [Recording](#mode-recording)
 - [Replay](#mode-replay)
 - [Analysis](#mode-analysis)
@@ -100,6 +112,12 @@ To get an overview over the possible modes and arguments, you can run
 ```shell
 ./advocate -help
 ```
+
+### Mode: Gui
+
+This modes starts a graphical interface allowing you to run all other modes.
+
+This is not available, if advocate was build with `-tags gui`.
 
 ### Mode: Recording
 

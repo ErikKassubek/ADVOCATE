@@ -224,6 +224,14 @@ func (this *ElementRoutineEnd) StringDebug() string {
 	return fmt.Sprintf("%s@%s", routine, this.String())
 }
 
+// StringGui returns the gui string representation of the element
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementRoutineEnd) StringGui() string {
+	return "E"
+}
+
 // ========================================================
 // MARK: Function
 // ========================================================

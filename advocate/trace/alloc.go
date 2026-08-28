@@ -327,6 +327,14 @@ func (this *ElementAlloc) StringDebug() string {
 	return fmt.Sprintf("%s@%s", routine, this.String())
 }
 
+// StringGui returns the gui string representation of the element
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementAlloc) StringGui() string {
+	return fmt.Sprintf("N,%d,%s,%d,%s", this.objId, string(this.elemType), this.num, this.Pos())
+}
+
 // ========================================================
 // MARK: Function
 // ========================================================

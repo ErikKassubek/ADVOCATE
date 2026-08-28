@@ -232,6 +232,14 @@ func (this *ElementOnce) Type(operation bool) OperationType {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementOnce) CanBeRequest() bool {
+	return true
+}
+
+// ========================================================
 // MARK: Equal
 // ========================================================
 
@@ -294,6 +302,22 @@ func (this *ElementOnce) StringDebug() string {
 		routine = "   *"
 	}
 	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementOnce) StringGui() string {
+	res := "O,"
+	res += strconv.Itoa(this.objId) + ","
+	if this.suc {
+		res += "t"
+	} else {
+		res += "f"
+	}
+	res += "," + this.Pos().String()
+	return res
 }
 
 // ========================================================

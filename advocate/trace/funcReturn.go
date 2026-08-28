@@ -138,20 +138,28 @@ func (this *ElementReturn) IsSameElement(elem Element) bool {
 // MARK: String
 // ========================================================
 
-func (this *ElementReturn) String() string {
-	return fmt.Sprintf("R,%d", this.t)
-}
-
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
+func (this *ElementReturn) String() string {
+	return fmt.Sprintf("R,%d", this.t)
+}
+
+// StringDebug returns the debug string representation of the element with leading routine
+//
+// Returns:
+//   - string: The debug string representation of the element with leading routine
 func (this *ElementReturn) StringDebug() string {
 	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
 	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+func (this *ElementReturn) StringGui() string {
+	return fmt.Sprintf("R")
 }
 
 // ========================================================

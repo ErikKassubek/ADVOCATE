@@ -7,14 +7,12 @@
 //
 // License: BSD-3-Clause
 
-//go:build !nogui
+//go:build nogui
 
 package main
 
 import (
 	"advocate/advoc"
-	"advocate/gui"
-	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -32,12 +30,8 @@ func main() {
 
 	advoc.Initialize()
 
-	if flags.Mode == "gui" {
-		gui.Run()
-	} else {
-		err := advoc.Run()
-		if err != nil {
-			log.Error(err)
-		}
+	err := advoc.Run()
+	if err != nil {
+		log.Error(err)
 	}
 }

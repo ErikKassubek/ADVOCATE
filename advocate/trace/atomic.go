@@ -256,6 +256,16 @@ func (this *ElementAtomic) StringDebug() string {
 	return fmt.Sprintf("%s@%s", routine, this.String())
 }
 
+// StringGui returns the gui string representation of the element.
+//
+// Returns:
+//   - string: The simple gui representation of the element
+func (this *ElementAtomic) StringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("A,%d,%s,%s", this.objId, opString, this.Pos())
+}
+
 // ========================================================
 // MARK: Function
 // ========================================================

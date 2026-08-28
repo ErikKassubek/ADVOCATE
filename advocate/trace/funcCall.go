@@ -208,6 +208,10 @@ func (this *ElementFunc) StringDebug() string {
 	return fmt.Sprintf("%s@%s", routine, this.String())
 }
 
+func (this *ElementFunc) StringGui() string {
+	return fmt.Sprintf("F,%s,%s,%s", this.name, this.GetPosDef(), this.Pos())
+}
+
 // ========================================================
 // MARK: VC
 // ========================================================

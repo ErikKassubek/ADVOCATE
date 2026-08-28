@@ -40,6 +40,7 @@ import (
 //   - allocs: allocs
 //   - resources: obj id to resource
 //   - callGraph: call graph
+//   - request bool: if true, requests and commits are separate elements, otherwise they are the same
 type Trace struct {
 	routines              map[int]*Routine
 	hbWasCalc             bool
@@ -52,6 +53,7 @@ type Trace struct {
 	allocs                map[int]*ElementAlloc
 	resources             map[int]Resource
 	callTree              CallTree
+	request               bool
 }
 
 // NewTrace creates a new empty trace structure
@@ -852,6 +854,53 @@ func (this *Trace) GetPartialTrace(startTime int, endTime int) map[int][]Element
 	}
 
 	return result
+}
+
+// split all blocking elements into request and commit
+func (this *Trace) AsRequestCommit() int {
+	this.request = true
+
+	mapping := make(map[int]Element)
+
+	newTr := make(map[int]*Routine)
+
+	elemCounter := 0
+
+	for rout, tr := range this.routines {
+		newRout := Routine{id: tr.id, resources: tr.resources}
+		for _, elem := range tr.elems {
+			if elem.CanBeRequest() {
+				newElem := elem.Copy(mapping, true)
+				newElem.SetRequest(true)
+				newRout.addElement(newElem)
+				elemCounter++
+			}
+			if !elem.CanBeRequest() || elem.T(Commit) != 0 {
+				newRout.addElement(elem)
+				elemCounter++
+			}
+		}
+		newTr[rout] = &newRout
+	}
+
+	this.routines = newTr
+
+	return elemCounter
+}
+
+// Make the times consecutive. Only works if trace is request commit trace
+func (this *Trace) NormalizeRequestCommit() {
+	if !this.request {
+		return
+	}
+
+	traceIter := this.AsIterator()
+	i := 0
+
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+		elem.SetT(Commit, i)
+		i++
+	}
 }
 
 // ========================================================

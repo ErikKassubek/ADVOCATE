@@ -234,6 +234,15 @@ func (this *ElementFork) StringDebug() string {
 	return fmt.Sprintf("%s@%s", routine, this.String())
 }
 
+// StringGui returns the simple gui representation of the element
+//
+// Returns:
+//   - string: The simple gui representation of the element
+func (this *ElementFork) StringGui() string {
+	return "G" + "," + strconv.Itoa(this.objId) +
+		"," + this.Pos().String()
+}
+
 // ========================================================
 // MARK: Function
 // ========================================================

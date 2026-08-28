@@ -348,6 +348,14 @@ func (this *ElementChannel) Type(operation bool) OperationType {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementChannel) CanBeRequest() bool {
+	return this.op != ChannelClose
+}
+
+// ========================================================
 // MARK: Equal
 // ========================================================
 
@@ -431,6 +439,16 @@ func (this *ElementChannel) StringDebug() string {
 		routine = "   *"
 	}
 	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element.
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementChannel) StringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("C,%d,%s,%s", this.objId, opString, this.Pos())
 }
 
 // ========================================================

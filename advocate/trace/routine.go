@@ -35,6 +35,10 @@ func (this *Routine) addElement(elem Element) {
 // Properties
 // ========================================================
 
+func (this *Routine) ID() int {
+	return this.id
+}
+
 func (this *Routine) Sort() {
 	sort.Sort(sortByTSort(this.elems))
 }

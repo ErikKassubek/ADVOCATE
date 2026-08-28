@@ -261,6 +261,18 @@ func (this *ElementMutex) Type(operation bool) OperationType {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementMutex) CanBeRequest() bool {
+	switch this.op {
+	case MutexLock, MutexRLock:
+		return true
+	}
+	return false
+}
+
+// ========================================================
 // MARK: Equal
 // ========================================================
 
@@ -331,6 +343,31 @@ func (this *ElementMutex) StringDebug() string {
 		routine = "   *"
 	}
 	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementMutex) StringGui() string {
+	res := "M,"
+	res += strconv.Itoa(this.objId) + ","
+
+	if this.rw {
+		res += "R,"
+	} else {
+		res += "-,"
+	}
+
+	res += string(string(this.op)[1])
+
+	if this.suc {
+		res += ",t"
+	} else {
+		res += ",f"
+	}
+	res += "," + this.Pos().String()
+	return res
 }
 
 // ========================================================

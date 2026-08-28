@@ -241,6 +241,14 @@ func (this *ElementCond) Type(operation bool) OperationType {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementCond) CanBeRequest() bool {
+	return this.op == CondWait
+}
+
+// ========================================================
 // MARK: Equal
 // ========================================================
 
@@ -305,6 +313,16 @@ func (this *ElementCond) StringDebug() string {
 		routine = "   *"
 	}
 	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the simple gui representation of the element.
+//
+// Returns:
+//   - string: The simple gui representation of the element
+func (this *ElementCond) StringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("D,%d,%s,%s", this.objId, opString, this.Pos())
 }
 
 // ========================================================

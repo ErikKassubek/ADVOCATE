@@ -359,6 +359,14 @@ func (this *ElementSelect) Line() int {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementSelect) CanBeRequest() bool {
+	return true
+}
+
+// ========================================================
 // MARK: Operation
 // ========================================================
 
@@ -477,6 +485,39 @@ func (this *ElementSelect) StringDebug() string {
 		routine = "   *"
 	}
 	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementSelect) StringGui() string {
+	res := "S" + "," + strconv.Itoa(this.objId) + ","
+
+	notNil := 0
+	for _, ca := range this.cases { // cases
+		if ca.tReq != 0 { // ignore nil cases
+			if notNil != 0 {
+				res += "~"
+			}
+			res += ca.toStringSep(".", true)
+			notNil++
+		}
+	}
+
+	if this.containsDefault {
+		if notNil != 0 {
+			res += "~"
+		}
+		if this.chosenDefault {
+			res += "D"
+		} else {
+			res += "d"
+		}
+	}
+	res += "," + strconv.Itoa(this.chosenIndex)
+	res += "," + this.Pos().String()
+	return res
 }
 
 // ========================================================

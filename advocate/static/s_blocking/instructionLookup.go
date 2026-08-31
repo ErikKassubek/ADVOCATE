@@ -17,7 +17,7 @@ import (
 
 func instInfoLookup(inst *s_ssa.InstructionLookup, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionLookup NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseLookup(inst *s_ssa.InstructionLookup, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

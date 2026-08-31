@@ -18,7 +18,7 @@ import (
 )
 
 func instInfoGo(inst *s_ssa.InstructionGo, rout int, _ trace.Element) *instructionWithInfo {
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

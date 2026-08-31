@@ -17,7 +17,7 @@ import (
 
 func instInfoMakeMap(inst *s_ssa.InstructionMakeMap, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionMakeMap NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseMakeMap(inst *s_ssa.InstructionMakeMap, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

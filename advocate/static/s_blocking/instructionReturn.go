@@ -17,20 +17,26 @@ import (
 func instInfoReturn(inst *s_ssa.InstructionReturn, rout int, _ trace.Element) *instructionWithInfo {
 	retSSAVar := inst.Instruction().Results
 
-	retInfo := make([]map[int]trace.Resource, len(retSSAVar))
+	// TODO: return parents
+
+	retInfo := make([]*instructionWithInfo, len(retSSAVar))
 	for i, v := range retSSAVar {
-		ret := getDecOfSSAVar(rout, v.Name()).Resource
-		if len(ret) != 0 {
-			retInfo[i] = ret[0]
+		ret := getDecOfSSAVar(rout, v.Name())
+		if ret != nil {
+			retInfo[i] = ret
 		}
 	}
 
-	retVar := blocking.ReturnStack(rout)
-	if retVar != nil {
-		return addPathInstr(rout, retVar, retInfo)
+	if len(retInfo) == 0 {
+		return nil
 	}
 
-	return nil
+	retVar := blocking.ReturnStack(rout)
+	iwi := newIWI2(retVar)
+	for _, ret := range retInfo {
+		iwi = iwi.Merge(ret)
+	}
+	return addPathInstr(rout, iwi)
 }
 
 func ParseReturn(inst *s_ssa.InstructionReturn, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

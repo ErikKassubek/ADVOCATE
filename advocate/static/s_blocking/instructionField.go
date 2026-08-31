@@ -17,7 +17,7 @@ import (
 
 func instInfoField(inst *s_ssa.InstructionField, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionField NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseField(inst *s_ssa.InstructionField, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

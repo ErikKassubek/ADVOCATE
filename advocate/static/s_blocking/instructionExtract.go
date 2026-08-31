@@ -17,7 +17,7 @@ import (
 
 func instInfoExtract(inst *s_ssa.InstructionExtract, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionExtract NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseExtract(inst *s_ssa.InstructionExtract, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

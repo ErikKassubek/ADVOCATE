@@ -15,9 +15,11 @@ import (
 )
 
 func instInfoMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Element) *instructionWithInfo {
+
 	elem, ok := elem.(*trace.ElementAlloc)
 	if !ok {
-		return addPathInstr(rout, inst, newInstructionWithInfoResorce(nil))
+		iwi := newIWI2(inst)
+		return addPathInstr(rout, iwi)
 	}
 
 	resources := make(map[int]trace.Resource)
@@ -25,7 +27,8 @@ func instInfoMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Elem
 		resources[res.Id()] = res
 	}
 
-	return addPathInstr(rout, inst, newInstructionWithInfoResorce(resources))
+	iwi := newIWI1(inst, fmtInstRes(resources))
+	return addPathInstr(rout, iwi)
 }
 
 func ParseMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

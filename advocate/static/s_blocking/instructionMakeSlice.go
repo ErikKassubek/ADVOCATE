@@ -17,7 +17,7 @@ import (
 
 func instInfoMakeSlice(inst *s_ssa.InstructionMakeSlice, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionMakeSlice NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseMakeSlice(inst *s_ssa.InstructionMakeSlice, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

@@ -111,6 +111,8 @@ func MayUnblock(routine int, start *instructionWithInfo) map[trace.Element][]pot
 
 	}
 
+	// TODO: recheck second order channels/channels on mutex
+
 	return result
 
 }

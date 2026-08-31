@@ -23,5 +23,5 @@ func ParseMakeClosure(inst *s_ssa.InstructionMakeClosure, rout int, elem trace.E
 		blocking.lastClosure[rout][i] = getDecOfSSAVar(rout, b.Name())
 	}
 
-	return inst.Next(), addPathInstr(rout, inst, nil)
+	return inst.Next(), addPathInstr(rout, newIWI2(inst))
 }

@@ -17,7 +17,7 @@ import (
 
 func instInfoNext(inst *s_ssa.InstructionNext, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionNext NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseNext(inst *s_ssa.InstructionNext, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

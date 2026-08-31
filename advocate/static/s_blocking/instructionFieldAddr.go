@@ -17,7 +17,7 @@ import (
 
 func instInfoFieldAddr(inst *s_ssa.InstructionFieldAddr, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionFieldAddr NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseFieldAddr(inst *s_ssa.InstructionFieldAddr, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

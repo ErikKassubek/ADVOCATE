@@ -70,6 +70,71 @@ type instructionWithInfo struct {
 	Inst     s_ssa.Instruction
 	Resource []map[int]trace.Resource // make list to deal with extract.
 	Variable string
+	Parents  []*instructionWithInfo
+}
+
+func newIWI(inst s_ssa.Instruction, res []map[int]trace.Resource, par []*instructionWithInfo) *instructionWithInfo {
+	return &instructionWithInfo{inst, res, inst.Variable(), par}
+}
+
+func newIwiFromIwi(inst s_ssa.Instruction, iwi *instructionWithInfo) *instructionWithInfo {
+	return &instructionWithInfo{inst, iwi.Resource, inst.Variable(), iwi.Parents}
+}
+
+func newIWI1(inst s_ssa.Instruction, res []map[int]trace.Resource) *instructionWithInfo {
+	return &instructionWithInfo{inst, res, inst.Variable(), make([]*instructionWithInfo, 0)}
+}
+
+func newIWI2(inst s_ssa.Instruction) *instructionWithInfo {
+	return &instructionWithInfo{inst, make([]map[int]trace.Resource, 0), inst.Variable(), make([]*instructionWithInfo, 0)}
+}
+
+func newIWI3(inst s_ssa.Instruction, v string, res []map[int]trace.Resource) *instructionWithInfo {
+	return &instructionWithInfo{inst, res, v, make([]*instructionWithInfo, 0)}
+}
+
+func (self *instructionWithInfo) Merge(other *instructionWithInfo) *instructionWithInfo {
+	maxLen := max(len(self.Resource), len(other.Resource))
+	res := make([]map[int]trace.Resource, maxLen)
+
+	for i := 0; i < maxLen; i++ {
+		res[i] = make(map[int]trace.Resource)
+		if i < len(self.Resource) {
+			for key, reso := range self.Resource[i] {
+				res[i][key] = reso
+			}
+		}
+		if i < len(other.Resource) {
+			for key, reso := range other.Resource[i] {
+				res[i][key] = reso
+			}
+		}
+	}
+
+	parents := make([]*instructionWithInfo, 0)
+
+	for _, par := range self.Parents {
+		parents = append(parents, par)
+	}
+
+	for _, par := range other.Parents {
+		parents = append(parents, par)
+	}
+
+	return &instructionWithInfo{self.Inst, res, self.Variable, parents}
+}
+
+func (self *instructionWithInfo) GetResources() map[int]trace.Resource {
+	res := self.Resource[0]
+
+	for _, parent := range self.Parents {
+		resPar := parent.GetResources()
+		for _, par := range resPar {
+			res[par.Id()] = par
+		}
+	}
+
+	return res
 }
 
 func compatible(iwi *instructionWithInfo, elem trace.Element) (bool, *trace.Resource) {
@@ -127,7 +192,7 @@ func compatible(iwi *instructionWithInfo, elem trace.Element) (bool, *trace.Reso
 	return false, nil
 }
 
-func newInstructionWithInfoResorce(resource map[int]trace.Resource) []map[int]trace.Resource {
+func fmtInstRes(resource map[int]trace.Resource) []map[int]trace.Resource {
 	if resource == nil {
 		return make([]map[int]trace.Resource, 0)
 	}
@@ -179,20 +244,16 @@ func (self *BlockingData) NewPathPerRoutine(rout int) {
 	self.returnVariables[rout] = &types.Stack[*s_ssa.InstructionCall]{}
 }
 
-func addPathInstr(rout int, inst s_ssa.Instruction, resources []map[int]trace.Resource) *instructionWithInfo {
+func addPathInstr(rout int, iwi *instructionWithInfo) *instructionWithInfo {
 	if _, ok := blocking.pathPerRoutine[rout]; !ok {
 		blocking.NewPathPerRoutine(rout)
 	}
 
-	v := inst.Variable()
-
-	newElem := &instructionWithInfo{inst, resources, v}
-
 	top := blocking.pathPerRoutine[rout].Pop()
-	top = append(top, newElem)
+	top = append(top, iwi)
 	blocking.pathPerRoutine[rout].Push(top)
 
-	return newElem
+	return iwi
 }
 
 func addPathParam(rout int, v string, resources []map[int]trace.Resource) *instructionWithInfo {
@@ -200,7 +261,7 @@ func addPathParam(rout int, v string, resources []map[int]trace.Resource) *instr
 		blocking.NewPathPerRoutine(rout)
 	}
 
-	newElem := &instructionWithInfo{nil, resources, v}
+	newElem := &instructionWithInfo{nil, resources, v, nil}
 
 	top := blocking.pathPerRoutine[rout].Pop()
 	top = append(top, newElem)

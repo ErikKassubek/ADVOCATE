@@ -18,7 +18,7 @@ import (
 	"strings"
 )
 
-var sendForward = make(map[trace.Resource]map[trace.Resource]bool)
+var sendForward = make(map[int][]*instructionWithInfo) // sender resource id -> possible values
 
 func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, forward bool) *instructionWithInfo {
 	log.Debug(inst.Instruction().Chan.Name())
@@ -31,11 +31,18 @@ func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, for
 		blocking.chanBuffer[elem.ResourceID()].Push(iwiSender)
 	}
 
-	if forward {
-		// TODO: make correct
+	var res *instructionWithInfo
+	if iwiSender != nil {
+		iwi := newIwiFromIwi(inst, iwiSender)
+		res = addPathInstr(rout, iwi)
+	} else {
+		iwi := newIWI2(inst)
+		res = addPathInstr(rout, iwi)
+	}
 
-		log.Debug("FORWARD SEND")
-		for _, resSend := range iwiSender.Resource[0] {
+	// TODO: test
+	if forward {
+		for _, resSend := range iwiSender.GetResources() {
 			// chan type contains concurrency primitive
 			log.Debug(resSend.Alloc())
 			pos := resSend.Alloc().Pos()
@@ -49,23 +56,13 @@ func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, for
 				continue
 			}
 
-			val := inst.Instruction().X.Name()
-			iwiVal := getDecOfSSAVar(rout, val)
+			res.Parents = append(res.Parents, res)
 
-			for _, resVal := range iwiVal.Resource[0] {
-				if _, ok := sendForward[resSend]; !ok {
-					sendForward[resSend] = make(map[trace.Resource]bool)
-				}
-				sendForward[resSend][resVal] = true
-			}
-
+			sendForward[resSend.Id()] = append(sendForward[resSend.Id()], res)
 		}
 	}
 
-	if iwiSender != nil {
-		return addPathInstr(rout, inst, iwiSender.Resource)
-	}
-	return addPathInstr(rout, inst, nil)
+	return res
 }
 
 func ParseSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, forward bool) (s_ssa.Instruction, *instructionWithInfo) {

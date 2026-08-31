@@ -22,7 +22,8 @@ func instInfoStore(inst *s_ssa.InstructionStore, rout int, _ trace.Element) *ins
 	if ssaVar == nil {
 		log.Errorf("Could not find ssa var %s for %s", inst.Term(), inst)
 	}
-	res := addPathInstr(rout, inst, ssaVar.Resource)
+	iwi := newIwiFromIwi(inst, ssaVar)
+	res := addPathInstr(rout, iwi)
 
 	switch inst.Inst().(*ssa.Store).Addr.(type) {
 	case *ssa.Global:

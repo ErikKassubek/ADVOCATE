@@ -23,7 +23,8 @@ func ParseAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) (s_s
 func instInfoAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) *instructionWithInfo {
 	elem, ok := elem.(*trace.ElementAlloc)
 	if !ok {
-		return addPathInstr(rout, inst, newInstructionWithInfoResorce(nil))
+		iwi := newIWI2(inst)
+		return addPathInstr(rout, iwi)
 	}
 
 	resources := make(map[int]trace.Resource)
@@ -31,5 +32,6 @@ func instInfoAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) *
 		resources[res.Id()] = res
 	}
 
-	return addPathInstr(rout, inst, newInstructionWithInfoResorce(resources))
+	iwi := newIWI1(inst, fmtInstRes(resources))
+	return addPathInstr(rout, iwi)
 }

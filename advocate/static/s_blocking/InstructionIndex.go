@@ -17,7 +17,7 @@ import (
 
 func instInfoIndex(inst *s_ssa.InstructionIndex, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionIndex NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseIndex(inst *s_ssa.InstructionIndex, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

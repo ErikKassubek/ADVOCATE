@@ -16,12 +16,13 @@ import (
 	"go/token"
 )
 
-var recvForward = make(map[trace.Resource]bool)
+var recvForward = make(map[*s_ssa.InstructionUnOp]map[int]map[trace.Resource]bool) // inst -> res -> routine
 
 func instInfoPointerDereference(inst *s_ssa.InstructionUnOp, rout int) *instructionWithInfo {
 	term := inst.Term()
 	ssaVar := getDecOfSSAVar(rout, term)
-	return addPathInstr(rout, inst, ssaVar.Resource)
+	iwi := newIWI1(inst, ssaVar.Resource)
+	return addPathInstr(rout, iwi)
 }
 
 func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, forward bool) *instructionWithInfo {
@@ -31,24 +32,26 @@ func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, 
 	}
 
 	if forward {
+		v := inst.Instruction().X.Name()
 		// TODO: implement
 		log.Debug("FORWARD RECV")
-		iwiReceiver := getDecOfSSAVar(rout, inst.Instruction().X.Name())
+		iwiReceiver := getDecOfSSAVar(rout, v)
 		log.Debug("RECV: ", inst.Instruction().X.Name())
 
-		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name()}
-		for _, resRecv := range iwiReceiver.Resource[0] {
-			for res := range sendForward[resRecv] {
-				receivedValue.Resource[0][elem.ResourceID()] = res
+		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name(), Parents: make([]*instructionWithInfo, 0)}
+
+		for _, res := range iwiReceiver.Resource[0] {
+			for _, iwiSend := range sendForward[res.Id()] {
+				receivedValue.Parents = append(receivedValue.Parents, iwiSend)
 			}
-			recvForward[resRecv] = true
 		}
 	}
 
 	if receivedValue == nil {
-		return addPathInstr(rout, inst, nil)
+		return addPathInstr(rout, newIWI2(inst))
 	}
-	return addPathInstr(rout, inst, receivedValue.Resource)
+
+	return addPathInstr(rout, newIwiFromIwi(inst, receivedValue))
 }
 
 func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, forward bool) *instructionWithInfo {

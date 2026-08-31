@@ -17,7 +17,7 @@ import (
 
 func instInfoRange(inst *s_ssa.InstructionRange, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionRange NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseRange(inst *s_ssa.InstructionRange, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

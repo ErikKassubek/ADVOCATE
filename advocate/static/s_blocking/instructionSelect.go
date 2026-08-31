@@ -17,7 +17,7 @@ import (
 
 func instInfoSelect(inst *s_ssa.InstructionSelect, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionSelect NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseSelect(inst *s_ssa.InstructionSelect, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

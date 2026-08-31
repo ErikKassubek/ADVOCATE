@@ -23,7 +23,9 @@ func instInfoPhi(inst *s_ssa.InstructionPhi, rout int, _ trace.Element) *instruc
 
 	ssaVar := getDecOfSSAVar(rout, pred)
 
-	return addPathInstr(rout, inst, ssaVar.Resource)
+	iwi := newIwiFromIwi(inst, ssaVar)
+
+	return addPathInstr(rout, iwi)
 }
 
 func ParsePhi(inst *s_ssa.InstructionPhi, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

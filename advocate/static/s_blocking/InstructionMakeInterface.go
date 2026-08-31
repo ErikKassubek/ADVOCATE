@@ -17,7 +17,7 @@ import (
 
 func instInfoMakeInterface(inst *s_ssa.InstructionMakeInterface, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionMakeInterface NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	return addPathInstr(rout, newIWI2(inst))
 }
 
 func ParseMakeInterface(inst *s_ssa.InstructionMakeInterface, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

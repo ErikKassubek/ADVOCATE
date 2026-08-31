@@ -12,8 +12,11 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"advocate/utils/log"
 	"go/token"
 )
+
+var recvForward = make(map[trace.Resource]bool)
 
 func instInfoPointerDereference(inst *s_ssa.InstructionUnOp, rout int) *instructionWithInfo {
 	term := inst.Term()
@@ -29,15 +32,17 @@ func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, 
 
 	if forward {
 		// TODO: implement
-		// log.Debug("FORWARD RECV")
-		// for _, res := range sendForward {
-		// 	l, err := code.GetLineContent(pos)
-		// 	if err != nil {
-		// 		log.Error(err)
-		// 	} else {
-		// 		log.Debug2("Pos: ", l)
-		// 	}
-		// }
+		log.Debug("FORWARD RECV")
+		iwiReceiver := getDecOfSSAVar(rout, inst.Instruction().X.Name())
+		log.Debug("RECV: ", inst.Instruction().X.Name())
+
+		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name()}
+		for _, resRecv := range iwiReceiver.Resource[0] {
+			for res := range sendForward[resRecv] {
+				receivedValue.Resource[0][elem.ResourceID()] = res
+			}
+			recvForward[resRecv] = true
+		}
 	}
 
 	if receivedValue == nil {
@@ -59,6 +64,8 @@ func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, for
 
 func ParseUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, forward bool) (s_ssa.Instruction, *instructionWithInfo) {
 	info := instInfoUnOp(inst, rout, elem, forward)
+
+	log.Debug(info.Resource)
 
 	return inst.Next(), info
 }

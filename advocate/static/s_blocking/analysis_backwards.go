@@ -103,10 +103,14 @@ func parseInstructions(elem trace.Element, inst s_ssa.Instruction, rout int) s_s
 		return nil
 	}
 
+	if !elem.Committed() {
+		return nil
+	}
+
 	next := parseInstruction(inst, rout, elem)
 
 	if next == nil {
-		return next
+		return nil
 	}
 
 	return skipNonRelevant(next, rout)

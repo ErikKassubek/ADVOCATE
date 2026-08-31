@@ -65,7 +65,7 @@ func isBlockingBug() {
 		unbl := MayUnblock(rout, path.Peek().last())
 
 		for ub, _ := range unbl {
-			log.Debug2(ub)
+			log.Resultf(true, true, "", "Found blocking bug after static: %s", ub)
 		}
 	}
 }

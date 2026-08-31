@@ -15,36 +15,55 @@ import (
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/types"
+	"strings"
 )
 
-var sendForward = make(map[trace.Resource]map[trace.Resource]struct{})
+var sendForward = make(map[trace.Resource]map[trace.Resource]bool)
 
 func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, forward bool) *instructionWithInfo {
-	iwi := getDecOfSSAVar(rout, inst.Instruction().Chan.Name())
+	log.Debug(inst.Instruction().Chan.Name())
+	iwiSender := getDecOfSSAVar(rout, inst.Instruction().Chan.Name())
 
 	if elem != nil {
 		if _, ok := blocking.chanBuffer[elem.ResourceID()]; !ok {
 			blocking.chanBuffer[elem.ResourceID()] = types.NewStack[*instructionWithInfo]()
 		}
-		blocking.chanBuffer[elem.ResourceID()].Push(iwi)
+		blocking.chanBuffer[elem.ResourceID()].Push(iwiSender)
 	}
 
 	if forward {
 		// TODO: make correct
+
 		log.Debug("FORWARD SEND")
-		for _, res := range iwi.Resource[0] {
-			pos := res.Alloc().Pos()
+		for _, resSend := range iwiSender.Resource[0] {
+			// chan type contains concurrency primitive
+			log.Debug(resSend.Alloc())
+			pos := resSend.Alloc().Pos()
 			l, err := code.GetLineContent(pos)
 			if err != nil {
 				log.Error(err)
-			} else {
-				log.Debug2("Pos: ", l)
+				continue
 			}
+
+			if !isChanConc(l) {
+				continue
+			}
+
+			val := inst.Instruction().X.Name()
+			iwiVal := getDecOfSSAVar(rout, val)
+
+			for _, resVal := range iwiVal.Resource[0] {
+				if _, ok := sendForward[resSend]; !ok {
+					sendForward[resSend] = make(map[trace.Resource]bool)
+				}
+				sendForward[resSend][resVal] = true
+			}
+
 		}
 	}
 
-	if iwi != nil {
-		return addPathInstr(rout, inst, iwi.Resource)
+	if iwiSender != nil {
+		return addPathInstr(rout, inst, iwiSender.Resource)
 	}
 	return addPathInstr(rout, inst, nil)
 }
@@ -57,4 +76,33 @@ func ParseSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, forwar
 	}
 
 	return inst.Next(), info
+}
+
+// isChanConc takes a line containing a channel make and determines,
+// if the channel type is a concurrency primitive, i.e.,
+// make(chan chan int), make(chan sync.Mutex), ...
+// TODO: what about structs that contain conc primitives
+func isChanConc(line string) bool {
+	t := strings.TrimSuffix(line, ")")
+
+	if t == line {
+		return false
+	}
+
+	ct := strings.Split(t, "make(chan")
+
+	if len(ct) <= 1 {
+		return false
+	}
+
+	ctVal := ct[len(ct)-1]
+
+	chanType := strings.TrimPrefix(ctVal, "chan")
+
+	return strings.Contains(chanType, "chan") ||
+		strings.Contains(chanType, "Mutex") ||
+		strings.Contains(chanType, "RWMutex") ||
+		strings.Contains(chanType, "WaitGroup") ||
+		strings.Contains(chanType, "Once") ||
+		strings.Contains(chanType, "Cond")
 }

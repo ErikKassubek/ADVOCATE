@@ -50,7 +50,7 @@ func MayUnblock(routine int, start *instructionWithInfo) map[trace.Element][]pot
 		nexts, alias := parseAllPaths(point, routine)
 
 		if alias != nil {
-			log.Debug2("CheckUnblock: ", routine, " # ", point, alias.Resource)
+			log.Debug2("CheckUnblock: ", routine, " # ", point, "#", alias.Resource)
 		} else {
 			log.Debug2("CheckUnblock: ", routine, " # ", point)
 		}
@@ -98,6 +98,8 @@ func MayUnblock(routine int, start *instructionWithInfo) map[trace.Element][]pot
 				}
 				result[elem] = append(result[elem], pu)
 
+				log.Debug("Potential Unlock: ", elem)
+
 				if ONLYONE {
 					delete(blocking.blocked, elem)
 					if len(blocking.blocked) == 0 {
@@ -129,6 +131,8 @@ func parseAllPaths(inst s_ssa.Instruction, rout int) ([]s_ssa.Instruction, *inst
 	if inst == nil {
 		return nil, nil
 	}
+
+	log.Debug("FORWARD: ", inst)
 
 	var resInst s_ssa.Instruction
 	var resIWI *instructionWithInfo

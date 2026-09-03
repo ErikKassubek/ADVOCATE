@@ -12,7 +12,6 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 	"go/token"
 )
 
@@ -34,9 +33,7 @@ func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, 
 	if forward {
 		v := inst.Instruction().X.Name()
 		// TODO: implement
-		log.Debug("FORWARD RECV")
 		iwiReceiver := getDecOfSSAVar(rout, v)
-		log.Debug("RECV: ", inst.Instruction().X.Name())
 
 		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name(), Parents: make([]*instructionWithInfo, 0)}
 
@@ -67,8 +64,6 @@ func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, for
 
 func ParseUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, forward bool) (s_ssa.Instruction, *instructionWithInfo) {
 	info := instInfoUnOp(inst, rout, elem, forward)
-
-	log.Debug(info.Resource)
 
 	return inst.Next(), info
 }

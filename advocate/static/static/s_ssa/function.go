@@ -9,6 +9,7 @@
 package s_ssa
 
 import (
+	"advocate/utils/flags"
 	"fmt"
 	"strings"
 
@@ -86,7 +87,8 @@ func isMain(fn *ssa.Function) bool {
 	return fn.Name() == "main" &&
 		fn.Signature.Recv() == nil &&
 		fn.Pkg != nil &&
-		fn.Pkg.Pkg.Name() == "main"
+		fn.Pkg.Pkg.Name() == "main" &&
+		flags.ModeMain != strings.HasSuffix(fn.String(), ".test.main")
 }
 
 func isInit(fn *ssa.Function) bool {
@@ -94,7 +96,7 @@ func isInit(fn *ssa.Function) bool {
 		fn.Signature.Recv() == nil &&
 		fn.Pkg != nil &&
 		fn.Pkg.Pkg.Name() == "main" &&
-		!strings.HasSuffix(fn.String(), ".test.init")
+		flags.ModeMain != strings.HasSuffix(fn.String(), ".test.init")
 }
 
 func (this *Function) Blocks() []*Block {

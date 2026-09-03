@@ -2392,7 +2392,6 @@ func shouldAdvocate(fn *ir.Func) bool {
 		pkg == "syscall" ||
 		pkg == "os" ||
 		pkg == "internal/syscall" {
-
 		return false
 	}
 
@@ -2402,8 +2401,16 @@ func shouldAdvocate(fn *ir.Func) bool {
 
 	name := fn.Sym().Name
 
+	if strings.HasPrefix(name, ".") {
+		return false
+	}
+
 	if name == "advocateFunctionCall" || name == "advocateFunctionReturn" {
 		return false
+	}
+
+	if strings.Contains(name, "main") {
+		fmt.Println(name)
 	}
 
 	return true

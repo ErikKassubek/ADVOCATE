@@ -64,8 +64,12 @@ func isBlockingBug() {
 		}
 		unbl := MayUnblock(rout, path.Peek().last())
 
-		for ub, _ := range unbl {
+		for ub := range blocking.blocked {
 			log.Resultf(true, true, "", "Found blocking bug after static: %s", ub)
+		}
+
+		for ub := range unbl {
+			log.Resultf(true, true, "", "Found possible partner for: %s", ub)
 		}
 	}
 }

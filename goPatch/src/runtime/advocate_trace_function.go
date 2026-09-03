@@ -45,14 +45,14 @@ type AdvocateTraceFunctionReturn struct {
 
 // AdvocateFunctionCall adds a function stall to the trace
 func advocateFunctionCall() {
-	if AdvocateTracingDisabled {
+	pc, fileDef, lineDef, _ := Caller(1)
+	funcName := FuncForPC(pc).Name()
+
+	if AdvocateTracingDisabled && funcName != "main.main" {
 		return
 	}
 
 	timer := GetNextTimeStep()
-
-	pc, fileDef, lineDef, _ := Caller(1)
-	funcName := FuncForPC(pc).Name()
 
 	// fix return of init
 	if funcName == "main.main" {

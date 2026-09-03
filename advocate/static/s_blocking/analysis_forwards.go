@@ -16,9 +16,6 @@ import (
 	"advocate/utils/types"
 )
 
-// if ONLYONE is true, it will only search for one possible unblocking operaiton.
-// if ONLYONE is false, it will try to find all
-const ONLYONE = true
 const FORWARD = true
 
 type potenitalUnblock struct {
@@ -100,11 +97,10 @@ func MayUnblock(routine int, start *instructionWithInfo) map[trace.Element][]pot
 
 				log.Debug("Potential Unlock: ", elem)
 
-				if ONLYONE {
-					delete(blocking.blocked, elem)
-					if len(blocking.blocked) == 0 {
-						return result
-					}
+				delete(blocking.blocked, elem)
+
+				if len(blocking.blocked) == 0 {
+					return result
 				}
 			}
 		}
@@ -134,7 +130,7 @@ func parseAllPaths(inst s_ssa.Instruction, rout int) ([]s_ssa.Instruction, *inst
 		return nil, nil
 	}
 
-	log.Debug("FORWARD: ", inst)
+	log.Debug2("FORWARD: ", inst)
 
 	var resInst s_ssa.Instruction
 	var resIWI *instructionWithInfo

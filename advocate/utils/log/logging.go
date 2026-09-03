@@ -149,9 +149,9 @@ func Debug(v ...any) {
 //   - v ...any: the content of the log
 func Debugf(format string, v ...any) {
 	if guiChanSet {
-		guiChan <- GuiInfo{fmt.Sprint(v...), DebugLv}
+		guiChan <- GuiInfo{fmt.Sprintf(format, v...), DebugLv}
 	} else {
-		log.Print(Yellow, fmt.Sprint(v...), Reset, "\n")
+		log.Printf(Yellow+format+Reset+"\n", v...)
 	}
 }
 
@@ -176,9 +176,9 @@ func Debug2(v ...any) {
 //   - v ...any: the content of the log
 func Debugf2(format string, v ...any) {
 	if guiChanSet {
-		guiChan <- GuiInfo{fmt.Sprint(v...), Debug2Lv}
+		guiChan <- GuiInfo{fmt.Sprintf(format, v...), Debug2Lv}
 	} else {
-		log.Print(Pink, fmt.Sprint(v...), Reset, "\n")
+		log.Printf(Pink+format+Reset+"\n", v...)
 	}
 }
 

@@ -56,7 +56,7 @@ func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, for
 				continue
 			}
 
-			res.Parents = append(res.Parents, res)
+			res.Parents[0] = append(res.Parents[0], res)
 
 			sendForward[resSend.Id()] = append(sendForward[resSend.Id()], res)
 		}

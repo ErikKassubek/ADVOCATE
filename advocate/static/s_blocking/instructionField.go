@@ -13,14 +13,37 @@ import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
 	"advocate/utils/log"
+	"strconv"
+	"strings"
 )
 
-func instInfoField(inst *s_ssa.InstructionField, rout int, _ trace.Element) *instructionWithInfo {
-	log.Todo("InstructionField NOT IMPLEMENTED YET")
-	return addPathInstr(rout, newIWI2(inst))
+func ParseField(inst *s_ssa.InstructionField, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
+	field_name, field_index := getFieldInfo(inst)
+
+	iwi := getDecOfSSAVar(rout, field_name)
+
+	iwi_new := newIwiFromIwiIndex(inst, iwi, field_index)
+
+	info := addPathInstr(rout, iwi_new)
+	return inst.Next(), info
 }
 
-func ParseField(inst *s_ssa.InstructionField, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
-	info := instInfoField(inst, rout, elem)
-	return inst.Next(), info
+func getFieldInfo(inst s_ssa.Instruction) (string, int) {
+	term := strings.ReplaceAll(inst.Term(), "&", "")
+	fields := strings.Split(term, " ")
+	if len(fields) != 2 {
+		log.Errorf("Invalid Field Term: %s", inst.Term())
+		return "", 0
+	}
+
+	name := strings.Split(fields[0], ".")[0]
+
+	index_str := strings.TrimSuffix(strings.TrimPrefix(fields[1], "[#"), "]")
+
+	index, err := strconv.Atoi(index_str)
+	if err != nil {
+		log.Errorf("Invalid Field Index %s", index_str)
+	}
+
+	return name, index
 }

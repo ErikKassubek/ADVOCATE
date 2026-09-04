@@ -23,7 +23,7 @@ const (
 	Yellow = "\033[33m"
 	Blue   = "\033[34m"
 	Purple = "\033[35m"
-	Grey   = "\033[90m"
+	Grey   = "\033[97m"
 	Pink   = "\033[95m"
 )
 

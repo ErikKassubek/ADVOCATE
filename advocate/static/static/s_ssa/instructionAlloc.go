@@ -27,5 +27,5 @@ func (this *InstructionAlloc) Instruction() *ssa.Alloc {
 
 func (this *InstructionAlloc) setRelevant(_ *Data) {
 	this.relevant = this.Conc().Resource()
-	this.inTrace = !this.Conc().Channel()
+	this.inTrace = this.relevant && !this.Conc().Channel()
 }

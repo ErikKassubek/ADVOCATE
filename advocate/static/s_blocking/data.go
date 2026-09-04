@@ -68,12 +68,12 @@ func (p path) last() *instructionWithInfo {
 
 type instructionWithInfo struct {
 	Inst     s_ssa.Instruction
-	Resource []map[int]trace.Resource // make list to deal with extract.
+	Resource []map[int]trace.Resource // index (for field, return/extrace, ...) -> resource id -> resource
 	Variable string
-	Parents  []*instructionWithInfo
+	Parents  [][]*instructionWithInfo // index (for field, return/extract, ...) -> []parents
 }
 
-func newIWI(inst s_ssa.Instruction, res []map[int]trace.Resource, par []*instructionWithInfo) *instructionWithInfo {
+func newIWI(inst s_ssa.Instruction, res []map[int]trace.Resource, par [][]*instructionWithInfo) *instructionWithInfo {
 	return &instructionWithInfo{inst, res, inst.Variable(), par}
 }
 
@@ -81,16 +81,25 @@ func newIwiFromIwi(inst s_ssa.Instruction, iwi *instructionWithInfo) *instructio
 	return &instructionWithInfo{inst, iwi.Resource, inst.Variable(), iwi.Parents}
 }
 
+func newIwiFromIwiIndex(inst s_ssa.Instruction, iwi *instructionWithInfo, index int) *instructionWithInfo {
+	return &instructionWithInfo{inst, []map[int]trace.Resource{iwi.Resource[index]}, inst.Variable(), [][]*instructionWithInfo{iwi.Parents[index]}} // TODO: index
+}
+
 func newIWI1(inst s_ssa.Instruction, res []map[int]trace.Resource) *instructionWithInfo {
-	return &instructionWithInfo{inst, res, inst.Variable(), make([]*instructionWithInfo, 0)}
+	return &instructionWithInfo{inst, res, inst.Variable(), make([][]*instructionWithInfo, len(res))}
 }
 
 func newIWI2(inst s_ssa.Instruction) *instructionWithInfo {
-	return &instructionWithInfo{inst, make([]map[int]trace.Resource, 0), inst.Variable(), make([]*instructionWithInfo, 0)}
+	return &instructionWithInfo{inst, make([]map[int]trace.Resource, 0), inst.Variable(), make([][]*instructionWithInfo, 0)}
 }
 
 func newIWI3(inst s_ssa.Instruction, v string, res []map[int]trace.Resource) *instructionWithInfo {
-	return &instructionWithInfo{inst, res, v, make([]*instructionWithInfo, 0)}
+	return &instructionWithInfo{inst, res, v, make([][]*instructionWithInfo, len(res))}
+}
+
+func newIWI4(inst s_ssa.Instruction, n int) *instructionWithInfo {
+	log.Debug("IWI4: ", inst, n)
+	return &instructionWithInfo{inst, make([]map[int]trace.Resource, n), inst.Variable(), make([][]*instructionWithInfo, n)}
 }
 
 func (self *instructionWithInfo) Merge(other *instructionWithInfo) *instructionWithInfo {
@@ -111,7 +120,7 @@ func (self *instructionWithInfo) Merge(other *instructionWithInfo) *instructionW
 		}
 	}
 
-	parents := make([]*instructionWithInfo, 0)
+	parents := make([][]*instructionWithInfo, 0)
 
 	for _, par := range self.Parents {
 		parents = append(parents, par)
@@ -128,9 +137,48 @@ func (self *instructionWithInfo) GetResources() map[int]trace.Resource {
 	res := self.Resource[0]
 
 	for _, parent := range self.Parents {
+		if len(parent) == 0 {
+			continue
+		}
+		resPar := parent[0].GetResources()
+		for _, par := range resPar {
+			res[par.Id()] = par
+		}
+	}
+
+	return res
+}
+
+func (self *instructionWithInfo) GetResourcesIndex(index int) map[int]trace.Resource {
+	res := self.Resource[index]
+
+	for _, parent := range self.Parents[index] {
 		resPar := parent.GetResources()
 		for _, par := range resPar {
 			res[par.Id()] = par
+		}
+	}
+
+	return res
+}
+
+func (self *instructionWithInfo) GetResourcesSlice() []map[int]trace.Resource {
+	if self == nil {
+		return []map[int]trace.Resource{}
+	}
+	res := make([]map[int]trace.Resource, len(self.Resource))
+
+	for i := range res {
+		res[i] = self.Resource[0]
+
+		for _, parent := range self.Parents {
+			if len(parent) == 0 {
+				continue
+			}
+			resPar := parent[0].GetResources()
+			for _, par := range resPar {
+				res[i][par.Id()] = par
+			}
 		}
 	}
 
@@ -256,12 +304,21 @@ func addPathInstr(rout int, iwi *instructionWithInfo) *instructionWithInfo {
 	return iwi
 }
 
-func addPathParam(rout int, v string, resources []map[int]trace.Resource) *instructionWithInfo {
+func addPathParam(rout int, v string, iwi *instructionWithInfo) *instructionWithInfo {
 	if _, ok := blocking.pathPerRoutine[rout]; !ok {
 		blocking.NewPathPerRoutine(rout)
 	}
 
-	newElem := &instructionWithInfo{nil, resources, v, nil}
+	var res []map[int]trace.Resource
+	var par [][]*instructionWithInfo
+
+	if iwi != nil {
+		res = iwi.Resource
+		par = iwi.Parents
+	}
+
+	newElem := &instructionWithInfo{nil, res, v, par}
+	log.Debug2("NEW: ", newElem)
 
 	top := blocking.pathPerRoutine[rout].Pop()
 	top = append(top, newElem)

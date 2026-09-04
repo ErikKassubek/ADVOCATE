@@ -12,10 +12,14 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"advocate/utils/log"
+	"go/types"
 )
 
 func ParseAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
 	info := instInfoAlloc(inst, rout, elem)
+
+	log.Debug2("Alloc")
 
 	return inst.Next(), info
 }
@@ -23,7 +27,10 @@ func ParseAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) (s_s
 func instInfoAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) *instructionWithInfo {
 	elem, ok := elem.(*trace.ElementAlloc)
 	if !ok {
-		iwi := newIWI2(inst)
+		// get number of fields in structs
+		st := inst.Instruction().Type().Underlying().(*types.Pointer).Elem().Underlying().(*types.Struct)
+		n := st.NumFields()
+		iwi := newIWI4(inst, n)
 		return addPathInstr(rout, iwi)
 	}
 

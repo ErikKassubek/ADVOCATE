@@ -47,14 +47,15 @@ func determineResouceToSSAAtTermination() {
 			b := f.Blocks()[0]
 
 			// skip non relevant instructions in main
-			for _, inst := range b.Instrs() {
-				if inst.InTrace() {
-					blocking.nextPerRout[1] = inst
-					break
-				} else {
-					printInstr(1, inst, elem, nil)
-				}
-			}
+			// for _, inst := range b.Instrs() {
+			// 	if inst.InTrace() {
+			// 		blocking.nextPerRout[1] = inst
+			// 		break
+			// 	} else {
+			// 		printInstr(1, inst, elem, nil)
+			// 	}
+			// }
+			blocking.nextPerRout[1] = parseNonTraceInstructions(b.Instrs()[0], 1)
 			continue
 		}
 
@@ -113,7 +114,7 @@ func parseInstructions(elem trace.Element, inst s_ssa.Instruction, rout int) s_s
 		return nil
 	}
 
-	return skipNonRelevant(next, rout)
+	return parseNonTraceInstructions(next, rout)
 }
 
 func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ssa.Instruction {
@@ -126,24 +127,25 @@ func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ss
 
 func printInstr(rout int, inst s_ssa.Instruction, elem trace.Element, info *instructionWithInfo) {
 	infoStr := "<NIL>"
-	if info != nil && len(info.Resource) != 0 {
+	res := info.GetResourcesSlice()
+	if info != nil && len(res) != 0 {
 		infoStr = ""
 
-		if len(info.Resource) != 1 {
-			for i, res := range info.Resource {
+		if len(res) != 1 {
+			for i, r := range res {
 				if i != 0 {
 					infoStr += " "
 				}
 				infoStr += fmt.Sprintf("#%d: ", i)
-				if len(res) == 0 {
+				if len(r) == 0 {
 					infoStr += "<NIL>"
 				}
-				for id := range res {
+				for id := range r {
 					infoStr += fmt.Sprint(id)
 				}
 			}
 		} else {
-			for id := range info.Resource[0] {
+			for id := range res[0] {
 				infoStr += fmt.Sprint(id)
 			}
 		}
@@ -157,14 +159,8 @@ func printInstr(rout int, inst s_ssa.Instruction, elem trace.Element, info *inst
 	}
 }
 
-func skipNonRelevant(inst s_ssa.Instruction, rout int) s_ssa.Instruction {
+func parseNonTraceInstructions(inst s_ssa.Instruction, rout int) s_ssa.Instruction {
 	for p := inst; p != nil; {
-		if !p.Relevant() {
-			printInstr(rout, p, nil, nil)
-			p = p.Next()
-			continue
-		}
-
 		if p.InTrace() {
 			return p
 		}

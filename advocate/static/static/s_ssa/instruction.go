@@ -13,7 +13,6 @@ type Instruction interface {
 	StringInfo() string
 	Inst() ssa.Instruction
 	InTrace() bool
-	Relevant() bool
 
 	Conc() hasConcInfo
 	HasChannel() bool

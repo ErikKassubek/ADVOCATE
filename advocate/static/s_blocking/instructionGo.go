@@ -52,7 +52,7 @@ func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Ins
 	// we skip the func call in this case. For this case, perform it here
 	parseCallParameter(inst.Instruction(), nil, rout, newRoutId, f)
 
-	blocking.nextPerRout[newRoutId] = skipNonRelevant(firstInFunc, newRoutId)
+	blocking.nextPerRout[newRoutId] = parseNonTraceInstructions(firstInFunc, newRoutId)
 
 	blocking.maxRoutId = max(blocking.maxRoutId, newRoutId)
 

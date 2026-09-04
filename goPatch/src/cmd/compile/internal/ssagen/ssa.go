@@ -2409,10 +2409,6 @@ func shouldAdvocate(fn *ir.Func) bool {
 		return false
 	}
 
-	if strings.Contains(name, "main") {
-		fmt.Println(name)
-	}
-
 	return true
 }
 

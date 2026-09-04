@@ -19,9 +19,11 @@ var recvForward = make(map[*s_ssa.InstructionUnOp]map[int]map[trace.Resource]boo
 
 func instInfoPointerDereference(inst *s_ssa.InstructionUnOp, rout int) *instructionWithInfo {
 	term := inst.Term()
-	ssaVar := getDecOfSSAVar(rout, term)
-	iwi := newIWI1(inst, ssaVar.Resource)
-	return addPathInstr(rout, iwi)
+	iwi := getDecOfSSAVar(rout, term)
+	iwi_new := newIwiFromIwi(inst, iwi)
+	iwi.Parents[0] = append(iwi.Parents[0], iwi_new)
+
+	return addPathInstr(rout, iwi_new)
 }
 
 func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, forward bool) *instructionWithInfo {
@@ -35,11 +37,12 @@ func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, 
 		// TODO: implement
 		iwiReceiver := getDecOfSSAVar(rout, v)
 
-		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name(), Parents: make([]*instructionWithInfo, 0)}
+		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name(), Parents: make([][]*instructionWithInfo, 1)}
+		receivedValue.Parents[0] = make([]*instructionWithInfo, 0)
 
 		for _, res := range iwiReceiver.Resource[0] {
 			for _, iwiSend := range sendForward[res.Id()] {
-				receivedValue.Parents = append(receivedValue.Parents, iwiSend)
+				receivedValue.Parents[0] = append(receivedValue.Parents[0], iwiSend)
 			}
 		}
 	}

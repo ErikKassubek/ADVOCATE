@@ -15,12 +15,18 @@ import (
 	"advocate/utils/log"
 )
 
-func instInfoFieldAddr(inst *s_ssa.InstructionFieldAddr, rout int, _ trace.Element) *instructionWithInfo {
-	log.Todo("InstructionFieldAddr NOT IMPLEMENTED YET")
-	return addPathInstr(rout, newIWI2(inst))
-}
-
 func ParseFieldAddr(inst *s_ssa.InstructionFieldAddr, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
-	info := instInfoFieldAddr(inst, rout, elem)
+	field_name, field_index := getFieldInfo(inst)
+
+	log.Debug2(inst)
+	log.Debug2(field_name)
+	iwi := getDecOfSSAVar(rout, field_name)
+
+	log.Debug2("IWI: ", iwi)
+
+	iwi_new := newIwiFromIwiIndex(inst, iwi, field_index)
+	iwi.Parents[field_index] = append(iwi.Parents[field_index], iwi_new) // TODO: do this for all addr
+
+	info := addPathInstr(rout, iwi_new)
 	return inst.Next(), info
 }

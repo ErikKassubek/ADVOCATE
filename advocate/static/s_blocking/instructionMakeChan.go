@@ -22,9 +22,9 @@ func instInfoMakeChan(inst *s_ssa.InstructionMakeChan, rout int, elem trace.Elem
 		return addPathInstr(rout, iwi)
 	}
 
-	resources := make(map[int]trace.Resource)
+	resources := make(map[trace.Resource]bool)
 	if res, ok := blocking.blockedResources[elem.ResourceID()]; ok {
-		resources[res.Id()] = res
+		resources[res] = true
 	}
 
 	iwi := newIWI1(inst, fmtInstRes(resources))

@@ -66,7 +66,7 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 	}
 
 	elem := ElementFork{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tPostInt,
 		objId:       idInt,
 		pos:         NewPosition(file, line),
@@ -93,6 +93,14 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 //   - int: The id of the new routine
 func (this *ElementFork) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementFork) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -316,30 +324,31 @@ func (this *ElementFork) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementFork) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementFork) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementFork{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			t:           0,
 			objId:       this.objId,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementFork{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		objId:       this.objId,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

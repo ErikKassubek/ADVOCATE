@@ -140,13 +140,13 @@ func printInstr(rout int, inst s_ssa.Instruction, elem trace.Element, info *inst
 				if len(r) == 0 {
 					infoStr += "<NIL>"
 				}
-				for id := range r {
-					infoStr += fmt.Sprint(id)
+				for res := range r {
+					infoStr += fmt.Sprint(res.Id())
 				}
 			}
 		} else {
-			for id := range res[0] {
-				infoStr += fmt.Sprint(id)
+			for res := range res[0] {
+				infoStr += fmt.Sprint(res.Id())
 			}
 		}
 

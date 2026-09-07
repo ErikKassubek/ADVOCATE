@@ -90,7 +90,7 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 	}
 
 	elem := ElementAlloc{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tInt,
 		objId:       idInt,
 		elemType:    et,
@@ -124,7 +124,7 @@ func (this *Trace) AddTraceElementAllocFromElem(elem Element) {
 	id := elem.ResourceID()
 
 	al := ElementAlloc{
-		ElementBase: this.newElementBase(rout),
+		ElementBase: this.newElementBase(this, rout),
 		t:           elem.T(Request) - 1,
 		objId:       id,
 		elemType:    et,
@@ -149,6 +149,14 @@ func (this *Trace) AddTraceElementAllocFromElem(elem Element) {
 //   - int: The id of the element
 func (this *ElementAlloc) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementAlloc) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // setObjId sets the object id
@@ -409,20 +417,21 @@ func (this *ElementAlloc) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementAlloc) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementAlloc) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	return &ElementAlloc{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           0,
 		objId:       this.objId,
 		elemType:    this.elemType,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

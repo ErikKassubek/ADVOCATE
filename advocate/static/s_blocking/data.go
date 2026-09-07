@@ -15,10 +15,7 @@ import (
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/types"
-	"go/token"
 	"strings"
-
-	"golang.org/x/tools/go/ssa"
 )
 
 var data *static.Data
@@ -60,218 +57,6 @@ func newBlockData() *BlockingData {
 	}
 }
 
-type path []*instructionWithInfo
-
-func (p path) last() *instructionWithInfo {
-	return p[len(p)-1]
-}
-
-type instructionWithInfo struct {
-	Inst     s_ssa.Instruction
-	Resource []map[int]trace.Resource // index (for field, return/extrace, ...) -> resource id -> resource
-	Variable string
-	Parents  [][]*instructionWithInfo // index (for field, return/extract, ...) -> []parents
-}
-
-func newIWI(inst s_ssa.Instruction, res []map[int]trace.Resource, par [][]*instructionWithInfo) *instructionWithInfo {
-	return &instructionWithInfo{inst, res, inst.Variable(), par}
-}
-
-func newIwiFromIwi(inst s_ssa.Instruction, iwi *instructionWithInfo) *instructionWithInfo {
-	return &instructionWithInfo{inst, iwi.Resource, inst.Variable(), iwi.Parents}
-}
-
-func newIwiFromIwiIndex(inst s_ssa.Instruction, iwi *instructionWithInfo, index int) *instructionWithInfo {
-	return &instructionWithInfo{inst, []map[int]trace.Resource{iwi.Resource[index]}, inst.Variable(), [][]*instructionWithInfo{iwi.Parents[index]}} // TODO: index
-}
-
-func newIWI1(inst s_ssa.Instruction, res []map[int]trace.Resource) *instructionWithInfo {
-	return &instructionWithInfo{inst, res, inst.Variable(), make([][]*instructionWithInfo, len(res))}
-}
-
-func newIWI2(inst s_ssa.Instruction) *instructionWithInfo {
-	return &instructionWithInfo{inst, make([]map[int]trace.Resource, 0), inst.Variable(), make([][]*instructionWithInfo, 0)}
-}
-
-func newIWI3(inst s_ssa.Instruction, v string, res []map[int]trace.Resource) *instructionWithInfo {
-	return &instructionWithInfo{inst, res, v, make([][]*instructionWithInfo, len(res))}
-}
-
-func newIWI4(inst s_ssa.Instruction, n int) *instructionWithInfo {
-	log.Debug("IWI4: ", inst, n)
-	return &instructionWithInfo{inst, make([]map[int]trace.Resource, n), inst.Variable(), make([][]*instructionWithInfo, n)}
-}
-
-func (self *instructionWithInfo) Merge(other *instructionWithInfo) *instructionWithInfo {
-	maxLen := max(len(self.Resource), len(other.Resource))
-	res := make([]map[int]trace.Resource, maxLen)
-
-	for i := 0; i < maxLen; i++ {
-		res[i] = make(map[int]trace.Resource)
-		if i < len(self.Resource) {
-			for key, reso := range self.Resource[i] {
-				res[i][key] = reso
-			}
-		}
-		if i < len(other.Resource) {
-			for key, reso := range other.Resource[i] {
-				res[i][key] = reso
-			}
-		}
-	}
-
-	parents := make([][]*instructionWithInfo, 0)
-
-	for _, par := range self.Parents {
-		parents = append(parents, par)
-	}
-
-	for _, par := range other.Parents {
-		parents = append(parents, par)
-	}
-
-	return &instructionWithInfo{self.Inst, res, self.Variable, parents}
-}
-
-func (self *instructionWithInfo) GetResources() map[int]trace.Resource {
-	res := self.Resource[0]
-
-	for _, parent := range self.Parents {
-		if len(parent) == 0 {
-			continue
-		}
-		resPar := parent[0].GetResources()
-		for _, par := range resPar {
-			res[par.Id()] = par
-		}
-	}
-
-	return res
-}
-
-func (self *instructionWithInfo) GetResourcesIndex(index int) map[int]trace.Resource {
-	res := self.Resource[index]
-
-	for _, parent := range self.Parents[index] {
-		resPar := parent.GetResources()
-		for _, par := range resPar {
-			res[par.Id()] = par
-		}
-	}
-
-	return res
-}
-
-func (self *instructionWithInfo) GetResourcesSlice() []map[int]trace.Resource {
-	if self == nil {
-		return []map[int]trace.Resource{}
-	}
-	res := make([]map[int]trace.Resource, len(self.Resource))
-
-	for i := range res {
-		res[i] = self.Resource[0]
-
-		for _, parent := range self.Parents {
-			if len(parent) == 0 {
-				continue
-			}
-			resPar := parent[0].GetResources()
-			for _, par := range resPar {
-				res[i][par.Id()] = par
-			}
-		}
-	}
-
-	return res
-}
-
-func compatible(iwi *instructionWithInfo, elem trace.Element) (bool, *trace.Resource) {
-	if iwi == nil || iwi.Resource == nil {
-		return false, nil
-	}
-
-	for _, res := range iwi.Resource { // should be only one element, but better to be sure
-		if _, ok := res[elem.ResourceID()]; !ok { // not the same object
-			return false, nil
-		}
-
-		r := res[elem.ResourceID()]
-
-		switch elem := elem.(type) {
-		case *trace.ElementChannel:
-			switch elem.Type(true) {
-			case trace.ChannelRecv:
-				return iwi.Inst.Class() == s_ssa.Ic_send, &r
-			case trace.ChannelSend:
-				if i, ok := iwi.Inst.Inst().(*ssa.UnOp); ok {
-					return i.Op == token.ARROW, &r
-				}
-			}
-		case *trace.ElementSelect:
-			for _, c := range elem.GetCases() {
-				if _, ok := res[c.ResourceID()]; !ok { // not the same object
-					continue
-				}
-				switch c.Type(true) {
-				case trace.ChannelRecv:
-					return iwi.Inst.Class() == s_ssa.Ic_send, &r
-				case trace.ChannelSend:
-					if i, ok := iwi.Inst.Inst().(*ssa.UnOp); ok {
-						return i.Op == token.ARROW, &r
-					}
-				}
-			}
-		case *trace.ElementMutex:
-			if iwi.Inst.HasMutex() {
-				if elem.Type(true) == trace.MutexLock && (strings.Contains(iwi.Inst.Term(), "(*sync.Mutex).Unlock(") || strings.Contains(iwi.Inst.Term(), "(*sync.RWMutex).Unlock(")) {
-					return true, &r
-				} else if elem.Type(true) == trace.MutexRLock && strings.Contains(iwi.Inst.Term(), "(*sync.RWMutex).RUnlock(") {
-					return true, &r
-				}
-			}
-		case *trace.ElementCond:
-			return iwi.Inst.HasCond() && (strings.Contains(iwi.Inst.Term(), "(*sync.Cond).Signal(") || strings.Contains(iwi.Inst.Term(), "(*sync.Cond).Broadcast(")), &r
-		case *trace.ElementWait:
-			return iwi.Inst.HasWG() && strings.Contains(iwi.Inst.Term(), "(*sync.WaitGroup).Done("), &r
-		}
-
-	}
-
-	return false, nil
-}
-
-func fmtInstRes(resource map[int]trace.Resource) []map[int]trace.Resource {
-	if resource == nil {
-		return make([]map[int]trace.Resource, 0)
-	}
-
-	return []map[int]trace.Resource{resource}
-}
-
-func (self *instructionWithInfo) sameResource(inst *instructionWithInfo) bool {
-	if len(self.Resource) != len(inst.Resource) {
-		return false
-	}
-
-	for i := 0; i < len(self.Resource); i++ {
-		res1 := self.Resource[i]
-		res2 := inst.Resource[i]
-
-		if len(res1) != len(res2) {
-			return false
-		}
-
-		for k := range res1 {
-			if _, ok := res2[k]; !ok {
-				return false
-			}
-		}
-
-	}
-	return true
-
-}
-
 func (self *BlockingData) NewFuncStack(rout int, inst *s_ssa.InstructionCall) {
 	res := make([]*instructionWithInfo, 0)
 	if inst != nil && inst.Variable() != "" {
@@ -309,16 +94,15 @@ func addPathParam(rout int, v string, iwi *instructionWithInfo) *instructionWith
 		blocking.NewPathPerRoutine(rout)
 	}
 
-	var res []map[int]trace.Resource
-	var par [][]*instructionWithInfo
+	var res map[int]map[trace.Resource]bool
+	var par map[int][]*instructionWithInfo
 
 	if iwi != nil {
 		res = iwi.Resource
-		par = iwi.Parents
+		par = iwi.Reference
 	}
 
-	newElem := &instructionWithInfo{nil, res, v, par}
-	log.Debug2("NEW: ", newElem)
+	newElem := &instructionWithInfo{nil, v, res, par}
 
 	top := blocking.pathPerRoutine[rout].Pop()
 	top = append(top, newElem)

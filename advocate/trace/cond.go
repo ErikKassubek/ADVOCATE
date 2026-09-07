@@ -86,7 +86,7 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	}
 
 	elem := ElementCond{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		tReq:        tPreInt,
 		tCom:        tPostInt,
 		objId:       idInt,
@@ -110,6 +110,14 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 //   - int: The id of the element
 func (this *ElementCond) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementCond) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -399,6 +407,7 @@ func (this *ElementCond) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //     since conds do not contain reference to other elements and no other
 //     elements contain referents to conds, this is not used
@@ -406,29 +415,29 @@ func (this *ElementCond) ReplayID() string {
 
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementCond) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementCond) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementCond{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			tReq:        0,
 			tCom:        0,
 			objId:       this.objId,
 			op:          this.op,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementCond{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		tReq:        this.tReq,
 		tCom:        this.tCom,
 		objId:       this.objId,
 		op:          this.op,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

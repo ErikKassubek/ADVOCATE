@@ -12,14 +12,11 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 	"go/types"
 )
 
 func ParseAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
 	info := instInfoAlloc(inst, rout, elem)
-
-	log.Debug2("Alloc")
 
 	return inst.Next(), info
 }
@@ -34,9 +31,9 @@ func instInfoAlloc(inst *s_ssa.InstructionAlloc, rout int, elem trace.Element) *
 		return addPathInstr(rout, iwi)
 	}
 
-	resources := make(map[int]trace.Resource)
+	resources := make(map[trace.Resource]bool)
 	if res, ok := blocking.blockedResources[elem.ResourceID()]; ok {
-		resources[res.Id()] = res
+		resources[res] = true
 	}
 
 	iwi := newIWI1(inst, fmtInstRes(resources))

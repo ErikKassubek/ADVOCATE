@@ -84,7 +84,7 @@ func (this *Trace) AddTraceElementOnce(routine int, tReq string,
 	}
 
 	elem := ElementOnce{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		tReq:        tReqInt,
 		tCom:        tComInt,
 		objId:       idInt,
@@ -109,6 +109,14 @@ func (this *Trace) AddTraceElementOnce(routine int, tReq string,
 //   - int: The id of the element
 func (this *ElementOnce) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementOnce) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -399,29 +407,29 @@ func (this *ElementOnce) ReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementOnce) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementOnce) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementOnce{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			tReq:        0,
 			tCom:        0,
 			objId:       this.objId,
 			suc:         false,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementOnce{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		tReq:        this.tReq,
 		tCom:        this.tCom,
 		objId:       this.objId,
 		suc:         this.suc,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

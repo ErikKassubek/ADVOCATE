@@ -95,7 +95,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 	}
 
 	elem := ElementSelect{
-		ElementBase:         this.newElementBase(routine),
+		ElementBase:         this.newElementBase(this, routine),
 		tPre:                tReqInt,
 		tPost:               tComInt,
 		objId:               idInt,
@@ -163,7 +163,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 		}
 
 		elemCase := &ElementChannel{
-			ElementBase: this.newElementBase(routine),
+			ElementBase: this.newElementBase(this, routine),
 			tReq:        tReqInt,
 			tCom:        cTPost,
 			objId:       cID,
@@ -203,6 +203,28 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 //   - int: The id of the element
 func (this *ElementSelect) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementSelect) Resource() Resource {
+	return NewResource(-1, nil)
+}
+
+// ResourceID returns the resources
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementSelect) Resources() map[Resource]bool {
+	res := make(map[Resource]bool)
+
+	for _, c := range this.cases {
+		res[c.Resource()] = true
+	}
+
+	return res
 }
 
 // ========================================================
@@ -601,13 +623,14 @@ func (this *ElementSelect) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //     This avoids double copy of referenced elements
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementSelect) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	id := this.ID()
 
 	if existing, ok := mapping[id]; ok {
@@ -616,7 +639,7 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		elem := &ElementSelect{
-			ElementBase:     this.ElementBase.Copy(),
+			ElementBase:     this.ElementBase.Copy(trace),
 			tPre:            0,
 			tPost:           0,
 			objId:           this.objId,
@@ -625,14 +648,14 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 			chosenDefault:   this.chosenDefault,
 			pos:             this.pos.copy(),
 			ci:              newConcInfo(),
-			function:        this.function.CopyFunc(mapping, keep),
+			function:        this.function.CopyFunc(trace, mapping, keep),
 		}
 
 		mapping[id] = elem
 
 		elem.cases = make([]*ElementChannel, 0)
 		for _, c := range this.cases {
-			cp := c.Copy(mapping, keep).(*ElementChannel)
+			cp := c.Copy(trace, mapping, keep).(*ElementChannel)
 			elem.cases = append(elem.cases, cp)
 			if cp.Committed() {
 				elem.chosenCase = cp
@@ -647,7 +670,7 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	elem := &ElementSelect{
-		ElementBase:     this.ElementBase.Copy(),
+		ElementBase:     this.ElementBase.Copy(trace),
 		tPre:            this.tPre,
 		tPost:           this.tPost,
 		objId:           this.objId,
@@ -656,14 +679,14 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 		chosenDefault:   this.chosenDefault,
 		pos:             this.pos.copy(),
 		ci:              this.ci.copy(),
-		function:        this.function.CopyFunc(mapping, keep),
+		function:        this.function.CopyFunc(trace, mapping, keep),
 	}
 
 	mapping[id] = elem
 
 	elem.cases = make([]*ElementChannel, 0)
 	for _, c := range this.cases {
-		cp := c.Copy(mapping, keep).(*ElementChannel)
+		cp := c.Copy(trace, mapping, keep).(*ElementChannel)
 		elem.cases = append(elem.cases, cp)
 		if cp.Committed() {
 			elem.chosenCase = cp

@@ -139,7 +139,7 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 	}
 
 	elem := ElementChannel{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		tReq:        tReqInt,
 		tCom:        tComInt,
 		objId:       idInt,
@@ -170,6 +170,14 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 //   - int: The id of the element
 func (this *ElementChannel) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementChannel) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -523,13 +531,14 @@ func (this *ElementChannel) ReplayID() string {
 
 // Copy creates a copy of the channel element
 //
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements,
 //     Used to avoid double copy of references
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementChannel) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	id := this.ID()
 	if existing, ok := mapping[id]; ok {
 		return existing
@@ -537,7 +546,7 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		newCh := ElementChannel{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			tReq:        0,
 			tCom:        0,
 			objId:       this.objId,
@@ -549,19 +558,19 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 			pos:         this.pos.copy(),
 			selIndex:    this.selIndex,
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 
 		mapping[id] = &newCh
 
 		var newPartner *ElementChannel
 		if this.partner != nil {
-			newPartner = this.partner.Copy(mapping, keep).(*ElementChannel)
+			newPartner = this.partner.Copy(trace, mapping, keep).(*ElementChannel)
 		}
 
 		var newSelect *ElementSelect
 		if this.sel != nil {
-			newSelect = this.sel.Copy(mapping, keep).(*ElementSelect)
+			newSelect = this.sel.Copy(trace, mapping, keep).(*ElementSelect)
 		}
 
 		newCh.partner = newPartner
@@ -571,7 +580,7 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	newCh := ElementChannel{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		tReq:        this.tReq,
 		tCom:        this.tCom,
 		objId:       this.objId,
@@ -583,19 +592,19 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 		pos:         this.pos.copy(),
 		selIndex:    this.selIndex,
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 
 	mapping[id] = &newCh
 
 	var newPartner *ElementChannel
 	if this.partner != nil {
-		newPartner = this.partner.Copy(mapping, keep).(*ElementChannel)
+		newPartner = this.partner.Copy(trace, mapping, keep).(*ElementChannel)
 	}
 
 	var newSelect *ElementSelect
 	if this.sel != nil {
-		newSelect = this.sel.Copy(mapping, keep).(*ElementSelect)
+		newSelect = this.sel.Copy(trace, mapping, keep).(*ElementSelect)
 	}
 
 	newCh.partner = newPartner

@@ -505,7 +505,7 @@ func (this *Trace) Copy(keep bool) (Trace, error) {
 	for _, rout := range this.routines {
 		newTrace.AddRoutine(rout.id)
 		for _, elem := range rout.elems {
-			newTrace.AddElement(elem.Copy(mapping, keep))
+			newTrace.AddElement(elem.Copy(&newTrace, mapping, keep))
 			if control.WasCanceled() {
 				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient RAM")
 			}
@@ -803,7 +803,7 @@ func (this *Trace) RemoveLater(tPost int) {
 		newElems := make([]Element, 0)
 		for _, elem := range rout.elems {
 			if elem.T(Commit) > tPost {
-				newElems = append(newElems, elem.Copy(mapping, true))
+				newElems = append(newElems, elem.Copy(this, mapping, true))
 			}
 		}
 		this.routines[routine].elems = newElems
@@ -870,7 +870,7 @@ func (this *Trace) AsRequestCommit() int {
 		newRout := Routine{id: tr.id, resources: tr.resources}
 		for _, elem := range tr.elems {
 			if elem.CanBeRequest() {
-				newElem := elem.Copy(mapping, true)
+				newElem := elem.Copy(this, mapping, true)
 				newElem.SetRequest(true)
 				newRout.addElement(newElem)
 				elemCounter++
@@ -1060,7 +1060,6 @@ func (this *Trace) Resources() map[int]Resource {
 // GetAlloc returns the alloc of an element.
 // For an alloc the element is returned.
 // For elements without alloc, nil is returned
-// Elem must not be select
 func (this *Trace) GetResources(elem Element) []Resource {
 	res := make([]Resource, 0)
 

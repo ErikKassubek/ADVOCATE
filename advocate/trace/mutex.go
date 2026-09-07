@@ -115,7 +115,7 @@ func (this *Trace) AddTraceElementMutex(routine int, tReq string,
 	}
 
 	elem := ElementMutex{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		tReq:        tReqInt,
 		tCom:        tComInt,
 		objId:       idInt,
@@ -141,6 +141,14 @@ func (this *Trace) AddTraceElementMutex(routine int, tReq string,
 //   - int: The id of the element
 func (this *ElementMutex) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementMutex) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -444,15 +452,16 @@ func (this *ElementMutex) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementMutex) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementMutex) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementMutex{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			tReq:        0,
 			tCom:        0,
 			objId:       this.objId,
@@ -461,12 +470,12 @@ func (this *ElementMutex) Copy(mapping map[int]Element, keep bool) Element {
 			suc:         true,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementMutex{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		tReq:        this.tReq,
 		tCom:        this.tCom,
 		objId:       this.objId,
@@ -475,7 +484,7 @@ func (this *ElementMutex) Copy(mapping map[int]Element, keep bool) Element {
 		suc:         this.suc,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

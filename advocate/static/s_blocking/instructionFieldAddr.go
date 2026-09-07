@@ -24,8 +24,12 @@ func ParseFieldAddr(inst *s_ssa.InstructionFieldAddr, rout int, elem trace.Eleme
 
 	log.Debug2("IWI: ", iwi)
 
+	if len(iwi.Reference[0]) != 0 {
+		log.Debug2(iwi.Reference[0][0])
+	}
+
 	iwi_new := newIwiFromIwiIndex(inst, iwi, field_index)
-	iwi.Parents[field_index] = append(iwi.Parents[field_index], iwi_new) // TODO: do this for all addr
+	setReference(iwi, field_index, iwi_new, 0)
 
 	info := addPathInstr(rout, iwi_new)
 	return inst.Next(), info

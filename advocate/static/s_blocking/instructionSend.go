@@ -21,7 +21,6 @@ import (
 var sendForward = make(map[int][]*instructionWithInfo) // sender resource id -> possible values
 
 func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, forward bool) *instructionWithInfo {
-	log.Debug2(inst.Instruction().Chan.Name())
 	iwiSender := getDecOfSSAVar(rout, inst.Instruction().Chan.Name())
 
 	if elem != nil {
@@ -42,9 +41,8 @@ func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, for
 
 	// TODO: test
 	if forward {
-		for _, resSend := range iwiSender.GetResources() {
+		for resSend := range iwiSender.GetResources() {
 			// chan type contains concurrency primitive
-			log.Debug2(resSend.Alloc())
 			pos := resSend.Alloc().Pos()
 			l, err := code.GetLineContent(pos)
 			if err != nil {
@@ -56,7 +54,7 @@ func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, for
 				continue
 			}
 
-			res.Parents[0] = append(res.Parents[0], res)
+			res.Reference[0] = append(res.Reference[0], res)
 
 			sendForward[resSend.Id()] = append(sendForward[resSend.Id()], res)
 		}

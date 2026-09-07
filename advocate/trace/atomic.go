@@ -53,7 +53,7 @@ type ElementAtomic struct {
 //   - id string: The id of the atomic variable
 //   - operation string: The operation on the atomic variable
 //   - pos string: The position of the atomic
-func (this Trace) AddTraceElementAtomic(routine int, tPost string,
+func (this *Trace) AddTraceElementAtomic(routine int, tPost string,
 	id string, operation string, pos string) error {
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
@@ -92,7 +92,7 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := ElementAtomic{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tPostInt,
 		objId:       idInt,
 		op:          opAInt,
@@ -115,6 +115,14 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 //   - int: The id of the element
 func (this *ElementAtomic) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementAtomic) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -340,6 +348,7 @@ func (this *ElementAtomic) ReplayID() string {
 // Copy the atomic element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[int]Element: map containing all already copied elements, if nil ignore all vc based values.
 //     since atomics do not contain reference to other elements and no other
 //     elements contain referents to atomics, this is not used
@@ -347,28 +356,28 @@ func (this *ElementAtomic) ReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementAtomic) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementAtomic) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		return &ElementAtomic{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			t:           0,
 			objId:       this.objId,
 			op:          this.op,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementAtomic{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		objId:       this.objId,
 		op:          this.op,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

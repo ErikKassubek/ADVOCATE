@@ -27,6 +27,7 @@ type Element interface {
 	ID() int
 	setID(ID int)
 	ResourceID() int
+	Resource() Resource
 
 	T(t timeType) int
 	SetT(t timeType, time int)
@@ -46,6 +47,9 @@ type Element interface {
 	IsEqual(elem Element) bool
 	IsSameElement(elem Element) bool
 
+	Trace() *Trace
+	setTrace(trace *Trace)
+
 	Request() bool
 	CanBeRequest() bool
 	SetRequest(req bool)
@@ -64,7 +68,7 @@ type Element interface {
 
 	ReplayID() string
 
-	Copy(mapping map[int]Element, keep bool) Element
+	Copy(trace *Trace, mapping map[int]Element, keep bool) Element
 
 	IsValid() bool
 
@@ -97,15 +101,17 @@ type ElementBase struct {
 	routineId int
 	routine   *Routine
 
+	trace *Trace
+
 	init bool
 
 	request bool // can only be true if trace.request is true
 }
 
-func (this *Trace) newElementBase(routID int) ElementBase {
+func (this *Trace) newElementBase(trace *Trace, routID int) ElementBase {
 	this.minTraceID++
 	rout := this.routines[routID]
-	return ElementBase{id: this.minTraceID, routineId: routID, index: this.NumberElemInRoutine(routID), routine: rout, init: !this.hasPassedMain}
+	return ElementBase{id: this.minTraceID, routineId: routID, index: this.NumberElemInRoutine(routID), routine: rout, trace: trace, init: !this.hasPassedMain}
 }
 
 // ID returns the trace id
@@ -152,12 +158,22 @@ func (this *ElementBase) CanBeRequest() bool {
 //
 // Parameter:
 //   - ID int: the trace id
-func (e ElementBase) Copy() ElementBase {
-	return e
+func (e ElementBase) Copy(trace *Trace) ElementBase { // TODO: fix copy, especially alloc
+	new_e := e
+	new_e.setTrace(trace)
+	return new_e
 }
 
 func (e ElementBase) InInit() bool {
 	return e.init
+}
+
+func (e ElementBase) Trace() *Trace {
+	return e.trace
+}
+
+func (e ElementBase) setTrace(trace *Trace) {
+	e.trace = trace
 }
 
 // ========================================================

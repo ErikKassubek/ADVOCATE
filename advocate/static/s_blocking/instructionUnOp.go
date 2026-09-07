@@ -12,6 +12,7 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"advocate/utils/log"
 	"go/token"
 )
 
@@ -21,7 +22,7 @@ func instInfoPointerDereference(inst *s_ssa.InstructionUnOp, rout int) *instruct
 	term := inst.Term()
 	iwi := getDecOfSSAVar(rout, term)
 	iwi_new := newIwiFromIwi(inst, iwi)
-	iwi.Parents[0] = append(iwi.Parents[0], iwi_new)
+	iwi.Reference[0] = append(iwi.Reference[0], iwi_new)
 
 	return addPathInstr(rout, iwi_new)
 }
@@ -37,12 +38,12 @@ func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, 
 		// TODO: implement
 		iwiReceiver := getDecOfSSAVar(rout, v)
 
-		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name(), Parents: make([][]*instructionWithInfo, 1)}
-		receivedValue.Parents[0] = make([]*instructionWithInfo, 0)
+		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name(), Reference: make(map[int][]*instructionWithInfo)}
+		receivedValue.Reference[0] = make([]*instructionWithInfo, 0)
 
-		for _, res := range iwiReceiver.Resource[0] {
+		for res := range iwiReceiver.Resource[0] {
 			for _, iwiSend := range sendForward[res.Id()] {
-				receivedValue.Parents[0] = append(receivedValue.Parents[0], iwiSend)
+				receivedValue.Reference[0] = append(receivedValue.Reference[0], iwiSend)
 			}
 		}
 	}
@@ -66,7 +67,9 @@ func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, for
 }
 
 func ParseUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, forward bool) (s_ssa.Instruction, *instructionWithInfo) {
-	info := instInfoUnOp(inst, rout, elem, forward)
+	iwi := instInfoUnOp(inst, rout, elem, forward)
 
-	return inst.Next(), info
+	log.Debug2(iwi)
+
+	return inst.Next(), iwi
 }

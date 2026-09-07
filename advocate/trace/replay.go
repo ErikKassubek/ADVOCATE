@@ -44,7 +44,7 @@ type ElementReplay struct {
 //   - error
 func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	elem := ElementReplay{
-		ElementBase: this.newElementBase(0),
+		ElementBase: this.newElementBase(this, 0),
 		t:           ts,
 		exitCode:    exitCode,
 	}
@@ -130,6 +130,14 @@ func (this *ElementReplay) Line() int {
 //   - int: The routine of the element
 func (this *ElementReplay) RoutineID() int {
 	return 1
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementReplay) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // TraceIndex returns the trace local index of the element in the trace
@@ -299,21 +307,22 @@ func (this *ElementReplay) ReplayID() string {
 // Copy creates a copy of the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - _ map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementReplay) Copy(_ map[int]Element, keep bool) Element {
+func (this *ElementReplay) Copy(trace *Trace, _ map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementReplay{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			t:           0,
 			exitCode:    this.exitCode,
 		}
 	}
 	return &ElementReplay{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		exitCode:    this.exitCode,
 	}

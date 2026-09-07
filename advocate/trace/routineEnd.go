@@ -49,7 +49,7 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 	}
 
 	elem := ElementRoutineEnd{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tPostInt,
 		ci:          newConcInfo(),
 	}
@@ -85,6 +85,14 @@ func (this *ElementRoutineEnd) setID(ID int) {
 //   - int: 0
 func (this *ElementRoutineEnd) ResourceID() int {
 	return 0
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementRoutineEnd) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -301,22 +309,23 @@ func (this *ElementRoutineEnd) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementRoutineEnd) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementRoutineEnd) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementRoutineEnd{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			t:           0,
 			ci:          newConcInfo(),
 		}
 	}
 
 	return &ElementRoutineEnd{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		ci:          this.ci.copy(),
 	}

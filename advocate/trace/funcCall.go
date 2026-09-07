@@ -83,7 +83,7 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef
 	}
 
 	elem := ElementFunc{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		name:        name,
 		ssaName:     funcNameToSSANane(name),
 		t:           tInt,
@@ -112,6 +112,14 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef
 
 func (this *ElementFunc) ResourceID() int {
 	return -1
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementFunc) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -253,7 +261,7 @@ func (this *ElementFunc) ReplayID() string {
 // MARK: Copy
 // ========================================================
 
-func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementFunc) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if this == nil {
 		return nil
 	}
@@ -265,7 +273,7 @@ func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	elem := &ElementFunc{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		name:        this.name,
 		ssaName:     this.ssaName,
@@ -278,14 +286,14 @@ func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
 	return elem
 }
 
-func (this *ElementFunc) CopyFunc(mapping map[int]Element, keep bool) *ElementFunc {
+func (this *ElementFunc) CopyFunc(trace *Trace, mapping map[int]Element, keep bool) *ElementFunc {
 	if this == nil {
 		return nil
 	}
 
 	var funcCopy *ElementFunc
 
-	if fc, ok := this.function.Copy(mapping, keep).(*ElementFunc); ok {
+	if fc, ok := this.function.Copy(trace, mapping, keep).(*ElementFunc); ok {
 		funcCopy = fc
 	}
 

@@ -83,7 +83,7 @@ func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, cho
 	}
 
 	elem := ElementControllFlow{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tInt,
 		numCases:    nc,
 		chosenCase:  cc,
@@ -114,6 +114,14 @@ func (this *ElementControllFlow) ResourceID() int {
 // Parameter:
 //   - id int: the object id
 func (this *ElementControllFlow) setObjId(id int) {
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementControllFlow) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -361,20 +369,21 @@ func (this *ElementControllFlow) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementControllFlow) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementControllFlow) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	return &ElementControllFlow{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		numCases:    this.numCases,
 		chosenCase:  this.chosenCase,
 		op:          this.op,
 		pos:         this.pos.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

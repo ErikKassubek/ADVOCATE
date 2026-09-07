@@ -48,7 +48,7 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 	}
 
 	elem := ElementReturn{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tInt,
 		function:    call,
 	}
@@ -63,6 +63,14 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 
 func (this *ElementReturn) ResourceID() int {
 	return -1
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementReturn) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -204,11 +212,11 @@ func (this *ElementReturn) ReplayID() string {
 // MARK: Copy
 // ========================================================
 
-func (this *ElementReturn) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementReturn) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	return &ElementReturn{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

@@ -107,7 +107,7 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := ElementWait{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		tPre:        tPreInt,
 		tPost:       tPostInt,
 		objId:       idInt,
@@ -149,6 +149,14 @@ func EmptyWait(id int) ElementWait {
 //   - int: The id of the element
 func (this *ElementWait) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementWait) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -449,10 +457,10 @@ func (this *ElementWait) ReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementWait) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementWait) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementWait{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			tPre:        0,
 			tPost:       0,
 			objId:       this.objId,
@@ -461,12 +469,12 @@ func (this *ElementWait) Copy(mapping map[int]Element, keep bool) Element {
 			val:         0,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementWait{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		tPre:        this.tPre,
 		tPost:       this.tPost,
 		objId:       this.objId,
@@ -475,7 +483,7 @@ func (this *ElementWait) Copy(mapping map[int]Element, keep bool) Element {
 		val:         this.val,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

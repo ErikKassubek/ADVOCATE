@@ -220,6 +220,10 @@ func (this *ElementRoutineEnd) String() string {
 	return "E" + "," + strconv.Itoa(this.t)
 }
 
+func (this *ElementRoutineEnd) StringLocal() string {
+	return "E" + "," + strconv.Itoa(this.t)
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

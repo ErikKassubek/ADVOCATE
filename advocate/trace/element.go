@@ -55,6 +55,7 @@ type Element interface {
 	SetRequest(req bool)
 
 	String() string
+	StringLocal() string
 	StringDebug() string
 	StringGui() string
 

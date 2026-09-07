@@ -127,7 +127,7 @@ func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ss
 
 func printInstr(rout int, inst s_ssa.Instruction, elem trace.Element, info *instructionWithInfo) {
 	infoStr := "<NIL>"
-	res := info.GetResourcesSlice()
+	res := info.GetResourcesMap()
 	if info != nil && len(res) != 0 {
 		infoStr = ""
 
@@ -149,14 +149,15 @@ func printInstr(rout int, inst s_ssa.Instruction, elem trace.Element, info *inst
 				infoStr += fmt.Sprint(res.Id())
 			}
 		}
-
 	}
 
 	if elem != nil {
-		log.Debugf("%2d | %-80.80s | %-25s | %s", rout, inst.StringInfo(), infoStr, elem.StringDebug())
+		log.Debugf("%2d | %-80.80s | %-25s | %s", rout, inst.StringInfo(), infoStr, elem.StringLocal())
 	} else {
 		log.Debugf("%2d | %-80.80s | %-25s |", rout, inst.StringInfo(), infoStr)
 	}
+
+	log.Debug2(info)
 }
 
 func parseNonTraceInstructions(inst s_ssa.Instruction, rout int) s_ssa.Instruction {

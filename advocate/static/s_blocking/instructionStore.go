@@ -18,11 +18,25 @@ import (
 )
 
 func instInfoStore(inst *s_ssa.InstructionStore, rout int, _ trace.Element) *instructionWithInfo {
-	ssaVar := getDecOfSSAVar(rout, inst.Term())
-	if ssaVar == nil {
+	decIwi := getDecOfSSAVar(rout, inst.Term())
+	if decIwi == nil {
 		log.Errorf("Could not find ssa var %s for %s", inst.Term(), inst)
 	}
-	iwi := newIwiFromIwi(inst, ssaVar)
+	iwi := newIwiFromIwi(inst, decIwi)
+
+	iwi.addReferenceIndex(decIwi, 0, 0)
+
+	if decIwi != nil && decIwi.Inst != nil {
+		log.Debug("AAAAAAAAA: ", decIwi.Inst.String(), " -> ", iwi.Inst.String())
+	}
+
+	// TODO: this is not correct
+	iwiOrg := getDecOfSSAVar(rout, inst.Variable())
+	log.Debug(iwiOrg == nil, inst.Variable())
+	if iwiOrg != nil {
+		iwi.addReferenceAll(iwiOrg)
+	}
+
 	res := addPathInstr(rout, iwi)
 
 	switch inst.Inst().(*ssa.Store).Addr.(type) {

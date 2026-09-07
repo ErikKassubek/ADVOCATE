@@ -300,6 +300,20 @@ func (this *ElementOnce) String() string {
 	return res
 }
 
+func (this *ElementOnce) StringLocal() string {
+	res := "O,"
+	res += strconv.Itoa(this.tReq) + ","
+	res += strconv.Itoa(this.tCom) + ","
+	res += strconv.Itoa(this.objId) + ","
+	if this.suc {
+		res += "t"
+	} else {
+		res += "f"
+	}
+	res += "," + this.Pos().Short()
+	return res
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

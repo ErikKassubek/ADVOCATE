@@ -215,6 +215,11 @@ func (this *ElementReplay) String() string {
 	return res
 }
 
+func (this *ElementReplay) StringLocal() string {
+	res := "X," + strconv.Itoa(this.t) + "," + strconv.Itoa(this.exitCode)
+	return res
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

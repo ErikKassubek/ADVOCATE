@@ -229,6 +229,11 @@ func (this *ElementFork) String() string {
 		"," + this.Pos().String()
 }
 
+func (this *ElementFork) StringLocal() string {
+	return "G" + "," + strconv.Itoa(this.t) + "," + strconv.Itoa(this.objId) +
+		"," + this.Pos().Short()
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

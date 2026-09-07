@@ -89,20 +89,20 @@ func addPathInstr(rout int, iwi *instructionWithInfo) *instructionWithInfo {
 	return iwi
 }
 
-func addPathParam(rout int, v string, iwi *instructionWithInfo) *instructionWithInfo {
+func addPathParam(rout int, v string, iwi *instructionWithInfo, f *s_ssa.Function) *instructionWithInfo {
 	if _, ok := blocking.pathPerRoutine[rout]; !ok {
 		blocking.NewPathPerRoutine(rout)
 	}
 
 	var res map[int]map[trace.Resource]bool
-	var par map[int][]*instructionWithInfo
+	var par map[int]map[*instructionWithInfo]map[int]bool
 
 	if iwi != nil {
 		res = iwi.Resource
 		par = iwi.Reference
 	}
 
-	newElem := &instructionWithInfo{nil, v, res, par}
+	newElem := &instructionWithInfo{s_ssa.NewParameter(f), v, res, par}
 
 	top := blocking.pathPerRoutine[rout].Pop()
 	top = append(top, newElem)
@@ -113,7 +113,7 @@ func addPathParam(rout int, v string, iwi *instructionWithInfo) *instructionWith
 
 func getDecOfSSAVar(rout int, v string) *instructionWithInfo {
 	if strings.Contains(v, ":") {
-		return &instructionWithInfo{}
+		return &instructionWithInfo{Resource: make(map[int]map[trace.Resource]bool), Reference: make(map[int]map[*instructionWithInfo]map[int]bool)}
 	}
 
 	ppr := blocking.pathPerRoutine[rout].Peek()

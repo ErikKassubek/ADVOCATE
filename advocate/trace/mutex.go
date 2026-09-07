@@ -341,6 +341,28 @@ func (this *ElementMutex) String() string {
 	return res
 }
 
+func (this *ElementMutex) StringLocal() string {
+	res := "M,"
+	res += strconv.Itoa(this.tReq) + "," + strconv.Itoa(this.tCom) + ","
+	res += strconv.Itoa(this.objId) + ","
+
+	if this.rw {
+		res += "R,"
+	} else {
+		res += "-,"
+	}
+
+	res += string(string(this.op)[1])
+
+	if this.suc {
+		res += ",t"
+	} else {
+		res += ",f"
+	}
+	res += "," + this.Pos().Short()
+	return res
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

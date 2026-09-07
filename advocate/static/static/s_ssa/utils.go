@@ -54,6 +54,8 @@ const (
 	Ic_store               InstClass = "store"
 	Ic_typeAssert          InstClass = "typeAssert"
 	Ic_unOp                InstClass = "unOp"
+
+	Ic_param InstClass = "param"
 )
 
 type hasConcInfo [4]bool

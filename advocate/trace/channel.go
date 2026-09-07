@@ -436,6 +436,28 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, this.objId, sep, op, sep, cl, sep, this.oID, sep, this.qSize, sep, this.qCount, posStr)
 }
 
+func (this *ElementChannel) StringLocal() string {
+	opFull := string(this.op)
+	op := "?"
+	if len(opFull) > 1 {
+		op = string(opFull[1])
+	}
+
+	cl := "f"
+	if this.cl {
+		cl = "t"
+	}
+
+	timeString := ""
+	posStr := ""
+	timeString = fmt.Sprintf(",%d,%d", this.T(Request), this.T(Commit))
+	posStr = "," + this.Pos().Short()
+
+	sep := ","
+
+	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, this.objId, sep, op, sep, cl, sep, this.oID, sep, this.qSize, sep, this.qCount, posStr)
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

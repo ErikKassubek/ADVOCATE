@@ -267,6 +267,19 @@ func (this *ElementControllFlow) String() string {
 	return fmt.Sprintf("I,%d,%s,%d,%d,%s", this.t, opStr, this.numCases, this.chosenCase, this.Pos())
 }
 
+func (this *ElementControllFlow) StringLocal() string {
+	opStr := ""
+	switch this.op {
+	case ControllIf:
+		opStr = "I"
+	case ControllSwitch:
+		opStr = "S"
+	default:
+		panic("Invalid op in Controll Flow Element")
+	}
+	return fmt.Sprintf("I,%d,%s,%d,%d,%s", this.t, opStr, this.numCases, this.chosenCase, this.Pos().Short())
+}
+
 // StringGui returns the simple gui representation of the element
 //
 // Returns:

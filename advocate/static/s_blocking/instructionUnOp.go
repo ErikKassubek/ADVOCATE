@@ -21,8 +21,12 @@ var recvForward = make(map[*s_ssa.InstructionUnOp]map[int]map[trace.Resource]boo
 func instInfoPointerDereference(inst *s_ssa.InstructionUnOp, rout int) *instructionWithInfo {
 	term := inst.Term()
 	iwi := getDecOfSSAVar(rout, term)
+
+	log.Debug2("A: ", iwi)
+
 	iwi_new := newIwiFromIwi(inst, iwi)
-	iwi.Reference[0] = append(iwi.Reference[0], iwi_new)
+
+	log.Debug2("B: ", iwi)
 
 	return addPathInstr(rout, iwi_new)
 }
@@ -38,12 +42,12 @@ func instInfoReceive(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, 
 		// TODO: implement
 		iwiReceiver := getDecOfSSAVar(rout, v)
 
-		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name(), Reference: make(map[int][]*instructionWithInfo)}
-		receivedValue.Reference[0] = make([]*instructionWithInfo, 0)
+		receivedValue = &instructionWithInfo{Inst: inst, Variable: inst.Instruction().Name(), Reference: make(map[int]map[*instructionWithInfo]map[int]bool)}
+		receivedValue.Reference[0] = make(map[*instructionWithInfo]map[int]bool)
 
 		for res := range iwiReceiver.Resource[0] {
 			for _, iwiSend := range sendForward[res.Id()] {
-				receivedValue.Reference[0] = append(receivedValue.Reference[0], iwiSend)
+				receivedValue.addReferenceAll(iwiSend)
 			}
 		}
 	}
@@ -68,8 +72,6 @@ func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, for
 
 func ParseUnOp(inst *s_ssa.InstructionUnOp, rout int, elem trace.Element, forward bool) (s_ssa.Instruction, *instructionWithInfo) {
 	iwi := instInfoUnOp(inst, rout, elem, forward)
-
-	log.Debug2(iwi)
 
 	return inst.Next(), iwi
 }

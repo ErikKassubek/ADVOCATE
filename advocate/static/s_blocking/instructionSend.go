@@ -54,8 +54,6 @@ func instInfoSend(inst *s_ssa.InstructionSend, rout int, elem trace.Element, for
 				continue
 			}
 
-			res.Reference[0] = append(res.Reference[0], res)
-
 			sendForward[resSend.Id()] = append(sendForward[resSend.Id()], res)
 		}
 	}

@@ -66,9 +66,9 @@ func parseCallParameter(call ssa.CallInstruction, inst *s_ssa.InstructionCall, r
 
 	for p, i := range paras {
 		if i == nil {
-			addPathParam(routFunc, p, nil)
+			addPathParam(routFunc, p, nil, f)
 		} else {
-			addPathParam(routFunc, p, i)
+			addPathParam(routFunc, p, i, f)
 		}
 	}
 
@@ -86,7 +86,7 @@ func parseCallParameter(call ssa.CallInstruction, inst *s_ssa.InstructionCall, r
 		}
 
 		for i := 0; i < len(info); i++ {
-			addPathParam(routFunc, fv[i].Name(), info[i])
+			addPathParam(routFunc, fv[i].Name(), info[i], f)
 		}
 	}
 }

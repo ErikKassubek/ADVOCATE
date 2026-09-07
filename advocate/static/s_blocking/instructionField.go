@@ -24,7 +24,7 @@ func ParseField(inst *s_ssa.InstructionField, rout int, elem trace.Element) (s_s
 
 	iwi_new := newIwiFromIwiIndex(inst, iwi, field_index)
 
-	setReference(iwi, field_index, iwi_new, 0)
+	iwi_new.addReferenceIndex(iwi, 0, field_index)
 
 	info := addPathInstr(rout, iwi_new)
 	return inst.Next(), info

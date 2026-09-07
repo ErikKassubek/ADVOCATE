@@ -154,6 +154,10 @@ func (this *ElementReturn) String() string {
 	return fmt.Sprintf("R,%d", this.t)
 }
 
+func (this *ElementReturn) StringLocal() string {
+	return fmt.Sprintf("R,%d", this.t)
+}
+
 // StringDebug returns the debug string representation of the element with leading routine
 //
 // Returns:

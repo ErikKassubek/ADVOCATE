@@ -323,6 +323,10 @@ func (this *ElementAlloc) String() string {
 	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.Pos())
 }
 
+func (this *ElementAlloc) StringLocal() string {
+	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.Pos().Short())
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

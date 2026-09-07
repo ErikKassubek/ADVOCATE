@@ -347,6 +347,22 @@ func (this *ElementWait) String() string {
 	return res
 }
 
+func (this *ElementWait) StringLocal() string {
+	res := "W,"
+	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
+	res += strconv.Itoa(this.objId) + ","
+	switch this.op {
+	case WaitAdd, WaitDone:
+		res += "A,"
+	case WaitWait:
+		res += "W,"
+	}
+
+	res += strconv.Itoa(this.delta) + "," + strconv.Itoa(this.val)
+	res += "," + this.Pos().Short()
+	return res
+}
+
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementWait) StringDebug() string {

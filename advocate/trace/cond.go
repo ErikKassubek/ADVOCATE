@@ -311,6 +311,22 @@ func (this *ElementCond) String() string {
 	return res
 }
 
+func (this *ElementCond) StringLocal() string {
+	res := "D,"
+	res += strconv.Itoa(this.tReq) + "," + strconv.Itoa(this.tCom) + ","
+	res += strconv.Itoa(this.objId) + ","
+	switch this.op {
+	case CondWait:
+		res += "W"
+	case CondSignal:
+		res += "S"
+	case CondBroadcast:
+		res += "B"
+	}
+	res += "," + this.Pos().Short()
+	return res
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

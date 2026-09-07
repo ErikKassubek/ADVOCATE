@@ -29,11 +29,11 @@ func (p path) last() *instructionWithInfo {
 type instructionWithInfo struct {
 	Inst      s_ssa.Instruction
 	Variable  string
-	Resource  map[int]map[trace.Resource]bool // index (for field, return/extrace, ...) ->  resource
-	Reference map[int][]*instructionWithInfo  // index (for field, return/extract, ...) -> []parents
+	Resource  map[int]map[trace.Resource]bool               // index (for field, return/extrace, ...) ->  resource
+	Reference map[int]map[*instructionWithInfo]map[int]bool // index (for field, return/extract, ...) -> instruction -> index in instruction
 }
 
-func newIWI(inst s_ssa.Instruction, res map[int]map[trace.Resource]bool, par map[int][]*instructionWithInfo) *instructionWithInfo {
+func newIWI(inst s_ssa.Instruction, res map[int]map[trace.Resource]bool, par map[int]map[*instructionWithInfo]map[int]bool) *instructionWithInfo {
 	return &instructionWithInfo{inst, inst.Variable(), res, par}
 }
 
@@ -43,35 +43,35 @@ func newIwiFromIwi(inst s_ssa.Instruction, iwi *instructionWithInfo) *instructio
 
 func newIwiFromIwiIndex(inst s_ssa.Instruction, iwi *instructionWithInfo, index int) *instructionWithInfo {
 	newRes := make(map[int]map[trace.Resource]bool)
-	newRes[index] = iwi.Resource[index]
+	newRes[0] = iwi.Resource[index]
 
-	newRef := make(map[int][]*instructionWithInfo)
-	newRef[index] = iwi.Reference[index]
+	newRef := make(map[int]map[*instructionWithInfo]map[int]bool)
+	newRef[0] = iwi.Reference[index]
 
 	return &instructionWithInfo{inst, inst.Variable(), newRes, newRef}
 }
 
 func newIWI1(inst s_ssa.Instruction, res map[int]map[trace.Resource]bool) *instructionWithInfo {
-	return &instructionWithInfo{inst, inst.Variable(), res, make(map[int][]*instructionWithInfo)}
+	return &instructionWithInfo{inst, inst.Variable(), res, make(map[int]map[*instructionWithInfo]map[int]bool)}
 }
 
 func newIWI2(inst s_ssa.Instruction) *instructionWithInfo {
-	return &instructionWithInfo{inst, inst.Variable(), make(map[int]map[trace.Resource]bool), make(map[int][]*instructionWithInfo)}
+	return &instructionWithInfo{inst, inst.Variable(), make(map[int]map[trace.Resource]bool), make(map[int]map[*instructionWithInfo]map[int]bool)}
 }
 
 func newIWI3(inst s_ssa.Instruction, v string, res map[int]map[trace.Resource]bool) *instructionWithInfo {
-	return &instructionWithInfo{inst, v, res, make(map[int][]*instructionWithInfo)}
+	return &instructionWithInfo{inst, v, res, make(map[int]map[*instructionWithInfo]map[int]bool)}
 }
 
 func newIWI4(inst s_ssa.Instruction, n int) *instructionWithInfo {
 	log.Debug("IWI4: ", inst, n)
 
 	resources := make(map[int]map[trace.Resource]bool)
-	references := make(map[int][]*instructionWithInfo)
+	references := make(map[int]map[*instructionWithInfo]map[int]bool)
 
 	for i := 0; i < n; i++ {
 		resources[i] = map[trace.Resource]bool{}
-		references[i] = make([]*instructionWithInfo, 0)
+		references[i] = make(map[*instructionWithInfo]map[int]bool)
 	}
 
 	return &instructionWithInfo{inst, inst.Variable(), resources, references}
@@ -101,21 +101,23 @@ func (self *instructionWithInfo) Merge(other *instructionWithInfo) *instructionW
 		}
 	}
 
-	new_parents := make(map[int][]*instructionWithInfo, 0)
+	new_reference := make(map[int]map[*instructionWithInfo]map[int]bool)
 
-	for i, parents := range self.Reference {
-		new_parents[i] = parents
+	for i, ref := range self.Reference {
+		new_reference[i] = ref
 	}
 
-	for i, parents := range other.Reference {
-		if _, ok := new_parents[i]; !ok {
-			new_parents[i] = make([]*instructionWithInfo, 0)
+	for i, ref := range other.Reference {
+		if _, ok := new_reference[i]; !ok {
+			new_reference[i] = make(map[*instructionWithInfo]map[int]bool)
 		}
 
-		new_parents[i] = append(new_parents[i], parents...)
+		for r, val := range ref {
+			new_reference[i][r] = val
+		}
 	}
 
-	return &instructionWithInfo{self.Inst, self.Variable, new_resources, new_parents}
+	return &instructionWithInfo{self.Inst, self.Variable, new_resources, new_reference}
 }
 
 func (self *instructionWithInfo) GetResources() map[trace.Resource]bool {
@@ -135,7 +137,7 @@ func (self *instructionWithInfo) GetResourcesRec(visited map[*instructionWithInf
 	}
 
 	for _, parents := range self.Reference {
-		for _, parent := range parents {
+		for parent := range parents {
 			if _, ok := visited[parent]; ok {
 				continue
 			}
@@ -151,8 +153,8 @@ func (self *instructionWithInfo) GetResourcesRec(visited map[*instructionWithInf
 func (self *instructionWithInfo) GetResourcesIndex(index int) map[trace.Resource]bool {
 	result := self.Resource[index]
 
-	for _, parent := range self.Reference[index] {
-		for res := range parent.GetResources() {
+	for ind := range self.Reference[index] {
+		for res := range ind.GetResources() {
 			result[res] = true
 		}
 	}
@@ -160,13 +162,13 @@ func (self *instructionWithInfo) GetResourcesIndex(index int) map[trace.Resource
 	return result
 }
 
-func (self *instructionWithInfo) GetResourcesSlice() []map[trace.Resource]bool {
+func (self *instructionWithInfo) GetResourcesMap() map[int]map[trace.Resource]bool {
 	if self == nil {
-		return []map[trace.Resource]bool{}
+		return map[int]map[trace.Resource]bool{}
 	}
-	res := make([]map[trace.Resource]bool, len(self.Resource))
+	res := make(map[int]map[trace.Resource]bool)
 
-	for i := range res {
+	for i := range self.Resource {
 		res[i] = self.GetResourcesIndex(i)
 	}
 
@@ -229,30 +231,55 @@ func compatible(iwi *instructionWithInfo, elem trace.Element) (bool, *trace.Reso
 }
 
 func (self *instructionWithInfo) String() string {
-	res := self.Inst.String() + " | "
+	if self == nil {
+		return ">IWI NIL <"
+	} else if self.Inst == nil {
+		return "> IWI.INST NIL <"
+	}
+	res := "> " + self.Inst.String() + " | "
 
-	for index, resources := range self.Resource {
-		res += fmt.Sprintf(" %d <", index)
+	resSlice := self.GetResourcesMap()
+
+	if len(resSlice) == 0 {
+		res += "NO RES"
+	}
+
+	for index, resources := range resSlice {
+		res += fmt.Sprintf(" %d # ", index)
 		for resource := range resources {
 			res += fmt.Sprint(resource.Id(), " ")
 		}
-		res += "> <"
-		references := self.Reference[index]
-		for _, ref := range references {
-			res += fmt.Sprint(ref.Inst, " ")
+
+		if len(resources) == 0 {
+			res += "-"
 		}
-		res += "> | "
+
+		res += " # "
+		references := self.Reference[index]
+		for ref := range references {
+			res += fmt.Sprint(ref.Variable, " ")
+		}
+
+		if len(references) == 0 {
+			res += "-"
+		}
+
+		if index != len(self.Resource) {
+			res += " | "
+		}
 	}
+
+	res += " <"
 
 	return res
 }
 
 func fmtInstRes(resource map[trace.Resource]bool) map[int]map[trace.Resource]bool {
 	if resource == nil {
-		return make(map[int]map[trace.Resource]bool, 0)
+		return make(map[int]map[trace.Resource]bool)
 	}
 
-	res := make(map[int]map[trace.Resource]bool, 1)
+	res := make(map[int]map[trace.Resource]bool)
 	res[0] = resource
 
 	return res
@@ -282,7 +309,95 @@ func (self *instructionWithInfo) sameResource(inst *instructionWithInfo) bool {
 
 }
 
-func setReference(iwi1 *instructionWithInfo, index1 int, iwi2 *instructionWithInfo, index2 int) {
-	iwi1.Reference[index1] = append(iwi1.Reference[index1], iwi2.Reference[index2]...)
-	iwi2.Reference[index2] = append(iwi2.Reference[index2], iwi1.Reference[index1]...)
+// TODO: fix
+func (self *instructionWithInfo) addReferenceIndex(iwi *instructionWithInfo, index1, index2 int) {
+	if _, ok := self.Reference[index1]; !ok {
+		self.Reference[index1] = make(map[*instructionWithInfo]map[int]bool)
+	}
+	if _, ok := self.Reference[index1][iwi]; !ok {
+		self.Reference[index1][iwi] = make(map[int]bool)
+	}
+	if _, ok := self.Reference[index1][self]; !ok {
+		self.Reference[index1][self] = make(map[int]bool)
+	}
+	if _, ok := self.Reference[index2]; !ok {
+		self.Reference[index2] = make(map[*instructionWithInfo]map[int]bool)
+	}
+	if _, ok := self.Reference[index2][iwi]; !ok {
+		self.Reference[index2][iwi] = make(map[int]bool)
+	}
+	if _, ok := self.Reference[index2][self]; !ok {
+		self.Reference[index2][self] = make(map[int]bool)
+	}
+
+	self.Reference[index1][iwi][index2] = true
+	for ref := range iwi.Reference[index2] {
+		if _, ok := self.Reference[index1][ref]; !ok {
+			self.Reference[index1][ref] = make(map[int]bool)
+		}
+		self.Reference[index1][ref][index2] = true
+	}
+
+	iwi.Reference[index2][self][index1] = true
+	for ref := range self.Reference[index1] {
+		if _, ok := self.Reference[index1][ref]; !ok {
+			self.Reference[index1][ref] = make(map[int]bool)
+		}
+		iwi.Reference[index2][ref][index1] = true
+	}
+}
+
+// TODO: fix
+func (self *instructionWithInfo) addReferenceAll(iwi *instructionWithInfo) {
+	indices := make(map[int]bool)
+
+	for index := range self.Reference {
+		indices[index] = true
+	}
+	for index := range iwi.Reference {
+		indices[index] = true
+	}
+
+	for index := range indices {
+		if _, ok := self.Reference[index]; !ok {
+			self.Reference[index] = make(map[*instructionWithInfo]map[int]bool)
+		}
+		if _, ok := self.Reference[index][iwi]; !ok {
+			self.Reference[index][iwi] = make(map[int]bool)
+		}
+		if _, ok := iwi.Reference[index]; !ok {
+			iwi.Reference[index] = make(map[*instructionWithInfo]map[int]bool)
+		}
+		if _, ok := iwi.Reference[index][self]; !ok {
+			iwi.Reference[index][self] = make(map[int]bool)
+		}
+
+		self.Reference[index][iwi][index] = true
+		for ref := range iwi.Reference[index] {
+			if self == ref {
+				continue
+			}
+			if index == 1 {
+				log.Debug2("MAKE: ", ref.Inst)
+			}
+			if _, ok := self.Reference[index][ref]; !ok {
+				self.Reference[index][ref] = make(map[int]bool)
+			}
+			self.Reference[index][ref][index] = true
+		}
+
+		iwi.Reference[index][self][index] = true
+		for ref := range self.Reference[index] {
+			if iwi == ref {
+				continue
+			}
+			if index == 1 {
+				log.Debug2("MAKE: ", ref.Inst)
+			}
+			if _, ok := iwi.Reference[index][ref]; !ok {
+				iwi.Reference[index][ref] = make(map[int]bool)
+			}
+			iwi.Reference[index][ref][index] = true
+		}
+	}
 }

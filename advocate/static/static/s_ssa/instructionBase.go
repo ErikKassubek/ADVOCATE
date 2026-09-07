@@ -72,23 +72,28 @@ func newInstructionBase(f *Function, c InstClass, inst ssa.Instruction, index in
 	}
 
 	// global var assign
-	term := inst.String()
-	if name == "" && strings.Contains(term, " = ") {
-		fields := strings.Split(term, " = ")
-		name = fields[0]
-		term = fields[1]
+	var b InstructionBase
+	if inst != nil {
+		term := inst.String()
+		if name == "" && strings.Contains(term, " = ") {
+			fields := strings.Split(term, " = ")
+			name = fields[0]
+			term = fields[1]
+		}
+
+		switch inst := inst.(type) {
+		case *ssa.Send:
+			name = inst.Chan.Name()
+		}
+
+		b = InstructionBase{class: c, f: f, b: inst.Block(), i_id: index}
+
+		b.setVariable(name, globalName)
+		b.setTerm(term, globalTerm)
+		b.setInst(inst)
+	} else {
+		b = InstructionBase{class: c, f: f, b: nil, i_id: 0}
 	}
-
-	switch inst := inst.(type) {
-	case *ssa.Send:
-		name = inst.Chan.Name()
-	}
-
-	b := InstructionBase{class: c, f: f, b: inst.Block(), i_id: index}
-
-	b.setVariable(name, globalName)
-	b.setTerm(term, globalTerm)
-	b.setInst(inst)
 
 	return b
 }

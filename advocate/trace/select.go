@@ -497,6 +497,36 @@ func (this *ElementSelect) String() string {
 	return res
 }
 
+func (this *ElementSelect) StringLocal() string {
+	res := "S" + "," + strconv.Itoa(this.tPre) + "," +
+		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) + ","
+
+	notNil := 0
+	for _, ca := range this.cases { // cases
+		if ca.tReq != 0 { // ignore nil cases
+			if notNil != 0 {
+				res += "~"
+			}
+			res += ca.toStringSep(".", true)
+			notNil++
+		}
+	}
+
+	if this.containsDefault {
+		if notNil != 0 {
+			res += "~"
+		}
+		if this.chosenDefault {
+			res += "D"
+		} else {
+			res += "d"
+		}
+	}
+	res += "," + strconv.Itoa(this.chosenIndex)
+	res += "," + this.Pos().Short()
+	return res
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

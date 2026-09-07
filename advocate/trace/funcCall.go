@@ -203,6 +203,10 @@ func (this *ElementFunc) String() string {
 	return fmt.Sprintf("F,%d,%s,%s,%s", this.t, this.name, this.PosDef(), this.Pos())
 }
 
+func (this *ElementFunc) StringLocal() string {
+	return fmt.Sprintf("F,%d,%s,%s,%s", this.t, this.name, this.PosDef().Short(), this.Pos().Short())
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:

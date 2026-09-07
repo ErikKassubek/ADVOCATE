@@ -12,24 +12,15 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 )
 
 func ParseFieldAddr(inst *s_ssa.InstructionFieldAddr, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
 	field_name, field_index := getFieldInfo(inst)
 
-	log.Debug2(inst)
-	log.Debug2(field_name)
 	iwi := getDecOfSSAVar(rout, field_name)
 
-	log.Debug2("IWI: ", iwi)
-
-	if len(iwi.Reference[0]) != 0 {
-		log.Debug2(iwi.Reference[0][0])
-	}
-
 	iwi_new := newIwiFromIwiIndex(inst, iwi, field_index)
-	setReference(iwi, field_index, iwi_new, 0)
+	iwi_new.addReferenceIndex(iwi, 0, field_index)
 
 	info := addPathInstr(rout, iwi_new)
 	return inst.Next(), info

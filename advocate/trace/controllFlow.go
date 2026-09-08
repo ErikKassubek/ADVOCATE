@@ -80,6 +80,8 @@ func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, cho
 		o = ControllIf
 	case "S":
 		o = ControllSwitch
+	case "L":
+		o = ControllLoop
 	}
 
 	elem := ElementControllFlow{
@@ -261,6 +263,8 @@ func (this *ElementControllFlow) String() string {
 		opStr = "I"
 	case ControllSwitch:
 		opStr = "S"
+	case ControllLoop:
+		opStr = "L"
 	default:
 		panic("Invalid op in Controll Flow Element")
 	}
@@ -274,6 +278,8 @@ func (this *ElementControllFlow) StringLocal() string {
 		opStr = "I"
 	case ControllSwitch:
 		opStr = "S"
+	case ControllLoop:
+		opStr = "L"
 	default:
 		panic("Invalid op in Controll Flow Element")
 	}
@@ -291,6 +297,8 @@ func (this *ElementControllFlow) StringGui() string {
 		opStr = "I"
 	case ControllSwitch:
 		opStr = "S"
+	case ControllLoop:
+		opStr = "L"
 	default:
 		panic("Invalid op in Controll Flow Element")
 	}

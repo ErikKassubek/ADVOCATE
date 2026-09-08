@@ -123,10 +123,12 @@ func instrumentStmtRecursive(n ir.Node) {
 	case *ir.ForStmt:
 		x.Cond = instrumentExprRecursive(x.Cond)
 		x.Body = instrumentStmtList(x.Body)
+		x.Body = instrumentLoop(x.Body, x.Pos())
 
 	case *ir.RangeStmt:
 		x.X = instrumentExprRecursive(x.X)
 		x.Body = instrumentStmtList(x.Body)
+		x.Body = instrumentLoop(x.Body, x.Pos())
 
 	case *ir.SwitchStmt:
 		instrumentSwitch(x)
@@ -318,6 +320,27 @@ func isSyncType(t *types.Type, name string) bool {
 // MARK: If
 // ==================================================
 
+func addControllRec(body ir.Nodes, pos src.XPos, numCases, caseNum int, t string, start bool) ir.Nodes {
+	fn := typecheck.LookupRuntime("advocateControllFlow")
+
+	call := typecheck.Call(
+		pos,
+		fn,
+		[]ir.Node{
+			ir.NewString(pos, t),
+			ir.NewInt(pos, int64(numCases)),
+			ir.NewInt(pos, int64(caseNum)),
+		},
+		false,
+	)
+
+	out := make(ir.Nodes, 0, len(body)+1)
+	out.Append(call)
+	out.Append(body...)
+
+	return out
+}
+
 func instrumentIfChain(n *ir.IfStmt) {
 	numCases := countIfCases(n)
 
@@ -331,6 +354,7 @@ func instrumentIfChain(n *ir.IfStmt) {
 			numCases,
 			caseNum,
 			"I",
+			true,
 		)
 
 		caseNum++
@@ -352,6 +376,7 @@ func instrumentIfChain(n *ir.IfStmt) {
 				numCases,
 				caseNum,
 				"I",
+				true,
 			)
 		}
 
@@ -395,6 +420,7 @@ func instrumentSwitch(n *ir.SwitchStmt) {
 			numCases,
 			i,
 			"S",
+			true,
 		)
 	}
 }
@@ -408,6 +434,31 @@ func countSwitchCases(n *ir.SwitchStmt) int {
 	}
 
 	return count
+}
+
+// ==================================================
+// MARK: Loop
+// ==================================================
+
+func instrumentLoop(body ir.Nodes, pos src.XPos) ir.Nodes {
+	fn := typecheck.LookupRuntime("advocateControllFlow")
+
+	call := typecheck.Call(
+		pos,
+		fn,
+		[]ir.Node{
+			ir.NewString(pos, "L"),
+			ir.NewInt(pos, int64(0)),
+			ir.NewInt(pos, int64(0)),
+		},
+		false,
+	)
+
+	out := make(ir.Nodes, 0, len(body)+1)
+	out.Append(call)
+	out.Append(body...)
+
+	return out
 }
 
 // ==================================================
@@ -523,27 +574,6 @@ func isAdvocateCall(n ir.Node) bool {
 func printFunc(fn *ir.Func) {
 	fmt.Printf("FUNC: %v\n", fn.Sym())
 	ir.DumpList("body", fn.Body)
-}
-
-func addControllRec(body ir.Nodes, pos src.XPos, numCases, caseNum int, t string) ir.Nodes {
-	fn := typecheck.LookupRuntime("advocateControllFlow")
-
-	call := typecheck.Call(
-		pos,
-		fn,
-		[]ir.Node{
-			ir.NewString(pos, t),
-			ir.NewInt(pos, int64(numCases)),
-			ir.NewInt(pos, int64(caseNum)),
-		},
-		false,
-	)
-
-	out := make(ir.Nodes, 0, len(body)+1)
-	out.Append(call)
-	out.Append(body...)
-
-	return out
 }
 
 func isUserMain(fn *ir.Func) bool {

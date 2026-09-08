@@ -250,6 +250,7 @@ const (
 	Controll       OperationType = "I"
 	ControllIf     OperationType = "II"
 	ControllSwitch OperationType = "IS"
+	ControllLoop   OperationType = "IL"
 
 	UnknownOperation OperationType = "XX"
 )

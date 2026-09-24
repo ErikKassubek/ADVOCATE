@@ -101,12 +101,21 @@ func AdvocateIgnoreReplay(operation Operation, file string) bool {
 		return true
 	}
 
-	if containsStr(file, "go/pkg/mod/") {
+	switch primitive {
+	case PrimitiveAtomic:
+		if ignoreAtomicsReplay {
+			return true
+		}
+	case PrimitiveRoutine:
+		if containsStr(file, "goPatch/src/testing/testing.go") {
+			return true
+		}
+	case PrimitiveAlloc, PrimitiveControll:
 		return true
 	}
 
-	if primitive == PrimitiveRoutine && containsStr(file, "goPatch/src/testing/testing.go") {
-		return false
+	if containsStr(file, "go/pkg/mod/") {
+		return true
 	}
 
 	return AdvocateIgnore(file)

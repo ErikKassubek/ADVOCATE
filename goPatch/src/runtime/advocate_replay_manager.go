@@ -196,8 +196,6 @@ func replayTimeout(replayElem ReplayElement) {
 		}
 		unlock(&waitingOpsMutex)
 
-		println("REL4")
-
 		suc := releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
 
 		if releaseOldestWait > 1 {

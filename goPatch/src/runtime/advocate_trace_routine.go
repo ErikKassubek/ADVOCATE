@@ -48,9 +48,9 @@ func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file stri
 
 	timer := GetNextTimeStep()
 
-	if AdvocateIgnore(file) {
-		return
-	}
+	// if AdvocateIgnore(file)  {
+	// 	return
+	// }
 
 	elem := AdvocateTraceSpawn{
 		t:     timer,

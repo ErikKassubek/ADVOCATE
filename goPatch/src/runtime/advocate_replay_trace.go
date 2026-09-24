@@ -24,7 +24,7 @@ func GetReplayTrace() (*AdvocateReplayTrace, *map[int][]int, *map[string][]Repla
 // Print the replay trace for one routine.
 func (t AdvocateReplayTrace) Print() {
 	for _, e := range t {
-		println(e.Op.ToString(), e.Time, e.File, e.Line, e.Blocked, e.Suc)
+		println(e.Op.ToString(), e.Time, e.Routine, e.File, e.Line, e.Blocked, e.Suc)
 	}
 }
 
@@ -95,12 +95,18 @@ func getNextReplayElement() (int, ReplayElement) {
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
 func AdvocateIgnoreReplay(operation Operation, file string) bool {
-	if ignoreAtomicsReplay && getOperationObjectString(operation) == "Atomic" {
+	primitive := getOperationPrimitive(operation)
+
+	if ignoreAtomicsReplay && primitive == PrimitiveAtomic {
 		return true
 	}
 
 	if containsStr(file, "go/pkg/mod/") {
 		return true
+	}
+
+	if primitive == PrimitiveRoutine && containsStr(file, "goPatch/src/testing/testing.go") {
+		return false
 	}
 
 	return AdvocateIgnore(file)

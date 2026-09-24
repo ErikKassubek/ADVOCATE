@@ -1,10 +1,9 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_replay.go
 // Brief: Functions for the replay
 //
 // Author: Erik Kassubek
-// Created: 2023-10-24
 //
 // License: BSD-3-Clause
 

@@ -1,10 +1,9 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_replay_wait.go
 // Brief: Wait for replay
 //
 // Author: Erik Kassubek
-// Created: 2025-07-14
 //
 // License: BSD-3-Clause
 
@@ -131,6 +130,9 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	_, nextElem := getNextReplayElement()
 
 	nextElemKey := nextElem.Key()
+	if printDebug {
+		println("Next: ", nextElemKey)
+	}
 	if key == nextElemKey && !waitForAck.waitForAck {
 		_, _ = getSelect(key)
 		// if it is the next element, release directly and add elems to waitForAck

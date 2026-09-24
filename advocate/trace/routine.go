@@ -9,7 +9,9 @@
 
 package trace
 
-import "sort"
+import (
+	"sort"
+)
 
 // ========================================================
 // MARK: Routine
@@ -18,11 +20,11 @@ import "sort"
 type Routine struct {
 	id        int
 	elems     []Element
-	resources []*Resource // for resource aware blocking bug detection
+	resources []Resource // for resource aware blocking bug detection
 }
 
 func NewRoutine(id int) *Routine {
-	return &Routine{id, make([]Element, 0), make([]*Resource, 0)}
+	return &Routine{id, make([]Element, 0), make([]Resource, 0)}
 }
 
 func (this *Routine) addElement(elem Element) {
@@ -32,6 +34,10 @@ func (this *Routine) addElement(elem Element) {
 // ========================================================
 // Properties
 // ========================================================
+
+func (this *Routine) ID() int {
+	return this.id
+}
 
 func (this *Routine) Sort() {
 	sort.Sort(sortByTSort(this.elems))
@@ -98,7 +104,7 @@ func (this *Routine) First() Element {
 	return this.elems[0]
 }
 
-func (this *Routine) Resources() []*Resource {
+func (this *Routine) Resources() []Resource {
 	return this.resources
 }
 
@@ -142,6 +148,6 @@ func (this *Routine) SetTSortAtIndex(tPost, index int) {
 // Resource Aware
 // ========================================================
 
-func (this *Routine) addResource(res *Resource) {
+func (this *Routine) addResource(res Resource) {
 	this.resources = append(this.resources, res)
 }

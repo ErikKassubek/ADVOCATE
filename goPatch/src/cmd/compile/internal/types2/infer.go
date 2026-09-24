@@ -62,7 +62,7 @@ func (check *Checker) infer(pos syntax.Pos, tparams []*TypeParam, targs []Type, 
 	// If we have invalid (ordinary) arguments, an error was reported before.
 	// Avoid additional inference errors and exit early (go.dev/issue/60434).
 	for _, arg := range args {
-		if arg.mode == invalid {
+		if !arg.isValid() {
 			return nil
 		}
 	}
@@ -111,7 +111,7 @@ func (check *Checker) infer(pos syntax.Pos, tparams []*TypeParam, targs []Type, 
 	// Unify parameter and argument types for generic parameters with typed arguments
 	// and collect the indices of generic parameters with untyped arguments.
 	// Terminology: generic parameter = function parameter with a type-parameterized type
-	u := newUnifier(tparams, targs, check.allowVersion(go1_21))
+	u := newUnifier(check, tparams, targs, check.allowVersion(go1_21))
 
 	errorf := func(tpar, targ Type, arg *operand) {
 		// provide a better error message if we can
@@ -162,7 +162,7 @@ func (check *Checker) infer(pos syntax.Pos, tparams []*TypeParam, targs []Type, 
 	}
 
 	for i, arg := range args {
-		if arg.mode == invalid {
+		if !arg.isValid() {
 			// An error was reported earlier. Ignore this arg
 			// and continue, we may still be able to infer all
 			// targs resulting in fewer follow-on errors.
@@ -170,12 +170,12 @@ func (check *Checker) infer(pos syntax.Pos, tparams []*TypeParam, targs []Type, 
 			continue
 		}
 		par := params.At(i)
-		if isParameterized(tparams, par.typ) || isParameterized(tparams, arg.typ) {
+		if isParameterized(tparams, par.typ) || isParameterized(tparams, arg.typ()) {
 			// Function parameters are always typed. Arguments may be untyped.
 			// Collect the indices of untyped arguments and handle them later.
-			if isTyped(arg.typ) {
-				if !u.unify(par.typ, arg.typ, assign) {
-					errorf(par.typ, arg.typ, arg)
+			if isTyped(arg.typ()) {
+				if !u.unify(par.typ, arg.typ(), assign) {
+					errorf(par.typ, arg.typ(), arg)
 					return nil
 				}
 			} else if _, ok := par.typ.(*TypeParam); ok && !arg.isNil() {
@@ -337,11 +337,11 @@ func (check *Checker) infer(pos syntax.Pos, tparams []*TypeParam, targs []Type, 
 			}
 			max := maxUntyped[tpar]
 			if max == nil {
-				max = arg.typ
+				max = arg.typ()
 			} else {
-				m := maxType(max, arg.typ)
+				m := maxType(max, arg.typ())
 				if m == nil {
-					err.addf(arg, "mismatched types %s and %s (cannot infer %s)", max, arg.typ, tpar)
+					err.addf(arg, "mismatched types %s and %s (cannot infer %s)", max, arg.typ(), tpar)
 					return nil
 				}
 				max = m
@@ -427,11 +427,11 @@ func (check *Checker) infer(pos syntax.Pos, tparams []*TypeParam, targs []Type, 
 				// Note that if t0 was a signature, t1 must be a signature, and t1
 				// can only be a generic signature if it originated from a generic
 				// function argument. Those signatures are never defined types and
-				// thus there is no need to call under below.
+				// thus there is no need to call Underlying below.
 				// TODO(gri) Consider doing this in Checker.subst.
 				//           Then this would fall out automatically here and also
 				//           in instantiation (where we also explicitly nil out
-				//           type parameters). See the *Signature TODO in subst.
+				//           type parameters).
 				if sig, _ := t1.(*Signature); sig != nil && sig.TypeParams().Len() > 0 && !isParameterized(tparams, sig) {
 					sig.tparams = nil
 				}
@@ -668,7 +668,7 @@ func coreTerm(tpar *TypeParam) (*term, bool) {
 	if n == 1 {
 		if debug {
 			u, _ := commonUnder(tpar, nil)
-			assert(under(single.typ) == u)
+			assert(single.typ.Underlying() == u)
 		}
 		return single, true
 	}

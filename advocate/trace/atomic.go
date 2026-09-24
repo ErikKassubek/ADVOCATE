@@ -53,7 +53,7 @@ type ElementAtomic struct {
 //   - id string: The id of the atomic variable
 //   - operation string: The operation on the atomic variable
 //   - pos string: The position of the atomic
-func (this Trace) AddTraceElementAtomic(routine int, tPost string,
+func (this *Trace) AddTraceElementAtomic(routine int, tPost string,
 	id string, operation string, pos string) error {
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
@@ -92,11 +92,11 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := ElementAtomic{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tPostInt,
 		objId:       idInt,
 		op:          opAInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -109,33 +109,20 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementAtomic) ObjID() int {
+func (this *ElementAtomic) ResourceID() int {
 	return this.objId
 }
 
-// ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
+// ResourceID returns the resource
 //
 // Returns:
-//   - int: The routine of the element
-func (this *ElementAtomic) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementAtomic) TraceIndex() (int, int) {
-	return this.routine, this.index
+//   - Resource: resource
+func (this *ElementAtomic) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -236,7 +223,7 @@ func (this *ElementAtomic) Line() int {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementAtomic) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -248,7 +235,7 @@ func (this *ElementAtomic) IsEqual(elem Element) bool {
 // Returns:
 //   - bool: true if at and elem are operations on the same atomic variable
 func (this *ElementAtomic) IsSameElement(elem Element) bool {
-	return this.objId == elem.ObjID()
+	return this.objId == elem.ResourceID()
 }
 
 // ========================================================
@@ -265,16 +252,32 @@ func (this *ElementAtomic) String() string {
 	return fmt.Sprintf("A,%d,%d,%s,%s", this.t, this.objId, opString, this.Pos())
 }
 
+func (this *ElementAtomic) StringLocal() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("A,%d,%d,%s,%s", this.t, this.objId, opString, this.Pos().Short)
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementAtomic) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element.
+//
+// Returns:
+//   - string: The simple gui representation of the element
+func (this *ElementAtomic) StringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("A,%d,%s\n%s", this.objId, opString, this.Pos().Short())
 }
 
 // ========================================================
@@ -341,7 +344,7 @@ func (this *ElementAtomic) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementAtomic) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================
@@ -351,6 +354,7 @@ func (this *ElementAtomic) ReplayID() string {
 // Copy the atomic element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[int]Element: map containing all already copied elements, if nil ignore all vc based values.
 //     since atomics do not contain reference to other elements and no other
 //     elements contain referents to atomics, this is not used
@@ -358,28 +362,28 @@ func (this *ElementAtomic) ReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementAtomic) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementAtomic) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		return &ElementAtomic{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			t:           0,
 			objId:       this.objId,
 			op:          this.op,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementAtomic{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		objId:       this.objId,
 		op:          this.op,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

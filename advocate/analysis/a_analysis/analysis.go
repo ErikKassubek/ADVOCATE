@@ -129,7 +129,7 @@ func RunHBAnalysis(fuzzing bool) {
 		switch e := elem.(type) {
 		case *trace.ElementFork, *trace.ElementAlloc, *trace.ElementReplay, *trace.ElementRoutineEnd:
 		default:
-			a_base.AddOpsPerID(e.ObjID())
+			a_base.AddOpsPerID(e.ResourceID())
 		}
 
 		switch e := elem.(type) {
@@ -155,10 +155,10 @@ func RunHBAnalysis(fuzzing bool) {
 			for _, c := range cases {
 				switch c.Type(true) {
 				case trace.ChannelSend:
-					ids = append(ids, c.ObjID())
+					ids = append(ids, c.ResourceID())
 					opTypes = append(opTypes, 0)
 				case trace.ChannelRecv:
-					ids = append(ids, c.ObjID())
+					ids = append(ids, c.ResourceID())
 					opTypes = append(opTypes, 1)
 				}
 			}

@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"encoding/json/internal/jsonwire"
 	"encoding/json/jsontext"
@@ -34,12 +35,22 @@ import (
 // the value pointed at by the pointer. If the pointer is nil, Unmarshal
 // allocates a new value for it to point to.
 //
-// To unmarshal JSON into a value implementing [Unmarshaler],
-// Unmarshal calls that value's [Unmarshaler.UnmarshalJSON] method, including
-// when the input is a JSON null.
-// Otherwise, if the value implements [encoding.TextUnmarshaler]
-// and the input is a JSON quoted string, Unmarshal calls
-// [encoding.TextUnmarshaler.UnmarshalText] with the unquoted form of the string.
+// The JSON input is decoded according the following rules:
+//
+//   - If the value type implements [jsonv2.UnmarshalerFrom],
+//     then the UnmarshalJSONFrom method is called to decode the JSON value.
+//     If the method returns [errors.ErrUnsupported],
+//     then the input is decoded according to subsequent rules.
+//
+//   - If the value type implements [Unmarshaler],
+//     then the UnmarshalJSON method is called to decode the JSON value,
+//     including when the input is a JSON null.
+//
+//   - If the value implements [encoding.TextUnmarshaler] and
+//     the input is a JSON string, then the UnmarshalText method
+//     is called with the unquoted form of the string.
+//
+// Otherwise, Unmarshal uses the following type-dependent default decodings:
 //
 // To unmarshal JSON into a struct, Unmarshal matches incoming object
 // keys to the keys used by [Marshal] (either the struct field name or its tag),
@@ -57,8 +68,10 @@ import (
 //   - map[string]any, for JSON objects
 //   - nil for JSON null
 //
-// To unmarshal a JSON array into a slice, Unmarshal resets the slice length
-// to zero and then appends each element to the slice.
+// To unmarshal a JSON array into a slice, Unmarshal decodes each JSON array
+// element into the corresponding slice element, reusing existing slice
+// elements in-place. The slice grows to accommodate additional elements,
+// or is truncated if the JSON array is shorter.
 // As a special case, to unmarshal an empty JSON array into a slice,
 // Unmarshal replaces the slice with a new empty slice.
 //
@@ -117,19 +130,24 @@ type UnmarshalTypeError struct {
 }
 
 func (e *UnmarshalTypeError) Error() string {
-	s := "json: cannot unmarshal"
-	if e.Value != "" {
-		s += " JSON " + e.Value
-	}
-	s += " into"
-	var preposition string
-	if e.Field != "" {
-		s += " " + e.Struct + "." + e.Field
-		preposition = " of"
-	}
-	if e.Type != nil {
-		s += preposition
-		s += " Go type " + e.Type.String()
+	var s string
+	if e.Struct != "" || e.Field != "" {
+		// The design of UnmarshalTypeError overly assumes a struct-based
+		// Go representation for the JSON value.
+		// The logic in jsontext represents paths using a JSON Pointer,
+		// which is agnostic to the Go type system.
+		// Trying to convert a JSON Pointer into an UnmarshalTypeError.Field
+		// is difficult. As a heuristic, if the last path token looks like
+		// an index into a JSON array (e.g., ".foo.bar.0"),
+		// avoid the phrase "Go struct field ".
+		intoWhat := "Go struct field "
+		i := strings.LastIndexByte(e.Field, '.') + len(".")
+		if len(e.Field[i:]) > 0 && strings.TrimRight(e.Field[i:], "0123456789") == "" {
+			intoWhat = "" // likely a Go slice or array
+		}
+		s = "json: cannot unmarshal " + e.Value + " into " + intoWhat + e.Struct + "." + e.Field + " of type " + e.Type.String()
+	} else {
+		s = "json: cannot unmarshal " + e.Value + " into Go value of type " + e.Type.String()
 	}
 	if e.Err != nil {
 		s += ": " + e.Err.Error()

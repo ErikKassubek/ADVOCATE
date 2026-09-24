@@ -30,12 +30,6 @@ func IsBenign(resultType helper.ResultType, fileName string, line int, blocked m
 
 	parents := buildParentMap(file)
 
-	// fix header shift
-	// lineShift := line
-	// if strings.HasSuffix(fileName, "main.go") || strings.HasSuffix(fileName, "_test.go") {
-	// 	lineShift -= 5
-	// }
-
 	node := findNodeAtLine(fset, file, line)
 	if node == nil {
 		return false, fmt.Errorf("Could not find node: %s:%d", fileName, line)

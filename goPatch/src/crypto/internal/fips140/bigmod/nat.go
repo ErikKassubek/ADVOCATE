@@ -142,6 +142,14 @@ func (x *Nat) Bits() []uint {
 	return x.limbs
 }
 
+// SetBits assigns x = y, where y is a slice of little-endian uint. x is resized
+// to the length of y.
+func (x *Nat) SetBits(y []uint) *Nat {
+	x.reset(len(y))
+	copy(x.limbs, y)
+	return x
+}
+
 // Bytes returns x as a zero-extended big-endian byte slice. The size of the
 // slice will match the size of m.
 //
@@ -1088,7 +1096,7 @@ func (x *Nat) GCDVarTime(a, b *Nat) (*Nat, error) {
 	return x.set(u), nil
 }
 
-// extendedGCD computes u and A such that a = GCD(a, m) and u = A*a - B*m.
+// extendedGCD computes u and A such that u = GCD(a, m) = A*a - B*m.
 //
 // u will have the size of the larger of a and m, and A will have the size of m.
 //
@@ -1209,6 +1217,16 @@ func rshift1(a *Nat, carry uint) {
 			aLimbs[i] |= carry << (_W - 1)
 		}
 	}
+}
+
+// ShiftRightByOne sets x = x >> 1.
+//
+// The announced length of x is unchanged.
+//
+//go:norace
+func (x *Nat) ShiftRightByOne() *Nat {
+	rshift1(x, 0)
+	return x
 }
 
 // DivShortVarTime calculates x = x / y and returns the remainder.

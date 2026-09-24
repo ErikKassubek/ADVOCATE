@@ -5,37 +5,46 @@
 // Package testing provides support for automated testing of Go packages.
 // It is intended to be used in concert with the “go test” utility, which automates
 // execution of any function of the form
-//     func TestXxx(*testing.T)
+//
+//	func TestXxx(*testing.T)
+//
 // where Xxx can be any alphanumeric string (but the first letter must not be in
 // [a-z]) and serves to identify the test routine.
 // These TestXxx routines should be declared within the package they are testing.
 //
 // Functions of the form
-//     func BenchmarkXxx(*testing.B)
+//
+//	func BenchmarkXxx(*testing.B)
+//
 // are considered benchmarks, and are executed by go test when the -test.bench
 // flag is provided.
 //
 // A sample benchmark function looks like this:
-//     func BenchmarkHello(b *testing.B) {
-//         for i := 0; i < b.N; i++ {
-//             fmt.Sprintf("hello")
-//         }
-//     }
+//
+//	func BenchmarkHello(b *testing.B) {
+//	    for i := 0; i < b.N; i++ {
+//	        fmt.Sprintf("hello")
+//	    }
+//	}
+//
 // The benchmark package will vary b.N until the benchmark function lasts
 // long enough to be timed reliably. The output
-//     testing.BenchmarkHello    10000000    282 ns/op
+//
+//	testing.BenchmarkHello    10000000    282 ns/op
+//
 // means that the loop ran 10000000 times at a speed of 282 ns per loop.
 //
 // If a benchmark needs some expensive setup before running, the timer
 // may be stopped:
-//     func BenchmarkBigLen(b *testing.B) {
-//         b.StopTimer()
-//         big := NewBig()
-//         b.StartTimer()
-//         for i := 0; i < b.N; i++ {
-//             big.Len()
-//         }
-//     }
+//
+//	func BenchmarkBigLen(b *testing.B) {
+//	    b.StopTimer()
+//	    big := NewBig()
+//	    b.StartTimer()
+//	    for i := 0; i < b.N; i++ {
+//	        big.Len()
+//	    }
+//	}
 package testing
 
 import (
@@ -47,6 +56,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	// ADVOCATE-START
+	_ "advocatego"
+	// ADVOCATE-END
 )
 
 var (

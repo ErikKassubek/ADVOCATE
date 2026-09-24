@@ -7,6 +7,8 @@ package astutil
 import (
 	"go/ast"
 	"go/token"
+	"iter"
+	"sort"
 	"strings"
 )
 
@@ -15,7 +17,7 @@ import (
 // https://go.dev/wiki/Deprecated, or "" if the documented symbol is not
 // deprecated.
 func Deprecation(doc *ast.CommentGroup) string {
-	for _, p := range strings.Split(doc.Text(), "\n\n") {
+	for p := range strings.SplitSeq(doc.Text(), "\n\n") {
 		// There is still some ambiguity for deprecation message. This function
 		// only returns the paragraph introduced by "Deprecated: ". More
 		// information related to the deprecation may follow in additional
@@ -30,7 +32,7 @@ func Deprecation(doc *ast.CommentGroup) string {
 
 // -- plundered from the future (CL 605517, issue #68021) --
 
-// TODO(adonovan): replace with ast.Directive after go1.25 (#68021).
+// TODO(adonovan): replace with ast.Directive in go1.26 (#68021).
 // Beware of our local mods to handle analysistest
 // "want" comments on the same line.
 
@@ -110,4 +112,32 @@ func Directives(g *ast.CommentGroup) (res []*Directive) {
 		}
 	}
 	return
+}
+
+// Comments returns an iterator over the comments overlapping the specified interval.
+// Comments are sorted by position in the file, so we can use binary search.
+func Comments(file *ast.File, start, end token.Pos) iter.Seq[*ast.Comment] {
+	return func(yield func(*ast.Comment) bool) {
+		// Find the first comment group that overlaps the range.
+		i := sort.Search(len(file.Comments), func(i int) bool {
+			return file.Comments[i].End() >= start
+		})
+		for _, cg := range file.Comments[i:] {
+			if cg.Pos() > end {
+				return
+			}
+			// Find the first comment in the group that overlaps the range.
+			j := sort.Search(len(cg.List), func(j int) bool {
+				return cg.List[j].End() >= start
+			})
+			for _, co := range cg.List[j:] {
+				if co.Pos() > end {
+					return
+				}
+				if !yield(co) {
+					return
+				}
+			}
+		}
+	}
 }

@@ -5,6 +5,7 @@
 package abi
 
 import (
+	"internal/goarch"
 	"unsafe"
 )
 
@@ -24,7 +25,7 @@ type Type struct {
 	TFlag       TFlag   // extra type information flags
 	Align_      uint8   // alignment of variable with this type
 	FieldAlign_ uint8   // alignment of struct field with this type
-	Kind_       Kind    // enumeration for C
+	Kind_       Kind    // what kind of type this is (string, int, ...)
 	// function for comparing objects of this type
 	// (ptr to object A, ptr to object B) -> ==?
 	Equal func(unsafe.Pointer, unsafe.Pointer) bool
@@ -78,12 +79,6 @@ const (
 	UnsafePointer
 )
 
-const (
-	// TODO (khr, drchase) why aren't these in TFlag?  Investigate, fix if possible.
-	KindDirectIface Kind = 1 << 5
-	KindMask        Kind = (1 << 5) - 1
-)
-
 // TFlag is used by a Type to signal what extra type information is
 // available in the memory directly following the Type value.
 type TFlag uint8
@@ -125,6 +120,15 @@ const (
 	// has type **byte instead of *byte. The runtime will store a
 	// pointer to the GC pointer bitmask in *GCData.
 	TFlagGCMaskOnDemand TFlag = 1 << 4
+
+	// TFlagDirectIface means that a value of this type is stored directly
+	// in the data field of an interface, instead of indirectly.
+	// This flag is just a cached computation of Size_ == PtrBytes == goarch.PtrSize.
+	TFlagDirectIface TFlag = 1 << 5
+
+	// Leaving this breadcrumb behind for dlv. It should not be used, and no
+	// Kind should be big enough to set this bit.
+	KindDirectIface Kind = 1 << 5
 )
 
 // NameOff is the offset to a name from moduledata.types.  See resolveNameOff in runtime.
@@ -190,7 +194,7 @@ func TypeFor[T any]() *Type {
 	return (*PtrType)(unsafe.Pointer(TypeOf((*T)(nil)))).Elem
 }
 
-func (t *Type) Kind() Kind { return t.Kind_ & KindMask }
+func (t *Type) Kind() Kind { return t.Kind_ }
 
 func (t *Type) HasName() bool {
 	return t.TFlag&TFlagNamed != 0
@@ -199,14 +203,9 @@ func (t *Type) HasName() bool {
 // Pointers reports whether t contains pointers.
 func (t *Type) Pointers() bool { return t.PtrBytes != 0 }
 
-// IfaceIndir reports whether t is stored indirectly in an interface value.
-func (t *Type) IfaceIndir() bool {
-	return t.Kind_&KindDirectIface == 0
-}
-
-// isDirectIface reports whether t is stored directly in an interface value.
+// IsDirectIface reports whether t is stored directly in an interface value.
 func (t *Type) IsDirectIface() bool {
-	return t.Kind_&KindDirectIface != 0
+	return t.TFlag&TFlagDirectIface != 0
 }
 
 func (t *Type) GcSlice(begin, end uintptr) []byte {
@@ -357,7 +356,7 @@ func (t *Type) Uncommon() *UncommonType {
 		return &(*u)(unsafe.Pointer(t)).u
 	case Map:
 		type u struct {
-			mapType
+			MapType
 			u UncommonType
 		}
 		return &(*u)(unsafe.Pointer(t)).u
@@ -386,7 +385,7 @@ func (t *Type) Elem() *Type {
 		tt := (*ChanType)(unsafe.Pointer(t))
 		return tt.Elem
 	case Map:
-		tt := (*mapType)(unsafe.Pointer(t))
+		tt := (*MapType)(unsafe.Pointer(t))
 		return tt.Elem
 	case Pointer:
 		tt := (*PtrType)(unsafe.Pointer(t))
@@ -406,12 +405,28 @@ func (t *Type) StructType() *StructType {
 	return (*StructType)(unsafe.Pointer(t))
 }
 
-// MapType returns t cast to a *OldMapType or *SwissMapType, or nil if its tag does not match.
-func (t *Type) MapType() *mapType {
+// MapType returns t cast to a *MapType, or nil if its tag does not match.
+func (t *Type) MapType() *MapType {
 	if t.Kind() != Map {
 		return nil
 	}
-	return (*mapType)(unsafe.Pointer(t))
+	return (*MapType)(unsafe.Pointer(t))
+}
+
+// PointerType returns t cast to a *PtrType, or nil if its tag does not match.
+func (t *Type) PointerType() *PtrType {
+	if t.Kind() != Pointer {
+		return nil
+	}
+	return (*PtrType)(unsafe.Pointer(t))
+}
+
+// SliceType returns t cast to a *SliceType, or nil if its tag does not match.
+func (t *Type) SliceType() *SliceType {
+	if t.Kind() != Slice {
+		return nil
+	}
+	return (*SliceType)(unsafe.Pointer(t))
 }
 
 // ArrayType returns t cast to a *ArrayType, or nil if its tag does not match.
@@ -420,6 +435,14 @@ func (t *Type) ArrayType() *ArrayType {
 		return nil
 	}
 	return (*ArrayType)(unsafe.Pointer(t))
+}
+
+// ChanType returns t cast to a *ChanType, or nil if its tag does not match.
+func (t *Type) ChanType() *ChanType {
+	if t.Kind() != Chan {
+		return nil
+	}
+	return (*ChanType)(unsafe.Pointer(t))
 }
 
 // FuncType returns t cast to a *FuncType, or nil if its tag does not match.
@@ -473,7 +496,7 @@ func (t *InterfaceType) NumMethod() int { return len(t.Methods) }
 
 func (t *Type) Key() *Type {
 	if t.Kind() == Map {
-		return (*mapType)(unsafe.Pointer(t)).Key
+		return (*MapType)(unsafe.Pointer(t)).Key
 	}
 	return nil
 }
@@ -657,7 +680,7 @@ func writeVarint(buf []byte, n int) int {
 	}
 }
 
-// Name returns the tag string for n, or empty if there is none.
+// Name returns the name of n, or empty if it does not actually have a name.
 func (n Name) Name() string {
 	if n.Bytes == nil {
 		return ""
@@ -714,6 +737,105 @@ func NewName(n, tag string, exported, embedded bool) Name {
 	return Name{Bytes: &b[0]}
 }
 
+// DescriptorSize returns the contiguous size taken in memory by the
+// type descriptor. This is the size of the Type struct,
+// plus other fields used by some type kinds, plus the UncommonType
+// struct if present, plus other optional information.
+// This is just the size of the bytes that appear contiguously in memory.
+// It does not include the size of things like type strings
+// and field names that appear elsewhere.
+//
+// This code must match the data structures build by
+// cmd/compile/internal/reflectdata/reflect.go:writeType.
+func (t *Type) DescriptorSize() int {
+	var baseSize, addSize int
+	switch t.Kind_ {
+	case Array:
+		baseSize, addSize = t.ArrayType().descriptorSizes()
+	case Chan:
+		baseSize, addSize = t.ChanType().descriptorSizes()
+	case Func:
+		baseSize, addSize = t.FuncType().descriptorSizes()
+	case Interface:
+		baseSize, addSize = t.InterfaceType().descriptorSizes()
+	case Map:
+		baseSize, addSize = t.MapType().descriptorSizes()
+	case Pointer:
+		baseSize, addSize = t.PointerType().descriptorSizes()
+	case Slice:
+		baseSize, addSize = t.SliceType().descriptorSizes()
+	case Struct:
+		baseSize, addSize = t.StructType().descriptorSizes()
+	case Bool,
+		Int, Int8, Int16, Int32, Int64,
+		Uint, Uint8, Uint16, Uint32, Uint64, Uintptr,
+		Float32, Float64, Complex64, Complex128,
+		String, UnsafePointer:
+
+		baseSize = int(unsafe.Sizeof(*t))
+		addSize = 0
+
+	default:
+		panic("DescriptorSize: invalid type descriptor")
+	}
+
+	// For clarity, we add the sizes together in the order
+	// they appear in memory.
+
+	ret := baseSize
+
+	mcount := 0
+	ut := t.Uncommon()
+	if ut != nil {
+		ret += int(unsafe.Sizeof(*ut))
+		mcount = int(ut.Mcount)
+	}
+
+	ret += addSize
+
+	ret += mcount * int(unsafe.Sizeof(Method{}))
+
+	return ret
+}
+
+func (at *ArrayType) descriptorSizes() (base, add int) {
+	return int(unsafe.Sizeof(*at)), 0
+}
+
+func (ct *ChanType) descriptorSizes() (base, add int) {
+	return int(unsafe.Sizeof(*ct)), 0
+}
+
+func (ft *FuncType) descriptorSizes() (base, add int) {
+	base = int(unsafe.Sizeof(*ft))
+	add = (ft.NumIn() + ft.NumOut()) * goarch.PtrSize
+	return base, add
+}
+
+func (it *InterfaceType) descriptorSizes() (base, add int) {
+	base = int(unsafe.Sizeof(*it))
+	add = len(it.Methods) * int(unsafe.Sizeof(Imethod{}))
+	return base, add
+}
+
+func (mt *MapType) descriptorSizes() (base, add int) {
+	return int(unsafe.Sizeof(*mt)), 0
+}
+
+func (pt *PtrType) descriptorSizes() (base, add int) {
+	return int(unsafe.Sizeof(*pt)), 0
+}
+
+func (st *SliceType) descriptorSizes() (base, add int) {
+	return int(unsafe.Sizeof(*st)), 0
+}
+
+func (st *StructType) descriptorSizes() (base, add int) {
+	base = int(unsafe.Sizeof(*st))
+	add = len(st.Fields) * int(unsafe.Sizeof(StructField{}))
+	return base, add
+}
+
 const (
 	TraceArgsLimit    = 10 // print no more than 10 args/components
 	TraceArgsMaxDepth = 5  // no more than 5 layers of nesting
@@ -749,31 +871,16 @@ const (
 
 // MaxPtrmaskBytes is the maximum length of a GC ptrmask bitmap,
 // which holds 1-bit entries describing where pointers are in a given type.
-// Above this length, the GC information is recorded as a GC program,
-// which can express repetition compactly. In either form, the
-// information is used by the runtime to initialize the heap bitmap,
-// and for large types (like 128 or more words), they are roughly the
-// same speed. GC programs are never much larger and often more
-// compact. (If large arrays are involved, they can be arbitrarily
-// more compact.)
+// Above this length, the runtime computes the GC ptrmask bitmap as needed.
+// The information is used by the runtime to initialize the heap bitmap.
 //
-// The cutoff must be large enough that any allocation large enough to
-// use a GC program is large enough that it does not share heap bitmap
-// bytes with any other objects, allowing the GC program execution to
-// assume an aligned start and not use atomic operations. In the current
-// runtime, this means all malloc size classes larger than the cutoff must
-// be multiples of four words. On 32-bit systems that's 16 bytes, and
-// all size classes >= 16 bytes are 16-byte aligned, so no real constraint.
-// On 64-bit systems, that's 32 bytes, and 32-byte alignment is guaranteed
-// for size classes >= 256 bytes. On a 64-bit system, 256 bytes allocated
-// is 32 pointers, the bits for which fit in 4 bytes. So MaxPtrmaskBytes
-// must be >= 4.
-//
-// We used to use 16 because the GC programs do have some constant overhead
-// to get started, and processing 128 pointers seems to be enough to
-// amortize that overhead well.
-//
-// To make sure that the runtime's chansend can call typeBitsBulkBarrier,
-// we raised the limit to 2048, so that even 32-bit systems are guaranteed to
-// use bitmaps for objects up to 64 kB in size.
-const MaxPtrmaskBytes = 2048
+// There is a bit of overhead to computing the GC ptrmask bitmap
+// the first time. On the other hand building GC ptrmask bitmaps
+// for all types at compile time takes space in the binary for
+// large types that have a lot of pointers, such as large array types.
+// Using 16 means that types that keep their pointers in the first
+// 512 (on 32-bit) or 1024 (on 64-bit) bytes are computed at compile time,
+// and types with more pointers are computed at run time.
+// This tradeoff sounds reasonable, and 16 was the cutoff back when
+// we used GC programs, but this has not been benchmarked.
+const MaxPtrmaskBytes = 16

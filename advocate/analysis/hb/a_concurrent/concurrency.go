@@ -53,12 +53,12 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 			switch a := e.(type) {
 			case *trace.ElementSelect:
 				for _, c := range a.GetCases() {
-					if elem.ObjID() == c.ObjID() {
+					if elem.ResourceID() == c.ResourceID() {
 						res = append(res, e)
 					}
 				}
 			default:
-				if e.ObjID() == elem.ObjID() {
+				if e.ResourceID() == elem.ResourceID() {
 					res = append(res, e)
 				}
 			}

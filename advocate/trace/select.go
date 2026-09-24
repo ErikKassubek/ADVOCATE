@@ -95,12 +95,12 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 	}
 
 	elem := ElementSelect{
-		ElementBase:         this.newElementBase(routine),
+		ElementBase:         this.newElementBase(this, routine),
 		tPre:                tReqInt,
 		tPost:               tComInt,
 		objId:               idInt,
 		chosenIndex:         chosenIndexInt,
-		pos:                 newPosition(file, line),
+		pos:                 NewPosition(file, line),
 		ci:                  newConcInfo(),
 		casesWithPosPartner: make([]int, 0),
 		function:            getLastCall(routine),
@@ -163,7 +163,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 		}
 
 		elemCase := &ElementChannel{
-			ElementBase: this.newElementBase(routine),
+			ElementBase: this.newElementBase(this, routine),
 			tReq:        tReqInt,
 			tCom:        cTPost,
 			objId:       cID,
@@ -173,7 +173,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 			qSize:       cOSize,
 			sel:         &elem,
 			selIndex:    len(caseList),
-			pos:         newPosition(file, line),
+			pos:         NewPosition(file, line),
 			ci:          newConcInfo(),
 		}
 
@@ -197,12 +197,34 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementSelect) ObjID() int {
+func (this *ElementSelect) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementSelect) Resource() Resource {
+	return NewResource(-1, nil)
+}
+
+// ResourceID returns the resources
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementSelect) Resources() map[Resource]bool {
+	res := make(map[Resource]bool)
+
+	for _, c := range this.cases {
+		res[c.Resource()] = true
+	}
+
+	return res
 }
 
 // ========================================================
@@ -359,24 +381,11 @@ func (this *ElementSelect) Line() int {
 }
 
 // ========================================================
-// MARK: Index
+// MARK: Request (gui)
 // ========================================================
 
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementSelect) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns the index of the element in the routine
-// Returns
-//
-//   - int: routine index
-//   - int: routine local index of the element
-func (this *ElementSelect) TraceIndex() (int, int) {
-	return this.routine, this.index
+func (this *ElementSelect) CanBeRequest() bool {
+	return true
 }
 
 // ========================================================
@@ -406,6 +415,23 @@ func (this *ElementSelect) Type(operation bool) OperationType {
 	return SelectOp
 }
 
+// Type returns the object type of the cases
+//
+// Parameter:
+//   - operations bool: if true, the operation id contains the operations, otherwise just that it is select
+//
+// Returns:
+//   - the object type
+func (this *ElementSelect) Types() []OperationType {
+	res := make([]OperationType, 0)
+
+	for _, c := range this.cases {
+		res = append(res, c.Type(true))
+	}
+
+	return res
+}
+
 // ========================================================
 // MARK: Equal
 // ========================================================
@@ -418,7 +444,7 @@ func (this *ElementSelect) Type(operation bool) OperationType {
 // Returns:
 //   - bool: true if they are equal, false otherwise
 func (this *ElementSelect) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -471,16 +497,79 @@ func (this *ElementSelect) String() string {
 	return res
 }
 
+func (this *ElementSelect) StringLocal() string {
+	res := "S" + "," + strconv.Itoa(this.tPre) + "," +
+		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) + ","
+
+	notNil := 0
+	for _, ca := range this.cases { // cases
+		if ca.tReq != 0 { // ignore nil cases
+			if notNil != 0 {
+				res += "~"
+			}
+			res += ca.toStringSep(".", true)
+			notNil++
+		}
+	}
+
+	if this.containsDefault {
+		if notNil != 0 {
+			res += "~"
+		}
+		if this.chosenDefault {
+			res += "D"
+		} else {
+			res += "d"
+		}
+	}
+	res += "," + strconv.Itoa(this.chosenIndex)
+	res += "," + this.Pos().Short()
+	return res
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementSelect) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementSelect) StringGui() string {
+	res := "S" + "," + strconv.Itoa(this.objId) + ","
+
+	notNil := 0
+	for _, ca := range this.cases { // cases
+		if ca.tReq != 0 { // ignore nil cases
+			if notNil != 0 {
+				res += "~"
+			}
+			res += ca.toStringSep(".", true)
+			notNil++
+		}
+	}
+
+	if this.containsDefault {
+		if notNil != 0 {
+			res += "~"
+		}
+		if this.chosenDefault {
+			res += "D"
+		} else {
+			res += "d"
+		}
+	}
+	res += "," + strconv.Itoa(this.chosenIndex)
+	res += "\n" + this.Pos().Short()
+	return res
 }
 
 // ========================================================
@@ -554,7 +643,7 @@ func (this *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - string: The replay id of the element
 func (this *ElementSelect) ReplayID() string {
-	return fmt.Sprintf("%d:%s#%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s#%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================
@@ -564,13 +653,14 @@ func (this *ElementSelect) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //     This avoids double copy of referenced elements
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementSelect) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	id := this.ID()
 
 	if existing, ok := mapping[id]; ok {
@@ -579,7 +669,7 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		elem := &ElementSelect{
-			ElementBase:     this.ElementBase.Copy(),
+			ElementBase:     this.ElementBase.Copy(trace),
 			tPre:            0,
 			tPost:           0,
 			objId:           this.objId,
@@ -588,14 +678,14 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 			chosenDefault:   this.chosenDefault,
 			pos:             this.pos.copy(),
 			ci:              newConcInfo(),
-			function:        this.function.CopyFunc(mapping, keep),
+			function:        this.function.CopyFunc(trace, mapping, keep),
 		}
 
 		mapping[id] = elem
 
 		elem.cases = make([]*ElementChannel, 0)
 		for _, c := range this.cases {
-			cp := c.Copy(mapping, keep).(*ElementChannel)
+			cp := c.Copy(trace, mapping, keep).(*ElementChannel)
 			elem.cases = append(elem.cases, cp)
 			if cp.Committed() {
 				elem.chosenCase = cp
@@ -610,7 +700,7 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	elem := &ElementSelect{
-		ElementBase:     this.ElementBase.Copy(),
+		ElementBase:     this.ElementBase.Copy(trace),
 		tPre:            this.tPre,
 		tPost:           this.tPost,
 		objId:           this.objId,
@@ -619,14 +709,14 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 		chosenDefault:   this.chosenDefault,
 		pos:             this.pos.copy(),
 		ci:              this.ci.copy(),
-		function:        this.function.CopyFunc(mapping, keep),
+		function:        this.function.CopyFunc(trace, mapping, keep),
 	}
 
 	mapping[id] = elem
 
 	elem.cases = make([]*ElementChannel, 0)
 	for _, c := range this.cases {
-		cp := c.Copy(mapping, keep).(*ElementChannel)
+		cp := c.Copy(trace, mapping, keep).(*ElementChannel)
 		elem.cases = append(elem.cases, cp)
 		if cp.Committed() {
 			elem.chosenCase = cp

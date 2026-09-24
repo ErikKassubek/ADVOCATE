@@ -15,6 +15,8 @@ type Bool struct {
 	v uint32
 }
 
+// ADVOCATE-START
+
 // Load atomically loads and returns the value stored in x.
 func (x *Bool) Load() bool { return LoadUint32Advocate(&x.v) != 0 }
 
@@ -28,6 +30,8 @@ func (x *Bool) Swap(new bool) (old bool) { return SwapUint32Advocate(&x.v, b32(n
 func (x *Bool) CompareAndSwap(old, new bool) (swapped bool) {
 	return CompareAndSwapUint32Advocate(&x.v, b32(old), b32(new))
 }
+
+// ADVOCATE-END
 
 // b32 returns a uint32 0 or 1 representing b.
 func b32(b bool) uint32 {
@@ -54,6 +58,8 @@ type Pointer[T any] struct {
 	v unsafe.Pointer
 }
 
+// ADVOCATE-START
+
 // Load atomically loads and returns the value stored in x.
 func (x *Pointer[T]) Load() *T { return (*T)(LoadPointerAdvocate(&x.v)) }
 
@@ -70,6 +76,8 @@ func (x *Pointer[T]) CompareAndSwap(old, new *T) (swapped bool) {
 	return CompareAndSwapPointer(&x.v, unsafe.Pointer(old), unsafe.Pointer(new))
 }
 
+// ADVOCATE-END
+
 // An Int32 is an atomic int32. The zero value is zero.
 //
 // Int32 must not be copied after first use.
@@ -77,6 +85,8 @@ type Int32 struct {
 	_ noCopy
 	v int32
 }
+
+// ADVOCATE-START
 
 // Load atomically loads and returns the value stored in x.
 func (x *Int32) Load() int32 { return LoadInt32Advocate(&x.v) }
@@ -103,6 +113,8 @@ func (x *Int32) And(mask int32) (old int32) { return AndInt32Advocate(&x.v, mask
 // provided as mask and returns the old value.
 func (x *Int32) Or(mask int32) (old int32) { return OrInt32Advocate(&x.v, mask) }
 
+// ADVOCATE-END
+
 // An Int64 is an atomic int64. The zero value is zero.
 //
 // Int64 must not be copied after first use.
@@ -111,6 +123,8 @@ type Int64 struct {
 	_ align64
 	v int64
 }
+
+// ADVOCATE-START
 
 // Load atomically loads and returns the value stored in x.
 func (x *Int64) Load() int64 { return LoadInt64Advocate(&x.v) }
@@ -137,6 +151,8 @@ func (x *Int64) And(mask int64) (old int64) { return AndInt64Advocate(&x.v, mask
 // provided as mask and returns the old value.
 func (x *Int64) Or(mask int64) (old int64) { return OrInt64Advocate(&x.v, mask) }
 
+// ADVOCATE-END
+
 // A Uint32 is an atomic uint32. The zero value is zero.
 //
 // Uint32 must not be copied after first use.
@@ -144,6 +160,8 @@ type Uint32 struct {
 	_ noCopy
 	v uint32
 }
+
+// ADVOCATE-START
 
 // Load atomically loads and returns the value stored in x.
 func (x *Uint32) Load() uint32 { return LoadUint32Advocate(&x.v) }
@@ -170,6 +188,8 @@ func (x *Uint32) And(mask uint32) (old uint32) { return AndUint32Advocate(&x.v, 
 // provided as mask and returns the old value.
 func (x *Uint32) Or(mask uint32) (old uint32) { return OrUint32Advocate(&x.v, mask) }
 
+// ADVOCATE-END
+
 // A Uint64 is an atomic uint64. The zero value is zero.
 //
 // Uint64 must not be copied after first use.
@@ -178,6 +198,8 @@ type Uint64 struct {
 	_ align64
 	v uint64
 }
+
+// ADVOCATE-START
 
 // Load atomically loads and returns the value stored in x.
 func (x *Uint64) Load() uint64 { return LoadUint64Advocate(&x.v) }
@@ -204,6 +226,8 @@ func (x *Uint64) And(mask uint64) (old uint64) { return AndUint64Advocate(&x.v, 
 // provided as mask and returns the old value.
 func (x *Uint64) Or(mask uint64) (old uint64) { return OrUint64Advocate(&x.v, mask) }
 
+// ADVOCATE-END
+
 // A Uintptr is an atomic uintptr. The zero value is zero.
 //
 // Uintptr must not be copied after first use.
@@ -211,6 +235,8 @@ type Uintptr struct {
 	_ noCopy
 	v uintptr
 }
+
+// ADVOCATE-START
 
 // Load atomically loads and returns the value stored in x.
 func (x *Uintptr) Load() uintptr { return LoadUintptrAdvocate(&x.v) }
@@ -234,8 +260,10 @@ func (x *Uintptr) Add(delta uintptr) (new uintptr) { return AddUintptrAdvocate(&
 func (x *Uintptr) And(mask uintptr) (old uintptr) { return AndUintptrAdvocate(&x.v, mask) }
 
 // Or atomically performs a bitwise OR operation on x using the bitmask
-// provided as mask and returns the updated value after the OR operation.
+// provided as mask and returns the old value.
 func (x *Uintptr) Or(mask uintptr) (old uintptr) { return OrUintptrAdvocate(&x.v, mask) }
+
+// ADVOCATE-END
 
 // noCopy may be added to structs which must not be copied
 // after the first use.

@@ -12,28 +12,12 @@ package sync
 
 import (
 	isync "internal/sync"
-	"unsafe"
 
 	// ADVOCATE-START
 	"runtime"
+	"unsafe"
 	// ADVOCATE-END
 )
-
-// ADVOCATE-START
-//
-//go:linkname AdvocateAllocMutex runtime.AdvocateAllocMutex
-func AdvocateAllocMutex(ptr unsafe.Pointer) {
-	if runtime.AdvocateTracingDisabled {
-		return
-	}
-	m := (*Mutex)(ptr)
-	// if m.id != 0 {
-	// 	return
-	// }
-	m.id = runtime.AdvocateAlloc("M", 0)
-}
-
-// ADVOCATE-END
 
 // A Mutex is a mutual exclusion lock.
 // The zero value for a Mutex is an unlocked mutex.
@@ -64,6 +48,22 @@ type Locker interface {
 	Unlock()
 }
 
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocMutex runtime.AdvocateAllocMutex
+func AdvocateAllocMutex(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	m := (*Mutex)(ptr)
+	// if m.id != 0 {
+	// 	return
+	// }
+	m.id = runtime.AdvocateAlloc("M", 0)
+}
+
+// ADVOCATE-END
+
 // Lock locks m.
 // If the lock is already in use, the calling goroutine
 // blocks until the mutex is available.
@@ -74,25 +74,25 @@ func (m *Mutex) Lock() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
+			_ = runtime.AdvocateMutexReq(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
-	// AdvocateMutexPre records, that a routine tries to lock a mutex.
+	// AdvocateMutexReq records, that a routine tries to lock a mutex.
 	// AdvocatePost is called, if the mutex was locked successfully.
 	// In this case, the Lock event in the trace is updated to include
 	// this information. advocateIndex is used for AdvocatePost to find the
 	// pre event.
-	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
+	advocateIndex := runtime.AdvocateMutexReq(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
 	// ADVOCATE-END
 
 	m.mu.Lock()
 
 	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex, true)
+	runtime.AdvocateMutexCom(advocateIndex, true)
 	//ADVOCATE-END
 }
 
@@ -108,21 +108,20 @@ func (m *Mutex) TryLock() bool {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
+			_ = runtime.AdvocateMutexReq(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
-	// AdvocateMutexPre records, that a routine tries to lock a mutex.
-	// advocateIndex is used for AdvocateMutexPost to find the pre event.
-	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
-	// ADVOCATE-END
+	// AdvocateMutexReq records, that a routine tries to lock a mutex.
+	// advocateIndex is used for AdvocateMutexCom to find the pre event.
+	advocateIndex := runtime.AdvocateMutexReq(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
 
 	res := m.mu.TryLock()
 
-	runtime.AdvocateMutexPost(advocateIndex, res)
+	runtime.AdvocateMutexCom(advocateIndex, res)
 
 	return res
 	// ADVOCATE-END
@@ -141,11 +140,11 @@ func (m *Mutex) Unlock() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
+			_ = runtime.AdvocateMutexReq(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
 			runtime.BlockForever()
 		}
 	}
-	// AdvocateMutexPre is used to record the unlocking of a mutex.
+	// AdvocateMutexReq is used to record the unlocking of a mutex.
 	// AdvocatePost records the successful unlocking of a mutex.
 	// For non rw mutexe, the unlock cannot fail. Therefore it is not
 	// strictly necessary to record the post for the unlocking of a mutex.
@@ -154,12 +153,12 @@ func (m *Mutex) Unlock() {
 	// rw mutex.
 	// Here the post is seperatly recorded to easy the implementation for
 	// the rw mutexes.
-	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
+	advocateIndex := runtime.AdvocateMutexReq(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
 	// ADVOCATE-END
 
 	m.mu.Unlock()
 
 	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex, true)
+	runtime.AdvocateMutexCom(advocateIndex, true)
 	// ADVOCATE-END
 }

@@ -181,7 +181,7 @@ func (this *Constraint) Len() int {
 func (this *Constraint) ToString() string {
 	res := ""
 	for _, e := range this.Elems {
-		res += fmt.Sprintf("%d:%s", e.Routine(), e.Pos())
+		res += fmt.Sprintf("%d:%s", e.RoutineID(), e.Pos())
 		switch f := e.(type) {
 		case *trace.ElementSelect:
 			res += fmt.Sprintf("%d", f.GetChosenIndex())

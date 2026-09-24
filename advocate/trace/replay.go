@@ -44,7 +44,7 @@ type ElementReplay struct {
 //   - error
 func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	elem := ElementReplay{
-		ElementBase: this.newElementBase(0),
+		ElementBase: this.newElementBase(this, 0),
 		t:           ts,
 		exitCode:    exitCode,
 	}
@@ -101,7 +101,7 @@ func (this *ElementReplay) Committed() bool {
 // Returns:
 //   - position: the position
 func (this *ElementReplay) Pos() Position {
-	return newPosition("", 0)
+	return NewPosition("", 0)
 }
 
 // File returns the file of the element
@@ -124,12 +124,20 @@ func (this *ElementReplay) Line() int {
 // MARK: Index
 // ========================================================
 
-// Routine returns the routine ID of the element.
+// RoutineID returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementReplay) Routine() int {
+func (this *ElementReplay) RoutineID() int {
 	return 1
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementReplay) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // TraceIndex returns the trace local index of the element in the trace
@@ -141,11 +149,11 @@ func (this *ElementReplay) TraceIndex() (int, int) {
 	return -1, -1
 }
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementReplay) ObjID() int {
+func (this *ElementReplay) ResourceID() int {
 	return 0
 }
 
@@ -207,16 +215,30 @@ func (this *ElementReplay) String() string {
 	return res
 }
 
+func (this *ElementReplay) StringLocal() string {
+	res := "X," + strconv.Itoa(this.t) + "," + strconv.Itoa(this.exitCode)
+	return res
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementReplay) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element.
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementReplay) StringGui() string {
+	res := "X," + strconv.Itoa(this.exitCode)
+	return res
 }
 
 // ========================================================
@@ -290,21 +312,22 @@ func (this *ElementReplay) ReplayID() string {
 // Copy creates a copy of the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - _ map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementReplay) Copy(_ map[int]Element, keep bool) Element {
+func (this *ElementReplay) Copy(trace *Trace, _ map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementReplay{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			t:           0,
 			exitCode:    this.exitCode,
 		}
 	}
 	return &ElementReplay{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		exitCode:    this.exitCode,
 	}

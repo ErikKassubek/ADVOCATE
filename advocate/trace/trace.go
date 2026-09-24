@@ -40,6 +40,7 @@ import (
 //   - allocs: allocs
 //   - resources: obj id to resource
 //   - callGraph: call graph
+//   - request bool: if true, requests and commits are separate elements, otherwise they are the same
 type Trace struct {
 	routines              map[int]*Routine
 	hbWasCalc             bool
@@ -50,8 +51,9 @@ type Trace struct {
 	blocked               map[int]Element
 	forks                 map[int]*ElementFork
 	allocs                map[int]*ElementAlloc
-	resources             map[int]*Resource
+	resources             map[int]Resource
 	callTree              CallTree
+	request               bool
 }
 
 // NewTrace creates a new empty trace structure
@@ -67,7 +69,7 @@ func NewTrace() Trace {
 		blocked:               make(map[int]Element),
 		forks:                 make(map[int]*ElementFork),
 		allocs:                make(map[int]*ElementAlloc),
-		resources:             make(map[int]*Resource),
+		resources:             make(map[int]Resource),
 		callTree:              *newCallGraph(),
 	}
 }
@@ -81,7 +83,7 @@ func (this *Trace) Clear() {
 	this.blocked = make(map[int]Element)
 	this.forks = make(map[int]*ElementFork)
 	this.allocs = make(map[int]*ElementAlloc)
-	this.resources = make(map[int]*Resource)
+	this.resources = make(map[int]Resource)
 	this.callTree = *newCallGraph()
 }
 
@@ -90,7 +92,7 @@ func (this *Trace) Clear() {
 // Parameter:
 //   - elem TraceElement: Element to add
 func (this *Trace) AddElement(elem Element) {
-	routine := elem.Routine()
+	routine := elem.RoutineID()
 
 	if !elem.Committed() {
 		this.blocked[routine] = elem
@@ -115,7 +117,7 @@ func (this *Trace) AddResource(elem Element) {
 		return
 	}
 
-	id := elem.ObjID()
+	id := elem.ResourceID()
 
 	if _, ok := this.resources[id]; ok {
 		return
@@ -347,7 +349,7 @@ func (this *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 		for _, elem := range routine.elems {
 			switch e := elem.(type) {
 			case *ElementWait:
-				if e.ObjID() == wgID {
+				if e.ResourceID() == wgID {
 					if e.T(Request) < waitTime {
 						delta := e.GetDelta()
 						if delta > 0 {
@@ -392,7 +394,7 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 					thread int
 					vc     *a_clock.VectorClock
 					wVc    *a_clock.VectorClock
-				}{elemStr, elem.T(Commit), elem.Routine(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
+				}{elemStr, elem.T(Commit), elem.RoutineID(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
 			}
 		}
 	}
@@ -461,6 +463,14 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 	return res
 }
 
+func (this *Trace) IsRoutTerm(id int) (bool, error) {
+	if rout, ok := this.routines[id]; ok {
+		return rout.IsTerminated(), nil
+	}
+
+	return false, fmt.Errorf("No Routine with ID %d", id)
+}
+
 // SetTSortAtIndex sets the tSort for an element given by its index
 //
 // Parameter:
@@ -495,7 +505,7 @@ func (this *Trace) Copy(keep bool) (Trace, error) {
 	for _, rout := range this.routines {
 		newTrace.AddRoutine(rout.id)
 		for _, elem := range rout.elems {
-			newTrace.AddElement(elem.Copy(mapping, keep))
+			newTrace.AddElement(elem.Copy(&newTrace, mapping, keep))
 			if control.WasCanceled() {
 				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient RAM")
 			}
@@ -793,7 +803,7 @@ func (this *Trace) RemoveLater(tPost int) {
 		newElems := make([]Element, 0)
 		for _, elem := range rout.elems {
 			if elem.T(Commit) > tPost {
-				newElems = append(newElems, elem.Copy(mapping, true))
+				newElems = append(newElems, elem.Copy(this, mapping, true))
 			}
 		}
 		this.routines[routine].elems = newElems
@@ -844,6 +854,53 @@ func (this *Trace) GetPartialTrace(startTime int, endTime int) map[int][]Element
 	}
 
 	return result
+}
+
+// split all blocking elements into request and commit
+func (this *Trace) AsRequestCommit() int {
+	this.request = true
+
+	mapping := make(map[int]Element)
+
+	newTr := make(map[int]*Routine)
+
+	elemCounter := 0
+
+	for rout, tr := range this.routines {
+		newRout := Routine{id: tr.id, resources: tr.resources}
+		for _, elem := range tr.elems {
+			if elem.CanBeRequest() {
+				newElem := elem.Copy(this, mapping, true)
+				newElem.SetRequest(true)
+				newRout.addElement(newElem)
+				elemCounter++
+			}
+			if !elem.CanBeRequest() || elem.T(Commit) != 0 {
+				newRout.addElement(elem)
+				elemCounter++
+			}
+		}
+		newTr[rout] = &newRout
+	}
+
+	this.routines = newTr
+
+	return elemCounter
+}
+
+// Make the times consecutive. Only works if trace is request commit trace
+func (this *Trace) NormalizeRequestCommit() {
+	if !this.request {
+		return
+	}
+
+	traceIter := this.AsIterator()
+	i := 0
+
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+		elem.SetT(Commit, i)
+		i++
+	}
 }
 
 // ========================================================
@@ -982,12 +1039,12 @@ func (this *Iterator) IncreaseIndex(routine int) {
 // MARK: Resources
 // ========================================================
 
-func (this *Trace) GetResourcesPerRout(routID int) []*Resource {
+func (this *Trace) GetResourcesPerRout(routID int) []Resource {
 	return this.routines[routID].Resources()
 }
 
-func (this *Trace) GetResourcesRout() map[int][]*Resource {
-	res := make(map[int][]*Resource)
+func (this *Trace) GetResourcesRout() map[int][]Resource {
+	res := make(map[int][]Resource)
 
 	for id, rout := range this.routines {
 		res[id] = rout.Resources()
@@ -996,30 +1053,29 @@ func (this *Trace) GetResourcesRout() map[int][]*Resource {
 	return res
 }
 
-func (this *Trace) Resources() map[int]*Resource {
+func (this *Trace) Resources() map[int]Resource {
 	return this.resources
 }
 
 // GetAlloc returns the alloc of an element.
 // For an alloc the element is returned.
 // For elements without alloc, nil is returned
-// Elem must not be select
-func (this *Trace) GetResources(elem Element) []*Resource {
-	res := make([]*Resource, 0)
+func (this *Trace) GetResources(elem Element) []Resource {
+	res := make([]Resource, 0)
 
 	switch elem := elem.(type) {
 	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay:
 	case *ElementSelect:
 		for _, c := range elem.GetCases() {
-			r, ok := this.resources[c.ObjID()]
-			if !ok || r == nil {
+			r, ok := this.resources[c.ResourceID()]
+			if !ok || r.id == 0 {
 				panic("Invalid Resource")
 			}
 			res = append(res, r)
 		}
 	default:
-		r, ok := this.resources[elem.ObjID()]
-		if !ok || r == nil {
+		r, ok := this.resources[elem.ResourceID()]
+		if !ok || r.id == 0 {
 			panic("Invalid Resource")
 		}
 		res = append(res, r)

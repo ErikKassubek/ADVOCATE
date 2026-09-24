@@ -48,7 +48,7 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 	}
 
 	elem := ElementReturn{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tInt,
 		function:    call,
 	}
@@ -61,8 +61,16 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 // MARK: ID
 // ========================================================
 
-func (this *ElementReturn) ObjID() int {
+func (this *ElementReturn) ResourceID() int {
 	return -1
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementReturn) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -94,7 +102,7 @@ func (this *ElementReturn) Committed() bool {
 // ========================================================
 
 func (this *ElementReturn) Pos() Position {
-	return newPosition("", 0)
+	return NewPosition("", 0)
 }
 
 func (this *ElementReturn) File() string {
@@ -103,18 +111,6 @@ func (this *ElementReturn) File() string {
 
 func (this *ElementReturn) Line() int {
 	return -1
-}
-
-// ========================================================
-// MARK: Index
-// ========================================================
-
-func (this *ElementReturn) Routine() int {
-	return this.routine
-}
-
-func (this *ElementReturn) TraceIndex() (int, int) {
-	return this.routine, this.index
 }
 
 // ========================================================
@@ -150,20 +146,32 @@ func (this *ElementReturn) IsSameElement(elem Element) bool {
 // MARK: String
 // ========================================================
 
-func (this *ElementReturn) String() string {
-	return fmt.Sprintf("R,%d", this.t)
-}
-
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
+func (this *ElementReturn) String() string {
+	return fmt.Sprintf("R,%d", this.t)
+}
+
+func (this *ElementReturn) StringLocal() string {
+	return fmt.Sprintf("R,%d", this.t)
+}
+
+// StringDebug returns the debug string representation of the element with leading routine
+//
+// Returns:
+//   - string: The debug string representation of the element with leading routine
 func (this *ElementReturn) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+func (this *ElementReturn) StringGui() string {
+	return fmt.Sprintf("R")
 }
 
 // ========================================================
@@ -201,18 +209,18 @@ func (this *ElementReturn) SetNumberConcurrent(_ int, _, _ bool) {
 // ========================================================
 
 func (this *ElementReturn) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, "", -1)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, "", -1)
 }
 
 // ========================================================
 // MARK: Copy
 // ========================================================
 
-func (this *ElementReturn) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementReturn) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	return &ElementReturn{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

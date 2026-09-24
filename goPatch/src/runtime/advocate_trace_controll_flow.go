@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: trace_conditional.go
 // Brief: Functionality for recording if and switch results
 //
 // Author: Erik Kassubek
-// Created: 2026-07-27
 //
 // License: BSD-3-Clause
 

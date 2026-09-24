@@ -203,7 +203,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		if !block {
 			return false
 		}
-		gopark(nil, nil, WaitReasonChanSendNilChan, traceBlockForever, 2)
+		gopark(nil, nil, waitReasonChanSendNilChan, traceBlockForever, 2)
 		throw("unreachable")
 	}
 
@@ -216,7 +216,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	if c.bubble != nil && getg().bubble != c.bubble {
-		panic(plainError("send on synctest channel from outside bubble"))
+		fatal("send on synctest channel from outside bubble")
 	}
 
 	// ADVOCATE-START
@@ -228,7 +228,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateChanPre(c, OperationChannelSend, false)
+				_ = AdvocateChanReq(c, OperationChannelSend, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -279,7 +279,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// pre envent in the trace.
 	var advocateIndex int
 	if !ignored && !c.advocateIgnore {
-		advocateIndex = AdvocateChanPre(c, OperationChannelSend, false)
+		advocateIndex = AdvocateChanReq(c, OperationChannelSend, false)
 	}
 	// ADVOCATE-END
 
@@ -289,6 +289,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
 		// ADVOCATE-END
+
 		unlock(&c.lock)
 		panic(plainError("send on closed channel"))
 	}
@@ -299,7 +300,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		// ADVOCATE-START
 		send(c, sg, ep, func() {
 			if !ignored && !c.advocateIgnore {
-				AdvocateChanPost(advocateIndex, c, OperationChannelSend)
+				AdvocateChanCom(advocateIndex, c, OperationChannelSend)
 			}
 			unlock(&c.lock)
 		}, 3)
@@ -322,7 +323,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 
 		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c, OperationChannelSend)
+			AdvocateChanCom(advocateIndex, c, OperationChannelSend)
 		}
 		// ADVOCATE-END
 
@@ -333,9 +334,10 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if !block {
 		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c, OperationChannelSend)
+			AdvocateChanCom(advocateIndex, c, OperationChannelSend)
 		}
 		// ADVOCATE-END
+
 		unlock(&c.lock)
 		return false
 	}
@@ -349,11 +351,11 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 	// No stack splits between assigning elem and enqueuing mysg
 	// on gp.waiting where copystack can find it.
-	mysg.elem = ep
+	mysg.elem.set(ep)
 	mysg.waitlink = nil
 	mysg.g = gp
 	mysg.isSelect = false
-	mysg.c = c
+	mysg.c.set(c)
 	gp.waiting = mysg
 	gp.param = nil
 	c.sendq.enqueue(mysg)
@@ -362,13 +364,11 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	reason := WaitReasonChanSend
+	reason := waitReasonChanSend
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanSend
 	}
-
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanSend, 2)
-
 	// Ensure the value being sent is kept alive until the
 	// receiver copies it out. The sudog has a pointer to the
 	// stack object, but sudogs aren't considered as roots of the
@@ -383,7 +383,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// ADVOCATE-START
 	lock(&c.lock)
 	if !ignored && !c.advocateIgnore {
-		AdvocateChanPost(advocateIndex, c, OperationChannelSend)
+		AdvocateChanCom(advocateIndex, c, OperationChannelSend)
 	}
 	unlock(&c.lock)
 	// ADVOCATE-END
@@ -395,7 +395,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if mysg.releasetime > 0 {
 		blockevent(mysg.releasetime-t0, 2)
 	}
-	mysg.c = nil
+	mysg.c.set(nil)
 	releaseSudog(mysg)
 	if closed {
 		// ADVOCATE-START
@@ -403,6 +403,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
 		// ADVOCATE-END
+
 		if c.closed == 0 {
 			throw("chansend: spurious wakeup")
 		}
@@ -420,7 +421,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 func send(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
 	if c.bubble != nil && getg().bubble != c.bubble {
 		unlockf()
-		panic(plainError("send on synctest channel from outside bubble"))
+		fatal("send on synctest channel from outside bubble")
 	}
 	if raceenabled {
 		if c.dataqsiz == 0 {
@@ -438,9 +439,9 @@ func send(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
 			c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz
 		}
 	}
-	if sg.elem != nil {
+	if sg.elem.get() != nil {
 		sendDirect(c.elemtype, sg, ep)
-		sg.elem = nil
+		sg.elem.set(nil)
 	}
 	gp := sg.g
 	unlockf()
@@ -497,7 +498,7 @@ func sendDirect(t *_type, sg *sudog, src unsafe.Pointer) {
 	// Once we read sg.elem out of sg, it will no longer
 	// be updated if the destination's stack gets copied (shrunk).
 	// So make sure that no preemption points can happen between read & use.
-	dst := sg.elem
+	dst := sg.elem.get()
 	typeBitsBulkBarrier(t, uintptr(dst), uintptr(src), t.Size_)
 	// No need for cgo write barrier checks because dst is always
 	// Go memory.
@@ -508,7 +509,7 @@ func recvDirect(t *_type, sg *sudog, dst unsafe.Pointer) {
 	// dst is on our stack or the heap, src is on another stack.
 	// The channel is locked, so src will not move during this
 	// operation.
-	src := sg.elem
+	src := sg.elem.get()
 	typeBitsBulkBarrier(t, uintptr(dst), uintptr(src), t.Size_)
 	memmove(dst, src, t.Size_)
 }
@@ -518,7 +519,7 @@ func closechan(c *hchan) {
 		panic(plainError("close of nil channel"))
 	}
 	if c.bubble != nil && getg().bubble != c.bubble {
-		panic(plainError("close of synctest channel from outside bubble"))
+		fatal("close of synctest channel from outside bubble")
 	}
 
 	// ADVOCATE-START
@@ -556,9 +557,9 @@ func closechan(c *hchan) {
 		if sg == nil {
 			break
 		}
-		if sg.elem != nil {
-			typedmemclr(c.elemtype, sg.elem)
-			sg.elem = nil
+		if sg.elem.get() != nil {
+			typedmemclr(c.elemtype, sg.elem.get())
+			sg.elem.set(nil)
 		}
 		if sg.releasetime != 0 {
 			sg.releasetime = cputicks()
@@ -578,7 +579,7 @@ func closechan(c *hchan) {
 		if sg == nil {
 			break
 		}
-		sg.elem = nil
+		sg.elem.set(nil)
 		if sg.releasetime != 0 {
 			sg.releasetime = cputicks()
 		}
@@ -654,12 +655,12 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		if !block {
 			return
 		}
-		gopark(nil, nil, WaitReasonChanReceiveNilChan, traceBlockForever, 2)
+		gopark(nil, nil, waitReasonChanReceiveNilChan, traceBlockForever, 2)
 		throw("unreachable")
 	}
 
 	if c.bubble != nil && getg().bubble != c.bubble {
-		panic(plainError("receive on synctest channel from outside bubble"))
+		fatal("receive on synctest channel from outside bubble")
 	}
 
 	if c.timer != nil {
@@ -675,7 +676,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateChanPre(c, OperationChannelRecv, false)
+				_ = AdvocateChanReq(c, OperationChannelRecv, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -739,7 +740,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// pre envent in the trace.
 	var advocateIndex int
 	if !ignored && !c.advocateIgnore {
-		advocateIndex = AdvocateChanPre(c, OperationChannelRecv, false)
+		advocateIndex = AdvocateChanReq(c, OperationChannelRecv, false)
 	}
 	// ADVOCATE-END
 
@@ -772,7 +773,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			// ADVOCATE-START
 			recv(c, sg, ep, func() {
 				if !ignored && !c.advocateIgnore {
-					AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
+					AdvocateChanCom(advocateIndex, c, OperationChannelRecv)
 				}
 				unlock(&c.lock)
 			}, 3)
@@ -799,7 +800,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 
 		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
+			AdvocateChanCom(advocateIndex, c, OperationChannelRecv)
 		}
 		// ADVOCATE-END
 
@@ -810,9 +811,10 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	if !block {
 		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
+			AdvocateChanCom(advocateIndex, c, OperationChannelRecv)
 		}
 		// ADVOCATE-END
+
 		unlock(&c.lock)
 		return false, false
 	}
@@ -826,13 +828,13 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	}
 	// No stack splits between assigning elem and enqueuing mysg
 	// on gp.waiting where copystack can find it.
-	mysg.elem = ep
+	mysg.elem.set(ep)
 	mysg.waitlink = nil
 	gp.waiting = mysg
 
 	mysg.g = gp
 	mysg.isSelect = false
-	mysg.c = c
+	mysg.c.set(c)
 	gp.param = nil
 	c.recvq.enqueue(mysg)
 	if c.timer != nil {
@@ -844,7 +846,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	reason := WaitReasonChanReceive
+	reason := waitReasonChanReceive
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanReceive
 	}
@@ -868,7 +870,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	lock(&c.lock)
 	if !ignored && !c.advocateIgnore {
 		if success {
-			AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
+			AdvocateChanCom(advocateIndex, c, OperationChannelRecv)
 		} else {
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
@@ -877,7 +879,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// ADVOCATE-END
 
 	gp.param = nil
-	mysg.c = nil
+	mysg.c.set(nil)
 	releaseSudog(mysg)
 	return true, success
 }
@@ -899,7 +901,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 func recv(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
 	if c.bubble != nil && getg().bubble != c.bubble {
 		unlockf()
-		panic(plainError("receive on synctest channel from outside bubble"))
+		fatal("receive on synctest channel from outside bubble")
 	}
 	if c.dataqsiz == 0 {
 		if raceenabled {
@@ -924,14 +926,14 @@ func recv(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
 			typedmemmove(c.elemtype, ep, qp)
 		}
 		// copy data from sender to queue
-		typedmemmove(c.elemtype, qp, sg.elem)
+		typedmemmove(c.elemtype, qp, sg.elem.get())
 		c.recvx++
 		if c.recvx == c.dataqsiz {
 			c.recvx = 0
 		}
 		c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz
 	}
-	sg.elem = nil
+	sg.elem.set(nil)
 	gp := sg.g
 	unlockf()
 	gp.param = unsafe.Pointer(sg)
@@ -989,7 +991,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateSelectPreOneNonDef(c, true)
+				_ = AdvocateSelectReqOneNonDef(c, true)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -999,7 +1001,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 	advocateIndex := -1
 	if c != nil && !c.advocateIgnore {
 		lock(&c.lock)
-		advocateIndex = AdvocateSelectPreOneNonDef(c, true)
+		advocateIndex = AdvocateSelectReqOneNonDef(c, true)
 		unlock(&c.lock)
 	}
 
@@ -1026,7 +1028,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 
 	if c != nil && !c.advocateIgnore {
 		lock(&c.lock)
-		AdvocateSelectPostOneNonDef(advocateIndex, res, c)
+		AdvocateSelectComOneNonDef(advocateIndex, res, c)
 		unlock(&c.lock)
 	}
 
@@ -1062,7 +1064,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateSelectPreOneNonDef(c, false)
+				_ = AdvocateSelectReqOneNonDef(c, false)
 				unlock(&c.lock)
 				BlockForever()
 			}
@@ -1072,7 +1074,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 	advocateIndex := -1
 	if c != nil && !c.advocateIgnore {
 		lock(&c.lock)
-		advocateIndex = AdvocateSelectPreOneNonDef(c, false)
+		advocateIndex = AdvocateSelectReqOneNonDef(c, false)
 		unlock(&c.lock)
 	}
 
@@ -1100,7 +1102,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 
 	if c != nil && !c.advocateIgnore {
 		lock(&c.lock)
-		AdvocateSelectPostOneNonDef(advocateIndex, res, c)
+		AdvocateSelectComOneNonDef(advocateIndex, res, c)
 		unlock(&c.lock)
 	}
 	return res, recv
@@ -1123,14 +1125,7 @@ func reflect_chanrecv(c *hchan, nb bool, elem unsafe.Pointer) (selected bool, re
 }
 
 func chanlen(c *hchan) int {
-	if c == nil {
-		return 0
-	}
-	async := debug.asynctimerchan.Load() != 0
-	if c.timer != nil && async {
-		c.timer.maybeRunChan(c)
-	}
-	if c.timer != nil && !async {
+	if c == nil || c.timer != nil {
 		// timer channels have a buffered implementation
 		// but present to users as unbuffered, so that we can
 		// undo sends without users noticing.
@@ -1140,14 +1135,7 @@ func chanlen(c *hchan) int {
 }
 
 func chancap(c *hchan) int {
-	if c == nil {
-		return 0
-	}
-	if c.timer != nil {
-		async := debug.asynctimerchan.Load() != 0
-		if async {
-			return int(c.dataqsiz)
-		}
+	if c == nil || c.timer != nil {
 		// timer channels have a buffered implementation
 		// but present to users as unbuffered, so that we can
 		// undo sends without users noticing.

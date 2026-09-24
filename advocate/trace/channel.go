@@ -4,7 +4,6 @@
 // Brief: Struct and functions for channel operations in the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -140,7 +139,7 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 	}
 
 	elem := ElementChannel{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		tReq:        tReqInt,
 		tCom:        tComInt,
 		objId:       idInt,
@@ -149,7 +148,7 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 		oID:         oIDInt,
 		qSize:       qSizeInt,
 		qCount:      qCountInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		selIndex:    -1,
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
@@ -165,33 +164,20 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementChannel) ObjID() int {
+func (this *ElementChannel) ResourceID() int {
 	return this.objId
 }
 
-// ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
+// ResourceID returns the resource
 //
 // Returns:
-//   - int: The routine of the element
-func (this *ElementChannel) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementChannel) TraceIndex() (int, int) {
-	return this.routine, this.index
+//   - Resource: resource
+func (this *ElementChannel) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -369,6 +355,14 @@ func (this *ElementChannel) Type(operation bool) OperationType {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementChannel) CanBeRequest() bool {
+	return this.op != ChannelClose
+}
+
+// ========================================================
 // MARK: Equal
 // ========================================================
 
@@ -380,7 +374,7 @@ func (this *ElementChannel) Type(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementChannel) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -396,7 +390,7 @@ func (this *ElementChannel) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.objId == elem.ObjID()
+	return this.objId == elem.ResourceID()
 }
 
 // ========================================================
@@ -442,16 +436,48 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, this.objId, sep, op, sep, cl, sep, this.oID, sep, this.qSize, sep, this.qCount, posStr)
 }
 
+func (this *ElementChannel) StringLocal() string {
+	opFull := string(this.op)
+	op := "?"
+	if len(opFull) > 1 {
+		op = string(opFull[1])
+	}
+
+	cl := "f"
+	if this.cl {
+		cl = "t"
+	}
+
+	timeString := ""
+	posStr := ""
+	timeString = fmt.Sprintf(",%d,%d", this.T(Request), this.T(Commit))
+	posStr = "," + this.Pos().Short()
+
+	sep := ","
+
+	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, this.objId, sep, op, sep, cl, sep, this.oID, sep, this.qSize, sep, this.qCount, posStr)
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementChannel) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element.
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementChannel) StringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("C,%d,%s\n%s", this.objId, opString, this.Pos().Short())
 }
 
 // ========================================================
@@ -518,7 +544,7 @@ func (this *ElementChannel) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementChannel) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================
@@ -527,13 +553,14 @@ func (this *ElementChannel) ReplayID() string {
 
 // Copy creates a copy of the channel element
 //
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements,
 //     Used to avoid double copy of references
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementChannel) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	id := this.ID()
 	if existing, ok := mapping[id]; ok {
 		return existing
@@ -541,7 +568,7 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		newCh := ElementChannel{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			tReq:        0,
 			tCom:        0,
 			objId:       this.objId,
@@ -553,19 +580,19 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 			pos:         this.pos.copy(),
 			selIndex:    this.selIndex,
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 
 		mapping[id] = &newCh
 
 		var newPartner *ElementChannel
 		if this.partner != nil {
-			newPartner = this.partner.Copy(mapping, keep).(*ElementChannel)
+			newPartner = this.partner.Copy(trace, mapping, keep).(*ElementChannel)
 		}
 
 		var newSelect *ElementSelect
 		if this.sel != nil {
-			newSelect = this.sel.Copy(mapping, keep).(*ElementSelect)
+			newSelect = this.sel.Copy(trace, mapping, keep).(*ElementSelect)
 		}
 
 		newCh.partner = newPartner
@@ -575,7 +602,7 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	newCh := ElementChannel{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		tReq:        this.tReq,
 		tCom:        this.tCom,
 		objId:       this.objId,
@@ -587,19 +614,19 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 		pos:         this.pos.copy(),
 		selIndex:    this.selIndex,
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 
 	mapping[id] = &newCh
 
 	var newPartner *ElementChannel
 	if this.partner != nil {
-		newPartner = this.partner.Copy(mapping, keep).(*ElementChannel)
+		newPartner = this.partner.Copy(trace, mapping, keep).(*ElementChannel)
 	}
 
 	var newSelect *ElementSelect
 	if this.sel != nil {
-		newSelect = this.sel.Copy(mapping, keep).(*ElementSelect)
+		newSelect = this.sel.Copy(trace, mapping, keep).(*ElementSelect)
 	}
 
 	newCh.partner = newPartner
@@ -717,7 +744,7 @@ func (this *ElementChannel) SetOID(oID int) {
 // Returns:
 //   - *TraceElementChannel: The partner, -1 if not found
 func (this *ElementChannel) findPartner(tr *Trace) *ElementChannel {
-	id := this.ObjID()
+	id := this.ResourceID()
 	oID := this.GetOID()
 
 	// return -1 if closed by channel

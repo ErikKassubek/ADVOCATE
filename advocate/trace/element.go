@@ -12,7 +12,10 @@ package trace
 import (
 	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
+	"advocate/utils/flags"
 	"fmt"
+	"path/filepath"
+	"strings"
 )
 
 // ========================================================
@@ -23,7 +26,8 @@ import (
 type Element interface {
 	ID() int
 	setID(ID int)
-	ObjID() int
+	ResourceID() int
+	Resource() Resource
 
 	T(t timeType) int
 	SetT(t timeType, time int)
@@ -34,7 +38,8 @@ type Element interface {
 	File() string
 	Line() int
 
-	Routine() int
+	RoutineID() int
+	Routine() *Routine
 	TraceIndex() (int, int)
 
 	Type(operation bool) OperationType
@@ -42,8 +47,17 @@ type Element interface {
 	IsEqual(elem Element) bool
 	IsSameElement(elem Element) bool
 
+	Trace() *Trace
+	setTrace(trace *Trace)
+
+	Request() bool
+	CanBeRequest() bool
+	SetRequest(req bool)
+
 	String() string
+	StringLocal() string
 	StringDebug() string
+	StringGui() string
 
 	Function() *ElementFunc
 
@@ -55,7 +69,7 @@ type Element interface {
 
 	ReplayID() string
 
-	Copy(mapping map[int]Element, keep bool) Element
+	Copy(trace *Trace, mapping map[int]Element, keep bool) Element
 
 	IsValid() bool
 
@@ -71,21 +85,34 @@ func IsOp(elem Element) bool {
 	return true
 }
 
+func isReqStr(elem Element) string {
+	if elem.Request() {
+		return "R"
+	}
+	return "C"
+}
+
 // ========================================================
 // MARK: Base
 // ========================================================
 
 type ElementBase struct {
-	id      int
-	index   int
-	routine int
+	id        int
+	index     int
+	routineId int
+	routine   *Routine
+
+	trace *Trace
 
 	init bool
+
+	request bool // can only be true if trace.request is true
 }
 
-func (this *Trace) newElementBase(routine int) ElementBase {
+func (this *Trace) newElementBase(trace *Trace, routID int) ElementBase {
 	this.minTraceID++
-	return ElementBase{id: this.minTraceID, routine: routine, index: this.NumberElemInRoutine(routine), init: !this.hasPassedMain}
+	rout := this.routines[routID]
+	return ElementBase{id: this.minTraceID, routineId: routID, index: this.NumberElemInRoutine(routID), routine: rout, trace: trace, init: !this.hasPassedMain}
 }
 
 // ID returns the trace id
@@ -104,16 +131,50 @@ func (this *ElementBase) setID(ID int) {
 	this.id = ID
 }
 
+func (this *ElementBase) Routine() *Routine {
+	return this.routine
+}
+
+func (this *ElementBase) RoutineID() int {
+	return this.routine.id
+}
+
+func (this *ElementBase) TraceIndex() (int, int) {
+	return this.routineId, this.index
+}
+
+func (this *ElementBase) Request() bool {
+	return this.request
+}
+
+func (this *ElementBase) SetRequest(req bool) {
+	this.request = req
+}
+
+func (this *ElementBase) CanBeRequest() bool {
+	return false
+}
+
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (e ElementBase) Copy() ElementBase {
-	return e
+func (e ElementBase) Copy(trace *Trace) ElementBase { // TODO: fix copy, especially alloc
+	new_e := e
+	new_e.setTrace(trace)
+	return new_e
 }
 
 func (e ElementBase) InInit() bool {
 	return e.init
+}
+
+func (e ElementBase) Trace() *Trace {
+	return e.trace
+}
+
+func (e ElementBase) setTrace(trace *Trace) {
+	e.trace = trace
 }
 
 // ========================================================
@@ -189,6 +250,7 @@ const (
 	Controll       OperationType = "I"
 	ControllIf     OperationType = "II"
 	ControllSwitch OperationType = "IS"
+	ControllLoop   OperationType = "IL"
 
 	UnknownOperation OperationType = "XX"
 )
@@ -323,8 +385,16 @@ type Position struct {
 	line int
 }
 
-func newPosition(file string, line int) Position {
+func NewPosition(file string, line int) Position {
 	return Position{file, line}
+}
+
+func (this Position) File() string {
+	return this.file
+}
+
+func (this Position) Line() int {
+	return this.line
 }
 
 func (this Position) copy() Position {
@@ -335,4 +405,21 @@ func (this Position) copy() Position {
 
 func (this Position) String() string {
 	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
+}
+
+func (this Position) Short() string {
+	pp := filepath.Dir(flags.ProgPath)
+	if strings.HasSuffix(flags.ProgPath, ".go") {
+		pp = filepath.Dir(pp)
+	}
+	shortFile := strings.TrimPrefix(this.file, pp)
+
+	if shortFile != this.file {
+		shortFile = "." + shortFile
+	} else if strings.Contains(shortFile, "/goPatch/") {
+		shortFile = "goPatch/" + strings.Split(shortFile, "/goPatch/")[1]
+	}
+	res := fmt.Sprintf("%s%s%d", shortFile, consts.PosSep, this.line)
+
+	return res
 }

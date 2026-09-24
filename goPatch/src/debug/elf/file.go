@@ -25,6 +25,7 @@ import (
 	"internal/saferio"
 	"internal/zstd"
 	"io"
+	"math"
 	"os"
 	"strings"
 	"unsafe"
@@ -289,7 +290,7 @@ func NewFile(r io.ReaderAt) (*File, error) {
 	// Read and decode ELF identifier
 	var ident [16]uint8
 	if _, err := r.ReadAt(ident[0:], 0); err != nil {
-		return nil, err
+		return nil, &FormatError{0, "cannot read ELF identifier", err}
 	}
 	if ident[0] != '\x7f' || ident[1] != 'E' || ident[2] != 'L' || ident[3] != 'F' {
 		return nil, &FormatError{0, "bad magic number", ident[0:4]}
@@ -399,8 +400,81 @@ func NewFile(r io.ReaderAt) (*File, error) {
 		return nil, &FormatError{0, "invalid ELF phentsize", phentsize}
 	}
 
+	// If the number of sections is greater than or equal to SHN_LORESERVE
+	// (0xff00), shnum has the value zero and the actual number of section
+	// header table entries is contained in the sh_size field of the section
+	// header at index 0.
+	//
+	// If the number of segments is greater than or equal to 0xffff,
+	// phnum has the value 0xffff, and the actual number of segments
+	// is contained in the sh_info field of the section header at
+	// index 0.
+	const pnXnum = 0xffff
+	if shoff > 0 && (shnum == 0 || phnum == pnXnum) {
+		var typ, link, info uint32
+		var size uint64
+		sr.Seek(shoff, io.SeekStart)
+		switch f.Class {
+		case ELFCLASS32:
+			sh := new(Section32)
+			if err := binary.Read(sr, bo, sh); err != nil {
+				return nil, err
+			}
+			size = uint64(sh.Size)
+			typ = sh.Type
+			link = sh.Link
+			info = sh.Info
+		case ELFCLASS64:
+			sh := new(Section64)
+			if err := binary.Read(sr, bo, sh); err != nil {
+				return nil, err
+			}
+			size = sh.Size
+			typ = sh.Type
+			link = sh.Link
+			info = sh.Info
+		}
+
+		if SectionType(typ) != SHT_NULL {
+			return nil, &FormatError{shoff, "invalid type of the initial section", SectionType(typ)}
+		}
+
+		if shnum == 0 {
+			if size < uint64(SHN_LORESERVE) {
+				return nil, &FormatError{shoff, "invalid ELF shnum contained in sh_size", shnum}
+			}
+			shnum = int(size)
+		}
+
+		if phnum == pnXnum {
+			if info < 0xffff {
+				return nil, &FormatError{shoff, "invalid ELF phnum contained in sh_info", info}
+			}
+			phnum = int(info)
+		}
+
+		// If the section name string table section index is greater than or
+		// equal to SHN_LORESERVE (0xff00), this member has the value
+		// SHN_XINDEX (0xffff) and the actual index of the section name
+		// string table section is contained in the sh_link field of the
+		// section header at index 0.
+		if shstrndx == int(SHN_XINDEX) {
+			shstrndx = int(link)
+			if shstrndx < int(SHN_LORESERVE) || shstrndx >= shnum {
+				return nil, &FormatError{shoff, "invalid ELF shstrndx contained in sh_link", shstrndx}
+			}
+		}
+	}
+
 	// Read program headers
-	f.Progs = make([]*Prog, phnum)
+	c := saferio.SliceCap[*Prog](uint64(phnum))
+	if c < 0 {
+		return nil, &FormatError{0, "too many segments", phnum}
+	}
+	if phnum > 0 && ((1<<64)-1)/uint64(phnum) < uint64(phentsize) {
+		return nil, &FormatError{0, "segment header overflow", phnum}
+	}
+	f.Progs = make([]*Prog, 0, c)
 	phdata, err := saferio.ReadDataAt(sr, uint64(phnum)*uint64(phentsize), phoff)
 	if err != nil {
 		return nil, err
@@ -442,53 +516,7 @@ func NewFile(r io.ReaderAt) (*File, error) {
 		}
 		p.sr = io.NewSectionReader(r, int64(p.Off), int64(p.Filesz))
 		p.ReaderAt = p.sr
-		f.Progs[i] = p
-	}
-
-	// If the number of sections is greater than or equal to SHN_LORESERVE
-	// (0xff00), shnum has the value zero and the actual number of section
-	// header table entries is contained in the sh_size field of the section
-	// header at index 0.
-	if shoff > 0 && shnum == 0 {
-		var typ, link uint32
-		sr.Seek(shoff, io.SeekStart)
-		switch f.Class {
-		case ELFCLASS32:
-			sh := new(Section32)
-			if err := binary.Read(sr, bo, sh); err != nil {
-				return nil, err
-			}
-			shnum = int(sh.Size)
-			typ = sh.Type
-			link = sh.Link
-		case ELFCLASS64:
-			sh := new(Section64)
-			if err := binary.Read(sr, bo, sh); err != nil {
-				return nil, err
-			}
-			shnum = int(sh.Size)
-			typ = sh.Type
-			link = sh.Link
-		}
-		if SectionType(typ) != SHT_NULL {
-			return nil, &FormatError{shoff, "invalid type of the initial section", SectionType(typ)}
-		}
-
-		if shnum < int(SHN_LORESERVE) {
-			return nil, &FormatError{shoff, "invalid ELF shnum contained in sh_size", shnum}
-		}
-
-		// If the section name string table section index is greater than or
-		// equal to SHN_LORESERVE (0xff00), this member has the value
-		// SHN_XINDEX (0xffff) and the actual index of the section name
-		// string table section is contained in the sh_link field of the
-		// section header at index 0.
-		if shstrndx == int(SHN_XINDEX) {
-			shstrndx = int(link)
-			if shstrndx < int(SHN_LORESERVE) {
-				return nil, &FormatError{shoff, "invalid ELF shstrndx contained in sh_link", shstrndx}
-			}
-		}
+		f.Progs = append(f.Progs, p)
 	}
 
 	if shnum > 0 && shentsize < wantShentsize {
@@ -496,7 +524,7 @@ func NewFile(r io.ReaderAt) (*File, error) {
 	}
 
 	// Read section headers
-	c := saferio.SliceCap[Section](uint64(shnum))
+	c = saferio.SliceCap[Section](uint64(shnum))
 	if c < 0 {
 		return nil, &FormatError{0, "too many sections", shnum}
 	}
@@ -640,7 +668,7 @@ func (f *File) getSymbols32(typ SectionType) ([]Symbol, []byte, error) {
 		return nil, nil, fmt.Errorf("cannot load symbol section: %w", err)
 	}
 	if len(data) == 0 {
-		return nil, nil, errors.New("symbol section is empty")
+		return nil, nil, ErrNoSymbols
 	}
 	if len(data)%Sym32Size != 0 {
 		return nil, nil, errors.New("length of symbol section is not a multiple of SymSize")
@@ -688,6 +716,9 @@ func (f *File) getSymbols64(typ SectionType) ([]Symbol, []byte, error) {
 	data, err := symtabSection.Data()
 	if err != nil {
 		return nil, nil, fmt.Errorf("cannot load symbol section: %w", err)
+	}
+	if len(data) == 0 {
+		return nil, nil, ErrNoSymbols
 	}
 	if len(data)%Sym64Size != 0 {
 		return nil, nil, errors.New("length of symbol section is not a multiple of Sym64Size")
@@ -827,17 +858,9 @@ func (f *File) applyRelocationsAMD64(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_X86_64_64:
-			if rela.Off+8 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val64 := sym.Value + uint64(rela.Addend)
-			f.ByteOrder.PutUint64(dst[rela.Off:rela.Off+8], val64)
+			putUint(f.ByteOrder, dst, rela.Off, 8, sym.Value, rela.Addend, false)
 		case R_X86_64_32:
-			if rela.Off+4 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, rela.Off, 4, sym.Value, rela.Addend, false)
 		}
 	}
 
@@ -869,12 +892,7 @@ func (f *File) applyRelocations386(dst []byte, rels []byte) error {
 		sym := &symbols[symNo-1]
 
 		if t == R_386_32 {
-			if rel.Off+4 >= uint32(len(dst)) {
-				continue
-			}
-			val := f.ByteOrder.Uint32(dst[rel.Off : rel.Off+4])
-			val += uint32(sym.Value)
-			f.ByteOrder.PutUint32(dst[rel.Off:rel.Off+4], val)
+			putUint(f.ByteOrder, dst, uint64(rel.Off), 4, sym.Value, 0, true)
 		}
 	}
 
@@ -907,12 +925,7 @@ func (f *File) applyRelocationsARM(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_ARM_ABS32:
-			if rel.Off+4 >= uint32(len(dst)) {
-				continue
-			}
-			val := f.ByteOrder.Uint32(dst[rel.Off : rel.Off+4])
-			val += uint32(sym.Value)
-			f.ByteOrder.PutUint32(dst[rel.Off:rel.Off+4], val)
+			putUint(f.ByteOrder, dst, uint64(rel.Off), 4, sym.Value, 0, true)
 		}
 	}
 
@@ -952,17 +965,9 @@ func (f *File) applyRelocationsARM64(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_AARCH64_ABS64:
-			if rela.Off+8 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val64 := sym.Value + uint64(rela.Addend)
-			f.ByteOrder.PutUint64(dst[rela.Off:rela.Off+8], val64)
+			putUint(f.ByteOrder, dst, rela.Off, 8, sym.Value, rela.Addend, false)
 		case R_AARCH64_ABS32:
-			if rela.Off+4 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, rela.Off, 4, sym.Value, rela.Addend, false)
 		}
 	}
 
@@ -998,11 +1003,7 @@ func (f *File) applyRelocationsPPC(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_PPC_ADDR32:
-			if rela.Off+4 >= uint32(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, uint64(rela.Off), 4, sym.Value, 0, false)
 		}
 	}
 
@@ -1038,17 +1039,9 @@ func (f *File) applyRelocationsPPC64(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_PPC64_ADDR64:
-			if rela.Off+8 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val64 := sym.Value + uint64(rela.Addend)
-			f.ByteOrder.PutUint64(dst[rela.Off:rela.Off+8], val64)
+			putUint(f.ByteOrder, dst, rela.Off, 8, sym.Value, rela.Addend, false)
 		case R_PPC64_ADDR32:
-			if rela.Off+4 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, rela.Off, 4, sym.Value, rela.Addend, false)
 		}
 	}
 
@@ -1081,12 +1074,7 @@ func (f *File) applyRelocationsMIPS(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_MIPS_32:
-			if rel.Off+4 >= uint32(len(dst)) {
-				continue
-			}
-			val := f.ByteOrder.Uint32(dst[rel.Off : rel.Off+4])
-			val += uint32(sym.Value)
-			f.ByteOrder.PutUint32(dst[rel.Off:rel.Off+4], val)
+			putUint(f.ByteOrder, dst, uint64(rel.Off), 4, sym.Value, 0, true)
 		}
 	}
 
@@ -1129,17 +1117,9 @@ func (f *File) applyRelocationsMIPS64(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_MIPS_64:
-			if rela.Off+8 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val64 := sym.Value + uint64(rela.Addend)
-			f.ByteOrder.PutUint64(dst[rela.Off:rela.Off+8], val64)
+			putUint(f.ByteOrder, dst, rela.Off, 8, sym.Value, rela.Addend, false)
 		case R_MIPS_32:
-			if rela.Off+4 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, rela.Off, 4, sym.Value, rela.Addend, false)
 		}
 	}
 
@@ -1177,17 +1157,9 @@ func (f *File) applyRelocationsLOONG64(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_LARCH_64:
-			if rela.Off+8 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val64 := sym.Value + uint64(rela.Addend)
-			f.ByteOrder.PutUint64(dst[rela.Off:rela.Off+8], val64)
+			putUint(f.ByteOrder, dst, rela.Off, 8, sym.Value, rela.Addend, false)
 		case R_LARCH_32:
-			if rela.Off+4 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, rela.Off, 4, sym.Value, rela.Addend, false)
 		}
 	}
 
@@ -1223,17 +1195,9 @@ func (f *File) applyRelocationsRISCV64(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_RISCV_64:
-			if rela.Off+8 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val64 := sym.Value + uint64(rela.Addend)
-			f.ByteOrder.PutUint64(dst[rela.Off:rela.Off+8], val64)
+			putUint(f.ByteOrder, dst, rela.Off, 8, sym.Value, rela.Addend, false)
 		case R_RISCV_32:
-			if rela.Off+4 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, rela.Off, 4, sym.Value, rela.Addend, false)
 		}
 	}
 
@@ -1269,17 +1233,9 @@ func (f *File) applyRelocationss390x(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_390_64:
-			if rela.Off+8 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val64 := sym.Value + uint64(rela.Addend)
-			f.ByteOrder.PutUint64(dst[rela.Off:rela.Off+8], val64)
+			putUint(f.ByteOrder, dst, rela.Off, 8, sym.Value, rela.Addend, false)
 		case R_390_32:
-			if rela.Off+4 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, rela.Off, 4, sym.Value, rela.Addend, false)
 		}
 	}
 
@@ -1315,17 +1271,10 @@ func (f *File) applyRelocationsSPARC64(dst []byte, rels []byte) error {
 
 		switch t {
 		case R_SPARC_64, R_SPARC_UA64:
-			if rela.Off+8 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val64 := sym.Value + uint64(rela.Addend)
-			f.ByteOrder.PutUint64(dst[rela.Off:rela.Off+8], val64)
+			putUint(f.ByteOrder, dst, rela.Off, 8, sym.Value, rela.Addend, false)
+
 		case R_SPARC_32, R_SPARC_UA32:
-			if rela.Off+4 >= uint64(len(dst)) || rela.Addend < 0 {
-				continue
-			}
-			val32 := uint32(sym.Value) + uint32(rela.Addend)
-			f.ByteOrder.PutUint32(dst[rela.Off:rela.Off+4], val32)
+			putUint(f.ByteOrder, dst, rela.Off, 4, sym.Value, rela.Addend, false)
 		}
 	}
 
@@ -1378,7 +1327,7 @@ func (f *File) DWARF() (*dwarf.Data, error) {
 		return b, nil
 	}
 
-	// There are many DWARf sections, but these are the ones
+	// There are many DWARF sections, but these are the ones
 	// the debug/dwarf package started with.
 	var dat = map[string][]byte{"abbrev": nil, "info": nil, "str": nil, "line": nil, "ranges": nil}
 	for i, s := range f.Sections {
@@ -1603,6 +1552,9 @@ func (f *File) dynamicVersions(str []byte) error {
 				deps = append(deps, depName)
 			}
 
+			if vnext == 0 {
+				break
+			}
 			j += int(vnext)
 		}
 
@@ -1899,4 +1851,39 @@ type nobitsSectionReader struct{}
 
 func (*nobitsSectionReader) ReadAt(p []byte, off int64) (n int, err error) {
 	return 0, errors.New("unexpected read from SHT_NOBITS section")
+}
+
+// putUint writes a relocation to slice
+// at offset start of length length (4 or 8 bytes),
+// adding sym+addend to the existing value if readUint is true,
+// or just writing sym+addend if readUint is false.
+// If the write would extend beyond the end of slice, putUint does nothing.
+// If the addend is negative, putUint does nothing.
+// If the addition would overflow, putUint does nothing.
+func putUint(byteOrder binary.ByteOrder, slice []byte, start, length, sym uint64, addend int64, readUint bool) {
+	if start+length > uint64(len(slice)) || math.MaxUint64-start < length {
+		return
+	}
+	if addend < 0 {
+		return
+	}
+
+	s := slice[start : start+length]
+
+	switch length {
+	case 4:
+		ae := uint32(addend)
+		if readUint {
+			ae += byteOrder.Uint32(s)
+		}
+		byteOrder.PutUint32(s, uint32(sym)+ae)
+	case 8:
+		ae := uint64(addend)
+		if readUint {
+			ae += byteOrder.Uint64(s)
+		}
+		byteOrder.PutUint64(s, sym+ae)
+	default:
+		panic("can't happen")
+	}
 }

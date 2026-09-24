@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
 
 	"cmd/compile/internal/base"
@@ -183,7 +184,7 @@ var BasicTypeNames = []string{
 }
 
 var fmtBufferPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return new(bytes.Buffer)
 	},
 }
@@ -430,10 +431,11 @@ func tconv2(b *bytes.Buffer, t *Type, verb rune, mode fmtMode, visited map[*Type
 			case IsExported(f.Sym.Name):
 				sconv2(b, f.Sym, 'S', mode)
 			default:
+				smode := mode
 				if mode != fmtTypeIDName {
-					mode = fmtTypeID
+					smode = fmtTypeID
 				}
-				sconv2(b, f.Sym, 'v', mode)
+				sconv2(b, f.Sym, 'v', smode)
 			}
 			tconv2(b, f.Type, 'S', mode, visited)
 		}
@@ -471,12 +473,10 @@ func tconv2(b *bytes.Buffer, t *Type, verb rune, mode fmtMode, visited map[*Type
 	case TSTRUCT:
 		if m := t.StructType().Map; m != nil {
 			mt := m.MapType()
-			// Format the bucket struct for map[x]y as map.bucket[x]y.
+			// Format the bucket struct for map[x]y as map.group[x]y.
 			// This avoids a recursive print that generates very long names.
 			switch t {
-			case mt.OldBucket:
-				b.WriteString("map.bucket[")
-			case mt.SwissGroup:
+			case mt.Group:
 				b.WriteString("map.group[")
 			default:
 				base.Fatalf("unknown internal map type")
@@ -637,6 +637,16 @@ func SplitVargenSuffix(name string) (base, suffix string) {
 	const dot = "·"
 	if i >= len(dot) && name[i-len(dot):i] == dot {
 		i -= len(dot)
+		return name[:i], name[i:]
+	}
+	return name, ""
+}
+
+// SplitMethSuffix returns name split into a defining type name and a .m
+// suffix, if any.
+func SplitMethSuffix(name string) (tname, suffix string) {
+	i := strings.LastIndex(name, ".")
+	if i >= 0 {
 		return name[:i], name[i:]
 	}
 	return name, ""

@@ -18,7 +18,7 @@ import (
 // Parameter:
 //   - n *trace.TraceElementAlloc: the new trace element
 func UpdateHBNew(n *trace.ElementAlloc) {
-	routine := n.Routine()
+	routine := n.RoutineID()
 	n.Vc(a_clock.Strong, CurrentVC[routine])
 	n.Vc(a_clock.Weak, CurrentWVC[routine])
 }
@@ -27,7 +27,7 @@ func UpdateHBNew(n *trace.ElementAlloc) {
 // Parameter:
 //   - re *trace.TraceElementRoutineEnd: the new trace element
 func UpdateHBRoutineEnd(re *trace.ElementRoutineEnd) {
-	routine := re.Routine()
+	routine := re.RoutineID()
 	re.Vc(a_clock.Strong, CurrentVC[routine])
 	re.Vc(a_clock.Weak, CurrentWVC[routine])
 }

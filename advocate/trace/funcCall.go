@@ -11,7 +11,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/consts"
 	"advocate/utils/flags"
 	"advocate/utils/types"
 	"errors"
@@ -84,12 +83,12 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef
 	}
 
 	elem := ElementFunc{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		name:        name,
 		ssaName:     funcNameToSSANane(name),
 		t:           tInt,
-		posDef:      newPosition(fileDef, lineDef),
-		posCall:     newPosition(fileCall, lineCall),
+		posDef:      NewPosition(fileDef, lineDef),
+		posCall:     NewPosition(fileCall, lineCall),
 		function:    getLastCall(routine),
 	}
 
@@ -111,8 +110,16 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef
 // MARK: ID
 // ========================================================
 
-func (this *ElementFunc) ObjID() int {
+func (this *ElementFunc) ResourceID() int {
 	return -1
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementFunc) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -155,20 +162,8 @@ func (this *ElementFunc) Line() int {
 	return this.posCall.line
 }
 
-func (this *ElementFunc) GetPosDef() string {
-	return fmt.Sprintf("%s%s%d", this.posCall.file, consts.PosSep, this.posCall.line)
-}
-
-// ========================================================
-// MARK: Index
-// ========================================================
-
-func (this *ElementFunc) Routine() int {
-	return this.routine
-}
-
-func (this *ElementFunc) TraceIndex() (int, int) {
-	return this.routine, this.index
+func (this *ElementFunc) PosDef() Position {
+	return this.posDef
 }
 
 // ========================================================
@@ -205,7 +200,11 @@ func (this *ElementFunc) IsSameElement(elem Element) bool {
 // ========================================================
 
 func (this *ElementFunc) String() string {
-	return fmt.Sprintf("F,%d,%s,%s,%s", this.t, this.name, this.GetPosDef(), this.Pos())
+	return fmt.Sprintf("F,%d,%s,%s,%s", this.t, this.name, this.PosDef(), this.Pos())
+}
+
+func (this *ElementFunc) StringLocal() string {
+	return fmt.Sprintf("F,%d,%s,%s,%s", this.t, this.name, this.PosDef().Short(), this.Pos().Short())
 }
 
 // String returns the simple string representation of the element with leading routine
@@ -213,11 +212,15 @@ func (this *ElementFunc) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementFunc) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+func (this *ElementFunc) StringGui() string {
+	return fmt.Sprintf("F,%s,%s\n%s", this.name, this.PosDef().Short(), this.Pos().Short())
 }
 
 // ========================================================
@@ -255,14 +258,14 @@ func (this *ElementFunc) SetNumberConcurrent(_ int, _, _ bool) {
 // ========================================================
 
 func (this *ElementFunc) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.posCall.file, this.posCall.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.posCall.file, this.posCall.line)
 }
 
 // ========================================================
 // MARK: Copy
 // ========================================================
 
-func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementFunc) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if this == nil {
 		return nil
 	}
@@ -274,7 +277,7 @@ func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	elem := &ElementFunc{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		name:        this.name,
 		ssaName:     this.ssaName,
@@ -287,14 +290,14 @@ func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
 	return elem
 }
 
-func (this *ElementFunc) CopyFunc(mapping map[int]Element, keep bool) *ElementFunc {
+func (this *ElementFunc) CopyFunc(trace *Trace, mapping map[int]Element, keep bool) *ElementFunc {
 	if this == nil {
 		return nil
 	}
 
 	var funcCopy *ElementFunc
 
-	if fc, ok := this.function.Copy(mapping, keep).(*ElementFunc); ok {
+	if fc, ok := this.function.Copy(trace, mapping, keep).(*ElementFunc); ok {
 		funcCopy = fc
 	}
 

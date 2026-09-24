@@ -123,7 +123,7 @@ func Send(graph *PoGraph, ch *trace.ElementChannel) {
 		gr = &po
 	}
 
-	id := ch.ObjID()
+	id := ch.ResourceID()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
@@ -179,7 +179,7 @@ func Recv(graph *PoGraph, ch *trace.ElementChannel) {
 		gr = &po
 	}
 
-	id := ch.ObjID()
+	id := ch.ResourceID()
 	qSize := ch.GetQSize()
 
 	newBuffer(gr, id, qSize)
@@ -211,7 +211,7 @@ func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
 		return
 	}
 
-	id := ch.ObjID()
+	id := ch.ResourceID()
 
 	if graph != nil {
 		if _, ok := graph.closeData[id]; ok {
@@ -233,9 +233,9 @@ func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
 //   - ch *TraceElementChannel: The trace element
 func Close(graph *PoGraph, ch *trace.ElementChannel) {
 	if graph != nil {
-		graph.closeData[ch.ObjID()] = ch
+		graph.closeData[ch.ResourceID()] = ch
 	} else {
-		po.closeData[ch.ObjID()] = ch
+		po.closeData[ch.ResourceID()] = ch
 	}
 }
 

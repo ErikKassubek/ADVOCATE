@@ -34,7 +34,7 @@ func UpdateHBCond(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondSignal(co *trace.ElementCond) {
-	id := co.ObjID()
+	id := co.ResourceID()
 
 	if len(a_base.CurrentlyWaiting[id]) != 0 {
 		tWait := a_base.CurrentlyWaiting[id][0]
@@ -47,7 +47,7 @@ func CondSignal(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondBroadcast(co *trace.ElementCond) {
-	id := co.ObjID()
+	id := co.ResourceID()
 	for _, wait := range a_base.CurrentlyWaiting[id] {
 		AddEdge(co, wait, false)
 	}

@@ -42,7 +42,7 @@ func UpdateHBAtomic(graph *PoGraph, at *trace.ElementAtomic) {
 //   - at *TraceElementAtomic: The trace element
 //   - numberOfRoutines int: The number of routines in the trace
 func Read(graph *PoGraph, at *trace.ElementAtomic) {
-	id := at.ObjID()
+	id := at.ResourceID()
 
 	if graph != nil {
 		if graph.lastAtomicWriter[id] != nil {
@@ -56,7 +56,7 @@ func Read(graph *PoGraph, at *trace.ElementAtomic) {
 }
 
 func Write(graph *PoGraph, at *trace.ElementAtomic) {
-	id := at.ObjID()
+	id := at.ResourceID()
 
 	gr := graph
 	if graph == nil {

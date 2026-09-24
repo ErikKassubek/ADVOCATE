@@ -23,7 +23,7 @@ func UpdateHBOnce(graph *PoGraph, on *trace.ElementOnce) {
 		gr = &po
 	}
 
-	objId := on.ObjID()
+	objId := on.ResourceID()
 
 	// suc once does not create edge -> only not suc
 	if on.GetSuc() {

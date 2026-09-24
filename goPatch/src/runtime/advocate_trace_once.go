@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace_once.go
 // Brief: Functionality for once
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -17,8 +16,8 @@ import "unsafe"
 // Struct to store an operation on a once
 //
 // Fields
-//   - tPre int64: time when the operation started
-//   - tPost int64: time when the operation finished
+//   - tReq int64: time when the operation started
+//   - tCom int64: time when the operation finished
 //   - res AdvocateTraceResource: the resource the op is applied to
 //   - suc bool: true if the func in the Do was executed, false otherwise
 //   - file string: file where the operation occurred
@@ -32,7 +31,7 @@ type AdvocateTraceOnce struct {
 	line int
 }
 
-// AdvocateOncePre adds a once to the trace
+// AdvocateOnceReq adds a once to the trace
 //
 // Parameter:
 //   - mem unsafe.Pointer: memory address
@@ -40,7 +39,7 @@ type AdvocateTraceOnce struct {
 //
 // Returns:
 //   - int: index of the operation in the trace
-func AdvocateOncePre(mem unsafe.Pointer, id uint64) int {
+func AdvocateOnceReq(mem unsafe.Pointer, id uint64) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -70,7 +69,7 @@ func AdvocateOncePre(mem unsafe.Pointer, id uint64) int {
 // Parameter:
 //   - index int: index of the operation in the trace
 //   - suc bool: true if the do on the once was called for the first time, false otherwise
-func AdvocateOncePost(index int, suc bool) {
+func AdvocateOnceCom(index int, suc bool) {
 	if AdvocateTracingDisabled {
 		return
 	}

@@ -545,34 +545,7 @@ func (d *deadcodePass) decodetypeMethods(ldr *loader.Loader, arch *sys.Arch, sym
 	if !decodetypeHasUncommon(arch, p) {
 		panic(fmt.Sprintf("no methods on %q", ldr.SymName(symIdx)))
 	}
-	off := commonsize(arch) // reflect.rtype
-	switch decodetypeKind(arch, p) {
-	case abi.Struct: // reflect.structType
-		off += 4 * arch.PtrSize
-	case abi.Pointer: // reflect.ptrType
-		off += arch.PtrSize
-	case abi.Func: // reflect.funcType
-		off += arch.PtrSize // 4 bytes, pointer aligned
-	case abi.Slice: // reflect.sliceType
-		off += arch.PtrSize
-	case abi.Array: // reflect.arrayType
-		off += 3 * arch.PtrSize
-	case abi.Chan: // reflect.chanType
-		off += 2 * arch.PtrSize
-	case abi.Map:
-		if buildcfg.Experiment.SwissMap {
-			off += 7*arch.PtrSize + 4 // internal/abi.SwissMapType
-			if arch.PtrSize == 8 {
-				off += 4 // padding for final uint32 field (Flags).
-			}
-		} else {
-			off += 4*arch.PtrSize + 8 // internal/abi.OldMapType
-		}
-	case abi.Interface: // reflect.interfaceType
-		off += 3 * arch.PtrSize
-	default:
-		// just Sizeof(rtype)
-	}
+	off := abi.RTypeSize(decodetypeKind(arch, p), arch.PtrSize)
 
 	mcount := int(decodeInuxi(arch, p[off+4:], 2))
 	moff := int(decodeInuxi(arch, p[off+4+2+2:], 4))

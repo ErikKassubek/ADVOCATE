@@ -96,7 +96,7 @@ func goCmd(t *testing.T, args ...string) string {
 
 // TestMain calls testMain so that the latter can use defer (TestMain exits with os.Exit).
 func testMain(m *testing.M) (int, error) {
-	if testing.Short() && os.Getenv("GO_BUILDER_NAME") == "" {
+	if testing.Short() && testenv.Builder() == "" {
 		globalSkip = func(t testing.TB) { t.Skip("short mode and $GO_BUILDER_NAME not set") }
 		return m.Run(), nil
 	}
@@ -554,7 +554,7 @@ func checkPIE(t *testing.T, name string) {
 }
 
 func TestTrivialPIE(t *testing.T) {
-	if strings.HasSuffix(os.Getenv("GO_BUILDER_NAME"), "-alpine") {
+	if strings.Contains(testenv.Builder(), "-alpine") {
 		t.Skip("skipping on alpine until issue #54354 resolved")
 	}
 	globalSkip(t)
@@ -1175,10 +1175,10 @@ func TestStd(t *testing.T) {
 	tmpDir := t.TempDir()
 	// Use a temporary pkgdir to not interfere with other tests, and not write to GOROOT.
 	// Cannot use goCmd as it runs with cloned GOROOT which is incomplete.
-	runWithEnv(t, "building std", []string{"GOROOT=" + oldGOROOT},
+	runWithEnv(t, "building std", []string{"GOROOT=" + oldGOROOT, "GOEXPERIMENT=nosimd"},
 		filepath.Join(oldGOROOT, "bin", "go"), "install", "-buildmode=shared", "-pkgdir="+tmpDir, "std")
 
 	// Issue #58966.
-	runWithEnv(t, "testing issue #58966", []string{"GOROOT=" + oldGOROOT},
+	runWithEnv(t, "testing issue #58966", []string{"GOROOT=" + oldGOROOT, "GOEXPERIMENT=nosimd"},
 		filepath.Join(oldGOROOT, "bin", "go"), "run", "-linkshared", "-pkgdir="+tmpDir, "./issue58966/main.go")
 }

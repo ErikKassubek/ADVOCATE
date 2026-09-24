@@ -34,10 +34,27 @@ type Once struct {
 	m    Mutex
 
 	// ADVOCATE-START
-	id     uint64 // id of the once
-	memAdr uintptr
+	id uint64 // id of the once
 	// ADVOCATE-END
 }
+
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocOnce runtime.AdvocateAllocOnce
+func AdvocateAllocOnce(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	o := (*Once)(ptr)
+
+	if o.id != 0 {
+		return
+	}
+
+	o.id = runtime.AdvocateAlloc("O", 0)
+}
+
+// ADVOCATE-END
 
 // Do calls the function f if and only if Do is being called for the
 // first time for this instance of [Once]. In other words, given
@@ -62,7 +79,7 @@ type Once struct {
 func (o *Once) Do(f func()) {
 	// Note: Here is an incorrect implementation of Do:
 	//
-	//	if o.done.CompareAndSwap(0, 1) {
+	//	if o.done.CompareAndSwap(false, true) {
 	//		f()
 	//	}
 	//
@@ -79,16 +96,14 @@ func (o *Once) Do(f func()) {
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
-			o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
-			_ = runtime.AdvocateOncePre(unsafe.Pointer(o), o.id)
+			_ = runtime.AdvocateOnceReq(unsafe.Pointer(o), o.id)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(2)
 
-	o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
-	index := runtime.AdvocateOncePre(unsafe.Pointer(o), o.id)
+	index := runtime.AdvocateOnceReq(unsafe.Pointer(o), o.id)
 	res := false
 	// ADVOCATE-END
 
@@ -98,8 +113,9 @@ func (o *Once) Do(f func()) {
 		res = o.doSlow(f)
 		// ADVOCATE-END
 	}
+
 	// ADVOCATE-START
-	runtime.AdvocateOncePost(index, res)
+	runtime.AdvocateOnceCom(index, res)
 	// ADVOCATE-END
 }
 

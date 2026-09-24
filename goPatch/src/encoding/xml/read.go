@@ -153,7 +153,7 @@ func (d *Decoder) DecodeElement(v any, start *StartElement) error {
 	if val.IsNil() {
 		return errors.New("nil pointer passed to Unmarshal")
 	}
-	return d.unmarshal(val.Elem(), start, 0)
+	return d.unmarshal(val.Elem(), start)
 }
 
 // An UnmarshalError represents an error in the unmarshaling process.
@@ -207,9 +207,11 @@ func (d *Decoder) unmarshalInterface(val Unmarshaler, start *StartElement) error
 	// Record that decoder must stop at end tag corresponding to start.
 	d.pushEOF()
 
-	d.unmarshalDepth++
+	savedInUnmarshalXML := d.inUnmarshalXML
+	d.inUnmarshalXML = true
+	defer func() { d.inUnmarshalXML = savedInUnmarshalXML }()
+
 	err := val.UnmarshalXML(d, *start)
-	d.unmarshalDepth--
 	if err != nil {
 		d.popEOF()
 		return err
@@ -255,28 +257,36 @@ func (d *Decoder) unmarshalAttr(val reflect.Value, attr Attr) error {
 		}
 		val = val.Elem()
 	}
-	if val.CanInterface() && val.Type().Implements(unmarshalerAttrType) {
+	if val.CanInterface() {
 		// This is an unmarshaler with a non-pointer receiver,
 		// so it's likely to be incorrect, but we do what we're told.
-		return val.Interface().(UnmarshalerAttr).UnmarshalXMLAttr(attr)
+		if unmarshaler, ok := reflect.TypeAssert[UnmarshalerAttr](val); ok {
+			return unmarshaler.UnmarshalXMLAttr(attr)
+		}
 	}
 	if val.CanAddr() {
 		pv := val.Addr()
-		if pv.CanInterface() && pv.Type().Implements(unmarshalerAttrType) {
-			return pv.Interface().(UnmarshalerAttr).UnmarshalXMLAttr(attr)
+		if pv.CanInterface() {
+			if unmarshaler, ok := reflect.TypeAssert[UnmarshalerAttr](pv); ok {
+				return unmarshaler.UnmarshalXMLAttr(attr)
+			}
 		}
 	}
 
 	// Not an UnmarshalerAttr; try encoding.TextUnmarshaler.
-	if val.CanInterface() && val.Type().Implements(textUnmarshalerType) {
+	if val.CanInterface() {
 		// This is an unmarshaler with a non-pointer receiver,
 		// so it's likely to be incorrect, but we do what we're told.
-		return val.Interface().(encoding.TextUnmarshaler).UnmarshalText([]byte(attr.Value))
+		if textUnmarshaler, ok := reflect.TypeAssert[encoding.TextUnmarshaler](val); ok {
+			return textUnmarshaler.UnmarshalText([]byte(attr.Value))
+		}
 	}
 	if val.CanAddr() {
 		pv := val.Addr()
-		if pv.CanInterface() && pv.Type().Implements(textUnmarshalerType) {
-			return pv.Interface().(encoding.TextUnmarshaler).UnmarshalText([]byte(attr.Value))
+		if pv.CanInterface() {
+			if textUnmarshaler, ok := reflect.TypeAssert[encoding.TextUnmarshaler](pv); ok {
+				return textUnmarshaler.UnmarshalText([]byte(attr.Value))
+			}
 		}
 	}
 
@@ -303,12 +313,7 @@ func (d *Decoder) unmarshalAttr(val reflect.Value, attr Attr) error {
 	return copyValue(val, []byte(attr.Value))
 }
 
-var (
-	attrType            = reflect.TypeFor[Attr]()
-	unmarshalerType     = reflect.TypeFor[Unmarshaler]()
-	unmarshalerAttrType = reflect.TypeFor[UnmarshalerAttr]()
-	textUnmarshalerType = reflect.TypeFor[encoding.TextUnmarshaler]()
-)
+var attrType = reflect.TypeFor[Attr]()
 
 const (
 	maxUnmarshalDepth     = 10000
@@ -318,8 +323,8 @@ const (
 var errUnmarshalDepth = errors.New("exceeded max depth")
 
 // Unmarshal a single XML element into val.
-func (d *Decoder) unmarshal(val reflect.Value, start *StartElement, depth int) error {
-	if depth >= maxUnmarshalDepth || runtime.GOARCH == "wasm" && depth >= maxUnmarshalDepthWasm {
+func (d *Decoder) unmarshal(val reflect.Value, start *StartElement) error {
+	if d.stkDepth > maxUnmarshalDepth || runtime.GOARCH == "wasm" && d.stkDepth > maxUnmarshalDepthWasm {
 		return errUnmarshalDepth
 	}
 	// Find start element if we need it.
@@ -352,27 +357,35 @@ func (d *Decoder) unmarshal(val reflect.Value, start *StartElement, depth int) e
 		val = val.Elem()
 	}
 
-	if val.CanInterface() && val.Type().Implements(unmarshalerType) {
+	if val.CanInterface() {
 		// This is an unmarshaler with a non-pointer receiver,
 		// so it's likely to be incorrect, but we do what we're told.
-		return d.unmarshalInterface(val.Interface().(Unmarshaler), start)
-	}
-
-	if val.CanAddr() {
-		pv := val.Addr()
-		if pv.CanInterface() && pv.Type().Implements(unmarshalerType) {
-			return d.unmarshalInterface(pv.Interface().(Unmarshaler), start)
+		if unmarshaler, ok := reflect.TypeAssert[Unmarshaler](val); ok {
+			return d.unmarshalInterface(unmarshaler, start)
 		}
 	}
 
-	if val.CanInterface() && val.Type().Implements(textUnmarshalerType) {
-		return d.unmarshalTextInterface(val.Interface().(encoding.TextUnmarshaler))
+	if val.CanAddr() {
+		pv := val.Addr()
+		if pv.CanInterface() {
+			if unmarshaler, ok := reflect.TypeAssert[Unmarshaler](pv); ok {
+				return d.unmarshalInterface(unmarshaler, start)
+			}
+		}
+	}
+
+	if val.CanInterface() {
+		if textUnmarshaler, ok := reflect.TypeAssert[encoding.TextUnmarshaler](val); ok {
+			return d.unmarshalTextInterface(textUnmarshaler)
+		}
 	}
 
 	if val.CanAddr() {
 		pv := val.Addr()
-		if pv.CanInterface() && pv.Type().Implements(textUnmarshalerType) {
-			return d.unmarshalTextInterface(pv.Interface().(encoding.TextUnmarshaler))
+		if pv.CanInterface() {
+			if textUnmarshaler, ok := reflect.TypeAssert[encoding.TextUnmarshaler](pv); ok {
+				return d.unmarshalTextInterface(textUnmarshaler)
+			}
 		}
 	}
 
@@ -415,7 +428,7 @@ func (d *Decoder) unmarshal(val reflect.Value, start *StartElement, depth int) e
 		v.SetLen(n + 1)
 
 		// Recur to read element into slice.
-		if err := d.unmarshal(v.Index(n), start, depth+1); err != nil {
+		if err := d.unmarshal(v.Index(n), start); err != nil {
 			v.SetLen(n)
 			return err
 		}
@@ -453,7 +466,7 @@ func (d *Decoder) unmarshal(val reflect.Value, start *StartElement, depth int) e
 				return UnmarshalError(e)
 			}
 			fv := finfo.value(sv, initNilPointers)
-			if _, ok := fv.Interface().(Name); ok {
+			if _, ok := reflect.TypeAssert[Name](fv); ok {
 				fv.Set(reflect.ValueOf(start.Name))
 			}
 		}
@@ -538,15 +551,13 @@ Loop:
 		case StartElement:
 			consumed := false
 			if sv.IsValid() {
-				// unmarshalPath can call unmarshal, so we need to pass the depth through so that
-				// we can continue to enforce the maximum recursion limit.
-				consumed, err = d.unmarshalPath(tinfo, sv, nil, &t, depth)
+				consumed, err = d.unmarshalPath(tinfo, sv, nil, &t)
 				if err != nil {
 					return err
 				}
 				if !consumed && saveAny.IsValid() {
 					consumed = true
-					if err := d.unmarshal(saveAny, &t, depth+1); err != nil {
+					if err := d.unmarshal(saveAny, &t); err != nil {
 						return err
 					}
 				}
@@ -578,20 +589,24 @@ Loop:
 		}
 	}
 
-	if saveData.IsValid() && saveData.CanInterface() && saveData.Type().Implements(textUnmarshalerType) {
-		if err := saveData.Interface().(encoding.TextUnmarshaler).UnmarshalText(data); err != nil {
-			return err
+	if saveData.IsValid() && saveData.CanInterface() {
+		if textUnmarshaler, ok := reflect.TypeAssert[encoding.TextUnmarshaler](saveData); ok {
+			if err := textUnmarshaler.UnmarshalText(data); err != nil {
+				return err
+			}
+			saveData = reflect.Value{}
 		}
-		saveData = reflect.Value{}
 	}
 
 	if saveData.IsValid() && saveData.CanAddr() {
 		pv := saveData.Addr()
-		if pv.CanInterface() && pv.Type().Implements(textUnmarshalerType) {
-			if err := pv.Interface().(encoding.TextUnmarshaler).UnmarshalText(data); err != nil {
-				return err
+		if pv.CanInterface() {
+			if textUnmarshaler, ok := reflect.TypeAssert[encoding.TextUnmarshaler](pv); ok {
+				if err := textUnmarshaler.UnmarshalText(data); err != nil {
+					return err
+				}
+				saveData = reflect.Value{}
 			}
-			saveData = reflect.Value{}
 		}
 	}
 
@@ -691,7 +706,7 @@ func copyValue(dst reflect.Value, src []byte) (err error) {
 // The consumed result tells whether XML elements have been consumed
 // from the Decoder until start's matching end element, or if it's
 // still untouched because start is uninteresting for sv's fields.
-func (d *Decoder) unmarshalPath(tinfo *typeInfo, sv reflect.Value, parents []string, start *StartElement, depth int) (consumed bool, err error) {
+func (d *Decoder) unmarshalPath(tinfo *typeInfo, sv reflect.Value, parents []string, start *StartElement) (consumed bool, err error) {
 	recurse := false
 Loop:
 	for i := range tinfo.fields {
@@ -706,7 +721,7 @@ Loop:
 		}
 		if len(finfo.parents) == len(parents) && finfo.name == start.Name.Local {
 			// It's a perfect match, unmarshal the field.
-			return true, d.unmarshal(finfo.value(sv, initNilPointers), start, depth+1)
+			return true, d.unmarshal(finfo.value(sv, initNilPointers), start)
 		}
 		if len(finfo.parents) > len(parents) && finfo.parents[len(parents)] == start.Name.Local {
 			// It's a prefix for the field. Break and recurse
@@ -735,9 +750,7 @@ Loop:
 		}
 		switch t := tok.(type) {
 		case StartElement:
-			// the recursion depth of unmarshalPath is limited to the path length specified
-			// by the struct field tag, so we don't increment the depth here.
-			consumed2, err := d.unmarshalPath(tinfo, sv, parents, &t, depth)
+			consumed2, err := d.unmarshalPath(tinfo, sv, parents, &t)
 			if err != nil {
 				return true, err
 			}

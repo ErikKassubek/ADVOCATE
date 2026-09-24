@@ -34,12 +34,12 @@ func RunAnalysisOnExitCodes(all bool) {
 		}
 
 		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TRequest:  0,
-			ObjType:   "CC",
-			File:      file,
-			Line:      line,
+			RoutineID:  0,
+			ResourceID: 0,
+			TRequest:   0,
+			ObjType:    "CC",
+			File:       file,
+			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
@@ -50,12 +50,12 @@ func RunAnalysisOnExitCodes(all bool) {
 			log.Error("Could not read exit pos: ", err)
 		}
 		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TRequest:  0,
-			ObjType:   "CC",
-			File:      file,
-			Line:      line,
+			RoutineID:  0,
+			ResourceID: 0,
+			TRequest:   0,
+			ObjType:    "CC",
+			File:       file,
+			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
@@ -66,12 +66,12 @@ func RunAnalysisOnExitCodes(all bool) {
 			log.Error("Could not read exit pos: ", err)
 		}
 		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TRequest:  0,
-			ObjType:   "WD",
-			File:      file,
-			Line:      line,
+			RoutineID:  0,
+			ResourceID: 0,
+			TRequest:   0,
+			ObjType:    "WD",
+			File:       file,
+			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
@@ -82,12 +82,12 @@ func RunAnalysisOnExitCodes(all bool) {
 			log.Error("Could not read exit pos: ", err)
 		}
 		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TRequest:  0,
-			ObjType:   "ML",
-			File:      file,
-			Line:      line,
+			RoutineID:  0,
+			ResourceID: 0,
+			TRequest:   0,
+			ObjType:    "ML",
+			File:       file,
+			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
@@ -98,12 +98,12 @@ func RunAnalysisOnExitCodes(all bool) {
 			log.Error("Could not read exit pos: ", err)
 		}
 		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TRequest:  0,
-			ObjType:   "XX",
-			File:      file,
-			Line:      line,
+			RoutineID:  0,
+			ResourceID: 0,
+			TRequest:   0,
+			ObjType:    "XX",
+			File:       file,
+			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.RUnknownPanic,
 			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
@@ -119,12 +119,12 @@ func RunAnalysisOnExitCodes(all bool) {
 				log.Error("Could not read exit pos: ", err)
 			}
 			arg1 := results.TraceElementResult{ // send
-				RoutineID: 0,
-				ObjID:     0,
-				TRequest:  0,
-				ObjType:   "CS",
-				File:      file,
-				Line:      line,
+				RoutineID:  0,
+				ResourceID: 0,
+				TRequest:   0,
+				ObjType:    "CS",
+				File:       file,
+				Line:       line,
 			}
 			results.Result(results.CRITICAL, helper.ASendOnClosed,
 				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})

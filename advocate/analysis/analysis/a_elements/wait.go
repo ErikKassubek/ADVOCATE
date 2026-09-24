@@ -28,7 +28,7 @@ func AnalyzeWait(wa *trace.ElementWait) {
 
 	switch wa.Type(true) {
 	case trace.WaitAdd, trace.WaitDone:
-		a_base.LastChangeWG[wa.ObjID()] = wa
+		a_base.LastChangeWG[wa.ResourceID()] = wa
 
 		if a_base.AnalysisCasesMap[flags.DoneBeforeAdd] || f_base.FuzzingModeGoCRHBPlus {
 			a_scenarios.CheckForDoneBeforeAddChange(wa)

@@ -9,7 +9,6 @@ import (
 	"go/constant"
 	"go/token"
 	"internal/abi"
-	"internal/buildcfg"
 	"strings"
 
 	"cmd/compile/internal/base"
@@ -137,17 +136,18 @@ func walkGrowslice(slice *ir.Name, init *ir.Nodes, oldPtr, newLen, oldCap, num i
 }
 
 // walkClear walks an OCLEAR node.
-func walkClear(n *ir.UnaryExpr) ir.Node {
+func walkClear(n *ir.UnaryExpr, init *ir.Nodes) ir.Node {
+	x := walkExpr(n.X, init)
 	typ := n.X.Type()
 	switch {
 	case typ.IsSlice():
-		if n := arrayClear(n.X.Pos(), n.X, nil); n != nil {
+		if n := arrayClear(x.Pos(), x, nil); n != nil {
 			return n
 		}
 		// If n == nil, we are clearing an array which takes zero memory, do nothing.
 		return ir.NewBlockStmt(n.Pos(), nil)
 	case typ.IsMap():
-		return mapClear(n.X, reflectdata.TypePtrAt(n.X.Pos(), n.X.Type()))
+		return mapClear(x, reflectdata.TypePtrAt(x.Pos(), typ))
 	}
 	panic("unreachable")
 }
@@ -313,15 +313,8 @@ func walkMakeChan(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
 
 // walkMakeMap walks an OMAKEMAP node.
 func walkMakeMap(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
-	if buildcfg.Experiment.SwissMap {
-		return walkMakeSwissMap(n, init)
-	}
-	return walkMakeOldMap(n, init)
-}
-
-func walkMakeSwissMap(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
 	t := n.Type()
-	mapType := reflectdata.SwissMapType()
+	mapType := reflectdata.MapType()
 	hint := n.Len
 
 	// var m *Map
@@ -334,28 +327,28 @@ func walkMakeSwissMap(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
 		m = stackTempAddr(init, mapType)
 
 		// Allocate one group pointed to by m.dirPtr on stack if hint
-		// is not larger than SwissMapGroupSlots. In case hint is
+		// is not larger than MapGroupSlots. In case hint is
 		// larger, runtime.makemap will allocate on the heap.
 		// Maximum key and elem size is 128 bytes, larger objects
 		// are stored with an indirection. So max bucket size is 2048+eps.
 		if !ir.IsConst(hint, constant.Int) ||
-			constant.Compare(hint.Val(), token.LEQ, constant.MakeInt64(abi.SwissMapGroupSlots)) {
+			constant.Compare(hint.Val(), token.LEQ, constant.MakeInt64(abi.MapGroupSlots)) {
 
-			// In case hint is larger than SwissMapGroupSlots
+			// In case hint is larger than MapGroupSlots
 			// runtime.makemap will allocate on the heap, see
 			// #20184
 			//
-			// if hint <= abi.SwissMapGroupSlots {
+			// if hint <= abi.MapGroupSlots {
 			//     var gv group
 			//     g = &gv
-			//     g.ctrl = abi.SwissMapCtrlEmpty
+			//     g.ctrl = abi.MapCtrlEmpty
 			//     m.dirPtr = g
 			// }
 
-			nif := ir.NewIfStmt(base.Pos, ir.NewBinaryExpr(base.Pos, ir.OLE, hint, ir.NewInt(base.Pos, abi.SwissMapGroupSlots)), nil, nil)
+			nif := ir.NewIfStmt(base.Pos, ir.NewBinaryExpr(base.Pos, ir.OLE, hint, ir.NewInt(base.Pos, abi.MapGroupSlots)), nil, nil)
 			nif.Likely = true
 
-			groupType := reflectdata.SwissMapGroupType(t)
+			groupType := reflectdata.MapGroupType(t)
 
 			// var gv group
 			// g = &gv
@@ -363,27 +356,27 @@ func walkMakeSwissMap(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
 
 			// Can't use ir.NewInt because bit 63 is set, which
 			// makes conversion to uint64 upset.
-			empty := ir.NewBasicLit(base.Pos, types.UntypedInt, constant.MakeUint64(abi.SwissMapCtrlEmpty))
+			empty := ir.NewBasicLit(base.Pos, types.UntypedInt, constant.MakeUint64(abi.MapCtrlEmpty))
 
-			// g.ctrl = abi.SwissMapCtrlEmpty
-			csym := groupType.Field(0).Sym // g.ctrl see reflectdata/map_swiss.go
+			// g.ctrl = abi.MapCtrlEmpty
+			csym := groupType.Field(0).Sym // g.ctrl see reflectdata/map.go
 			ca := ir.NewAssignStmt(base.Pos, ir.NewSelectorExpr(base.Pos, ir.ODOT, g, csym), empty)
 			nif.Body.Append(ca)
 
 			// m.dirPtr = g
-			dsym := mapType.Field(2).Sym // m.dirPtr see reflectdata/map_swiss.go
+			dsym := mapType.Field(2).Sym // m.dirPtr see reflectdata/map.go
 			na := ir.NewAssignStmt(base.Pos, ir.NewSelectorExpr(base.Pos, ir.ODOT, m, dsym), typecheck.ConvNop(g, types.Types[types.TUNSAFEPTR]))
 			nif.Body.Append(na)
 			appendWalkStmt(init, nif)
 		}
 	}
 
-	if ir.IsConst(hint, constant.Int) && constant.Compare(hint.Val(), token.LEQ, constant.MakeInt64(abi.SwissMapGroupSlots)) {
+	if ir.IsConst(hint, constant.Int) && constant.Compare(hint.Val(), token.LEQ, constant.MakeInt64(abi.MapGroupSlots)) {
 		// Handling make(map[any]any) and
-		// make(map[any]any, hint) where hint <= abi.SwissMapGroupSlots
+		// make(map[any]any, hint) where hint <= abi.MapGroupSlots
 		// specially allows for faster map initialization and
 		// improves binary size by using calls with fewer arguments.
-		// For hint <= abi.SwissMapGroupSlots no groups will be
+		// For hint <= abi.MapGroupSlots no groups will be
 		// allocated by makemap. Therefore, no groups need to be
 		// allocated in this code path.
 		if n.Esc() == ir.EscNone {
@@ -391,7 +384,7 @@ func walkMakeSwissMap(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
 			// m map has been allocated on the stack already.
 			// m.seed = uintptr(rand())
 			rand := mkcall("rand", types.Types[types.TUINT64], init)
-			seedSym := mapType.Field(1).Sym // m.seed see reflectdata/map_swiss.go
+			seedSym := mapType.Field(1).Sym // m.seed see reflectdata/map.go
 			appendWalkStmt(init, ir.NewAssignStmt(base.Pos, ir.NewSelectorExpr(base.Pos, ir.ODOT, m, seedSym), typecheck.Conv(rand, types.Types[types.TUINTPTR])))
 			return typecheck.ConvNop(m, t)
 		}
@@ -426,101 +419,6 @@ func walkMakeSwissMap(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
 
 	fn := typecheck.LookupRuntime(fnname, mapType, t.Key(), t.Elem())
 	return mkcall1(fn, n.Type(), init, reflectdata.MakeMapRType(base.Pos, n), typecheck.Conv(hint, argtype), m)
-}
-
-func walkMakeOldMap(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
-	t := n.Type()
-	hmapType := reflectdata.OldMapType()
-	hint := n.Len
-
-	// var h *hmap
-	var h ir.Node
-	if n.Esc() == ir.EscNone {
-		// Allocate hmap on stack.
-
-		// var hv hmap
-		// h = &hv
-		h = stackTempAddr(init, hmapType)
-
-		// Allocate one bucket pointed to by hmap.buckets on stack if hint
-		// is not larger than BUCKETSIZE. In case hint is larger than
-		// BUCKETSIZE runtime.makemap will allocate the buckets on the heap.
-		// Maximum key and elem size is 128 bytes, larger objects
-		// are stored with an indirection. So max bucket size is 2048+eps.
-		if !ir.IsConst(hint, constant.Int) ||
-			constant.Compare(hint.Val(), token.LEQ, constant.MakeInt64(abi.OldMapBucketCount)) {
-
-			// In case hint is larger than BUCKETSIZE runtime.makemap
-			// will allocate the buckets on the heap, see #20184
-			//
-			// if hint <= BUCKETSIZE {
-			//     var bv bmap
-			//     b = &bv
-			//     h.buckets = b
-			// }
-
-			nif := ir.NewIfStmt(base.Pos, ir.NewBinaryExpr(base.Pos, ir.OLE, hint, ir.NewInt(base.Pos, abi.OldMapBucketCount)), nil, nil)
-			nif.Likely = true
-
-			// var bv bmap
-			// b = &bv
-			b := stackTempAddr(&nif.Body, reflectdata.OldMapBucketType(t))
-
-			// h.buckets = b
-			bsym := hmapType.Field(5).Sym // hmap.buckets see reflect.go:hmap
-			na := ir.NewAssignStmt(base.Pos, ir.NewSelectorExpr(base.Pos, ir.ODOT, h, bsym), typecheck.ConvNop(b, types.Types[types.TUNSAFEPTR]))
-			nif.Body.Append(na)
-			appendWalkStmt(init, nif)
-		}
-	}
-
-	if ir.IsConst(hint, constant.Int) && constant.Compare(hint.Val(), token.LEQ, constant.MakeInt64(abi.OldMapBucketCount)) {
-		// Handling make(map[any]any) and
-		// make(map[any]any, hint) where hint <= BUCKETSIZE
-		// special allows for faster map initialization and
-		// improves binary size by using calls with fewer arguments.
-		// For hint <= BUCKETSIZE overLoadFactor(hint, 0) is false
-		// and no buckets will be allocated by makemap. Therefore,
-		// no buckets need to be allocated in this code path.
-		if n.Esc() == ir.EscNone {
-			// Only need to initialize h.hash0 since
-			// hmap h has been allocated on the stack already.
-			// h.hash0 = rand32()
-			rand := mkcall("rand32", types.Types[types.TUINT32], init)
-			hashsym := hmapType.Field(4).Sym // hmap.hash0 see reflect.go:hmap
-			appendWalkStmt(init, ir.NewAssignStmt(base.Pos, ir.NewSelectorExpr(base.Pos, ir.ODOT, h, hashsym), rand))
-			return typecheck.ConvNop(h, t)
-		}
-		// Call runtime.makemap_small to allocate an
-		// hmap on the heap and initialize hmap's hash0 field.
-		fn := typecheck.LookupRuntime("makemap_small", t.Key(), t.Elem())
-		return mkcall1(fn, n.Type(), init)
-	}
-
-	if n.Esc() != ir.EscNone {
-		h = typecheck.NodNil()
-	}
-	// Map initialization with a variable or large hint is
-	// more complicated. We therefore generate a call to
-	// runtime.makemap to initialize hmap and allocate the
-	// map buckets.
-
-	// When hint fits into int, use makemap instead of
-	// makemap64, which is faster and shorter on 32 bit platforms.
-	fnname := "makemap64"
-	argtype := types.Types[types.TINT64]
-
-	// Type checking guarantees that TIDEAL hint is positive and fits in an int.
-	// See checkmake call in TMAP case of OMAKE case in OpSwitch in typecheck1 function.
-	// The case of hint overflow when converting TUINT or TUINTPTR to TINT
-	// will be handled by the negative range checks in makemap during runtime.
-	if hint.Type().IsKind(types.TIDEAL) || hint.Type().Size() <= types.Types[types.TUINT].Size() {
-		fnname = "makemap"
-		argtype = types.Types[types.TINT]
-	}
-
-	fn := typecheck.LookupRuntime(fnname, hmapType, t.Key(), t.Elem())
-	return mkcall1(fn, n.Type(), init, reflectdata.MakeMapRType(base.Pos, n), typecheck.Conv(hint, argtype), h)
 }
 
 // walkMakeSlice walks an OMAKESLICE node.
@@ -558,7 +456,7 @@ func walkMakeSlice(n *ir.MakeExpr, init *ir.Nodes) ir.Node {
 			niflen := ir.NewIfStmt(base.Pos, ir.NewBinaryExpr(base.Pos, ir.OLT, len, ir.NewInt(base.Pos, 0)), nil, nil)
 			niflen.Body = []ir.Node{mkcall("panicmakeslicelen", nil, init)}
 			nif.Body.Append(niflen, mkcall("panicmakeslicecap", nil, init))
-			init.Append(typecheck.Stmt(nif))
+			appendWalkStmt(init, nif)
 
 			// var arr [cap]E
 			// s = arr[:len]
@@ -817,10 +715,14 @@ func walkPrint(nn *ir.CallExpr, init *ir.Nodes) ir.Node {
 			}
 		case types.TINT, types.TINT8, types.TINT16, types.TINT32, types.TINT64:
 			on = typecheck.LookupRuntime("printint")
-		case types.TFLOAT32, types.TFLOAT64:
-			on = typecheck.LookupRuntime("printfloat")
-		case types.TCOMPLEX64, types.TCOMPLEX128:
-			on = typecheck.LookupRuntime("printcomplex")
+		case types.TFLOAT32:
+			on = typecheck.LookupRuntime("printfloat32")
+		case types.TFLOAT64:
+			on = typecheck.LookupRuntime("printfloat64")
+		case types.TCOMPLEX64:
+			on = typecheck.LookupRuntime("printcomplex64")
+		case types.TCOMPLEX128:
+			on = typecheck.LookupRuntime("printcomplex128")
 		case types.TBOOL:
 			on = typecheck.LookupRuntime("printbool")
 		case types.TSTRING:
@@ -828,16 +730,21 @@ func walkPrint(nn *ir.CallExpr, init *ir.Nodes) ir.Node {
 			if ir.IsConst(n, constant.String) {
 				cs = ir.StringVal(n)
 			}
-			switch cs {
-			case " ":
-				on = typecheck.LookupRuntime("printsp")
-			case "\n":
-				on = typecheck.LookupRuntime("printnl")
-			default:
-				on = typecheck.LookupRuntime("printstring")
+			// Print values of the named type `quoted` using printquoted.
+			if types.RuntimeSymName(n.Type().Sym()) == "quoted" {
+				on = typecheck.LookupRuntime("printquoted")
+			} else {
+				switch cs {
+				case " ":
+					on = typecheck.LookupRuntime("printsp")
+				case "\n":
+					on = typecheck.LookupRuntime("printnl")
+				default:
+					on = typecheck.LookupRuntime("printstring")
+				}
 			}
 		default:
-			badtype(ir.OPRINT, n.Type(), nil)
+			badtype(nn.Op(), n.Type(), nil)
 			continue
 		}
 
@@ -860,9 +767,9 @@ func walkPrint(nn *ir.CallExpr, init *ir.Nodes) ir.Node {
 	return walkStmt(typecheck.Stmt(r))
 }
 
-// walkRecoverFP walks an ORECOVERFP node.
-func walkRecoverFP(nn *ir.CallExpr, init *ir.Nodes) ir.Node {
-	return mkcall("gorecover", nn.Type(), init, walkExpr(nn.Args[0], init))
+// walkRecover walks an ORECOVER node.
+func walkRecover(nn *ir.CallExpr, init *ir.Nodes) ir.Node {
+	return mkcall("gorecover", nn.Type(), init)
 }
 
 // walkUnsafeData walks an OUNSAFESLICEDATA or OUNSAFESTRINGDATA expression.

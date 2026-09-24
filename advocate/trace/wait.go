@@ -107,14 +107,14 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := ElementWait{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		tPre:        tPreInt,
 		tPost:       tPostInt,
 		objId:       idInt,
 		op:          opWOp,
 		delta:       deltaInt,
 		val:         valInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -143,12 +143,20 @@ func EmptyWait(id int) ElementWait {
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementWait) ObjID() int {
+func (this *ElementWait) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementWait) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -250,27 +258,6 @@ func (this *ElementWait) Line() int {
 }
 
 // ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementWait) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementWait) TraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// ========================================================
 // MARK: Operation
 // ========================================================
 
@@ -298,6 +285,14 @@ func (this *ElementWait) IsWait() bool {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementWait) CanBeRequest() bool {
+	return this.op == WaitWait
+}
+
+// ========================================================
 // MARK: Equal
 // ========================================================
 
@@ -309,7 +304,7 @@ func (this *ElementWait) IsWait() bool {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementWait) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -325,7 +320,7 @@ func (this *ElementWait) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.objId == elem.ObjID()
+	return this.objId == elem.ResourceID()
 }
 
 // ========================================================
@@ -352,24 +347,59 @@ func (this *ElementWait) String() string {
 	return res
 }
 
+func (this *ElementWait) StringLocal() string {
+	res := "W,"
+	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
+	res += strconv.Itoa(this.objId) + ","
+	switch this.op {
+	case WaitAdd, WaitDone:
+		res += "A,"
+	case WaitWait:
+		res += "W,"
+	}
+
+	res += strconv.Itoa(this.delta) + "," + strconv.Itoa(this.val)
+	res += "," + this.Pos().Short()
+	return res
+}
+
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementWait) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.RoutineID())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the simple string representation of the element
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementWait) StringGui() string {
+	res := "W,"
+	res += strconv.Itoa(this.objId) + ","
+	switch this.op {
+	case WaitAdd, WaitDone:
+		res += "A,"
+	case WaitWait:
+		res += "W,"
+	}
+
+	res += strconv.Itoa(this.delta) + "," + strconv.Itoa(this.val)
+	res += "\n" + this.Pos().Short()
+	return res
+}
+
+// String returns the simple string representation of the element with leading routine
+
 // ========================================================
 // MARK: Function
 // ========================================================
 
 func (this *ElementWait) Function() *ElementFunc {
 	return this.function
-}
-
-// String returns the simple string representation of the element with leading routine
-//
-// Returns:
-//   - string: The simple string representation of the element with leading routine
-func (this *ElementWait) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
-	if this.ElementBase.init {
-		routine = "   *"
-	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -428,7 +458,7 @@ func (this *ElementWait) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementWait) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================
@@ -443,10 +473,10 @@ func (this *ElementWait) ReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementWait) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementWait) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementWait{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			tPre:        0,
 			tPost:       0,
 			objId:       this.objId,
@@ -455,12 +485,12 @@ func (this *ElementWait) Copy(mapping map[int]Element, keep bool) Element {
 			val:         0,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementWait{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		tPre:        this.tPre,
 		tPost:       this.tPost,
 		objId:       this.objId,
@@ -469,7 +499,7 @@ func (this *ElementWait) Copy(mapping map[int]Element, keep bool) Element {
 		val:         this.val,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

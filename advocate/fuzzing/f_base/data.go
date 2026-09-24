@@ -10,7 +10,6 @@
 package f_base
 
 import (
-	"advocate/utils/log"
 	"advocate/utils/results/results"
 	"advocate/utils/types"
 
@@ -51,7 +50,6 @@ var (
 )
 
 func Clear() {
-	log.Debug("RESET2")
 	MutationQueue = types.NewQueue[Mutation]()
 	AllMutations = make(map[string]int)
 	ChainFiles = make(map[int]Constraint)

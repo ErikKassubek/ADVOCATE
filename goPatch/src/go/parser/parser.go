@@ -85,6 +85,11 @@ func (p *parser) init(file *token.File, src []byte, mode Mode) {
 	p.next()
 }
 
+// end returns the end position of the current token
+func (p *parser) end() token.Pos {
+	return p.scanner.End()
+}
+
 // ----------------------------------------------------------------------------
 // Parsing support
 
@@ -345,30 +350,29 @@ func (p *parser) expectClosing(tok token.Token, context string) token.Pos {
 
 // expectSemi consumes a semicolon and returns the applicable line comment.
 func (p *parser) expectSemi() (comment *ast.CommentGroup) {
-	// semicolon is optional before a closing ')' or '}'
-	if p.tok != token.RPAREN && p.tok != token.RBRACE {
-		switch p.tok {
-		case token.COMMA:
-			// permit a ',' instead of a ';' but complain
-			p.errorExpected(p.pos, "';'")
-			fallthrough
-		case token.SEMICOLON:
-			if p.lit == ";" {
-				// explicit semicolon
-				p.next()
-				comment = p.lineComment // use following comments
-			} else {
-				// artificial semicolon
-				comment = p.lineComment // use preceding comments
-				p.next()
-			}
-			return comment
-		default:
-			p.errorExpected(p.pos, "';'")
-			p.advance(stmtStart)
+	switch p.tok {
+	case token.RPAREN, token.RBRACE:
+		return nil // semicolon is optional before a closing ')' or '}'
+	case token.COMMA:
+		// permit a ',' instead of a ';' but complain
+		p.errorExpected(p.pos, "';'")
+		fallthrough
+	case token.SEMICOLON:
+		if p.lit == ";" {
+			// explicit semicolon
+			p.next()
+			comment = p.lineComment // use following comments
+		} else {
+			// artificial semicolon
+			comment = p.lineComment // use preceding comments
+			p.next()
 		}
+		return comment
+	default:
+		p.errorExpected(p.pos, "';'")
+		p.advance(stmtStart)
+		return nil
 	}
-	return nil
 }
 
 func (p *parser) atComma(context string, follow token.Token) bool {
@@ -453,25 +457,6 @@ var exprEnd = map[token.Token]bool{
 	token.RPAREN:    true,
 	token.RBRACK:    true,
 	token.RBRACE:    true,
-}
-
-// safePos returns a valid file position for a given position: If pos
-// is valid to begin with, safePos returns pos. If pos is out-of-range,
-// safePos returns the EOF position.
-//
-// This is hack to work around "artificial" end positions in the AST which
-// are computed by adding 1 to (presumably valid) token positions. If the
-// token positions are invalid due to parse errors, the resulting end position
-// may be past the file's EOF position, which would lead to panics if used
-// later on.
-func (p *parser) safePos(pos token.Pos) (res token.Pos) {
-	defer func() {
-		if recover() != nil {
-			res = token.Pos(p.file.Base() + p.file.Size()) // EOF position
-		}
-	}()
-	_ = p.file.Offset(pos) // trigger a panic if position is out-of-range
-	return pos
 }
 
 // ----------------------------------------------------------------------------
@@ -740,7 +725,7 @@ func (p *parser) parseFieldDecl() *ast.Field {
 
 	var tag *ast.BasicLit
 	if p.tok == token.STRING {
-		tag = &ast.BasicLit{ValuePos: p.pos, Kind: p.tok, Value: p.lit}
+		tag = &ast.BasicLit{ValuePos: p.pos, ValueEnd: p.end(), Kind: p.tok, Value: p.lit}
 		p.next()
 	}
 
@@ -1494,7 +1479,7 @@ func (p *parser) parseOperand() ast.Expr {
 		return x
 
 	case token.INT, token.FLOAT, token.IMAG, token.CHAR, token.STRING:
-		x := &ast.BasicLit{ValuePos: p.pos, Kind: p.tok, Value: p.lit}
+		x := &ast.BasicLit{ValuePos: p.pos, ValueEnd: p.end(), Kind: p.tok, Value: p.lit}
 		p.next()
 		return x
 
@@ -2022,7 +2007,7 @@ func (p *parser) parseCallExpr(callType string) *ast.CallExpr {
 	}
 	if _, isBad := x.(*ast.BadExpr); !isBad {
 		// only report error if it's a new one
-		p.error(p.safePos(x.End()), fmt.Sprintf("expression in %s must be function call", callType))
+		p.error(x.End(), fmt.Sprintf("expression in %s must be function call", callType))
 	}
 	return nil
 }
@@ -2100,7 +2085,7 @@ func (p *parser) makeExpr(s ast.Stmt, want string) ast.Expr {
 		found = "assignment"
 	}
 	p.error(s.Pos(), fmt.Sprintf("expected %s, found %s (missing parentheses around composite literal?)", want, found))
-	return &ast.BadExpr{From: s.Pos(), To: p.safePos(s.End())}
+	return &ast.BadExpr{From: s.Pos(), To: s.End()}
 }
 
 // parseIfHeader is an adjusted version of parser.header
@@ -2423,7 +2408,7 @@ func (p *parser) parseForStmt() ast.Stmt {
 			key, value = as.Lhs[0], as.Lhs[1]
 		default:
 			p.errorExpected(as.Lhs[len(as.Lhs)-1].Pos(), "at most 2 expressions")
-			return &ast.BadStmt{From: pos, To: p.safePos(body.End())}
+			return &ast.BadStmt{From: pos, To: body.End()}
 		}
 		// parseSimpleStmt returned a right-hand side that
 		// is a single unary expression of the form "range x"
@@ -2531,9 +2516,11 @@ func (p *parser) parseImportSpec(doc *ast.CommentGroup, _ token.Token, _ int) as
 	}
 
 	pos := p.pos
+	end := p.pos
 	var path string
 	if p.tok == token.STRING {
 		path = p.lit
+		end = p.end()
 		p.next()
 	} else if p.tok.IsLiteral() {
 		p.error(pos, "import path must be a string")
@@ -2548,7 +2535,7 @@ func (p *parser) parseImportSpec(doc *ast.CommentGroup, _ token.Token, _ int) as
 	spec := &ast.ImportSpec{
 		Doc:     doc,
 		Name:    ident,
-		Path:    &ast.BasicLit{ValuePos: pos, Kind: token.STRING, Value: path},
+		Path:    &ast.BasicLit{ValuePos: pos, ValueEnd: end, Kind: token.STRING, Value: path},
 		Comment: comment,
 	}
 	p.imports = append(p.imports, spec)
@@ -2807,12 +2794,6 @@ func (p *parser) parseFuncDecl() *ast.FuncDecl {
 	var tparams *ast.FieldList
 	if p.tok == token.LBRACK {
 		tparams = p.parseTypeParameters()
-		if recv != nil && tparams != nil {
-			// Method declarations do not have type parameters. We parse them for a
-			// better error message and improved error recovery.
-			p.error(tparams.Opening, "method must have no type parameters")
-			tparams = nil
-		}
 	}
 	params := p.parseParameters(false)
 	results := p.parseParameters(true)

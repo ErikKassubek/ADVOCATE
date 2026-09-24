@@ -6,6 +6,39 @@
 #include "go_tls.h"
 #include "funcdata.h"
 #include "textflag.h"
+#include "cgo/abi_loong64.h"
+
+// When building with -buildmode=c-shared, this symbol is called when the shared
+// library is loaded.
+TEXT _rt0_loong64_lib(SB),NOSPLIT,$168
+	// Preserve callee-save registers.
+	SAVE_R22_TO_R31(3*8)
+	SAVE_F24_TO_F31(13*8)
+
+	// Initialize g as nil in case of using g later e.g. sigaction in cgo_sigaction.go
+	MOVV	R0, g
+
+	MOVV	R4, _rt0_loong64_lib_argc<>(SB)
+	MOVV	R5, _rt0_loong64_lib_argv<>(SB)
+
+	MOVV	$runtime·libInit(SB), R19
+	JAL	(R19)
+
+	// Restore callee-save registers.
+	RESTORE_R22_TO_R31(3*8)
+	RESTORE_F24_TO_F31(13*8)
+	RET
+
+TEXT runtime·rt0_lib_go<ABIInternal>(SB),NOSPLIT,$0
+	MOVV	_rt0_loong64_lib_argc<>(SB), R4
+	MOVV	_rt0_loong64_lib_argv<>(SB), R5
+	MOVV	$runtime·rt0_go(SB),R19
+	JMP	(R19)
+
+DATA _rt0_loong64_lib_argc<>(SB)/8, $0
+GLOBL _rt0_loong64_lib_argc<>(SB),NOPTR, $8
+DATA _rt0_loong64_lib_argv<>(SB)/8, $0
+GLOBL _rt0_loong64_lib_argv<>(SB),NOPTR, $8
 
 #define	REGCTXT	R29
 
@@ -70,8 +103,9 @@ nocgo:
 	// start this M
 	JAL	runtime·mstart(SB)
 
-	// Prevent dead-code elimination of debugCallV2, which is
+	// Prevent dead-code elimination of debugCallV2 and debugPinnerV1, which are
 	// intended to be called by debuggers.
+	MOVV	$runtime·debugPinnerV1<ABIInternal>(SB), R0
 	MOVV	$runtime·debugCallV2<ABIInternal>(SB), R0
 
 	MOVV	R0, 1(R0)
@@ -453,7 +487,7 @@ CALLFN(·call268435456, 268435456)
 CALLFN(·call536870912, 536870912)
 CALLFN(·call1073741824, 1073741824)
 
-TEXT runtime·procyield(SB),NOSPLIT,$0-0
+TEXT runtime·procyieldAsm(SB),NOSPLIT,$0-0
 	RET
 
 // Save state of caller into g->sched.
@@ -487,6 +521,7 @@ TEXT ·asmcgocall(SB),NOSPLIT,$0-20
 	// Figure out if we need to switch to m->g0 stack.
 	// We get called to create new OS threads too, and those
 	// come in on the m->g0 stack already.
+	BEQ	g, R0, nosave
 	MOVV	g_m(g), R5
 	MOVV	m_gsignal(R5), R6
 	BEQ	R6, g, g0
@@ -517,6 +552,29 @@ g0:
 	MOVV	R5, R3
 
 	MOVW	R4, ret+16(FP)
+	RET
+
+nosave:
+	// Running on a system stack, perhaps even without a g.
+	// Having no g can happen during thread creation or thread teardown.
+	MOVV	fn+0(FP), R25
+	MOVV	arg+8(FP), R4
+	MOVV	R3, R12
+	ADDV	$-16, R3
+	MOVV	R0, 0(R3)	// Where above code stores g, in case someone looks during debugging.
+	MOVV	R12, 8(R3)	// Save original stack pointer.
+	JAL	(R25)
+	MOVV	8(R3), R3	// Restore stack pointer.
+	MOVW	R4, ret+16(FP)
+	RET
+
+// func asmcgocall_no_g(fn, arg unsafe.Pointer)
+// Call fn(arg) aligned appropriately for the gcc ABI.
+// Called on a system stack, and there may be no g yet.
+TEXT ·asmcgocall_no_g(SB),NOSPLIT,$0-16
+	MOVV	fn+0(FP), R25
+	MOVV	arg+8(FP), R4
+	JAL	(R25)
 	RET
 
 // func cgocallback(fn, frame unsafe.Pointer, ctxt uintptr)
@@ -598,20 +656,19 @@ havem:
 	MOVV	m_curg(R12), g
 	JAL	runtime·save_g(SB)
 	MOVV	(g_sched+gobuf_sp)(g), R13 // prepare stack as R13
-	MOVV	(g_sched+gobuf_pc)(g), R4
-	MOVV	R4, -(24+8)(R13) // "saved LR"; must match frame size
-	MOVV    fn+0(FP), R5
-	MOVV    frame+8(FP), R6
-	MOVV    ctxt+16(FP), R7
-	MOVV	$-(24+8)(R13), R3
-	MOVV    R5, 8(R3)
-	MOVV    R6, 16(R3)
-	MOVV    R7, 24(R3)
-	JAL	runtime·cgocallbackg(SB)
+	MOVV	(g_sched+gobuf_pc)(g), R7
+	MOVV	R7, -(24+8)(R13) // "saved LR"; must match frame size
+
+	MOVV    fn+0(FP), R4
+	MOVV    frame+8(FP), R5
+	MOVV    ctxt+16(FP), R6
+	SUBV	$(24+8), R13	// Allocate the same frame size on the g stack
+	MOVV	R13, R3		// switch stack
+	JAL	runtime·cgocallbackg<ABIInternal>(SB)
 
 	// Restore g->sched (== m->curg->sched) from saved values.
-	MOVV	0(R3), R4
-	MOVV	R4, (g_sched+gobuf_pc)(g)
+	MOVV	0(R3), R7
+	MOVV	R7, (g_sched+gobuf_pc)(g)
 	MOVV	$(24+8)(R3), R13 // must match frame size
 	MOVV	R13, (g_sched+gobuf_sp)(g)
 
@@ -667,16 +724,6 @@ TEXT runtime·abort(SB),NOSPLIT|NOFRAME,$0-0
 	MOVW	(R0), R0
 	UNDEF
 
-// AES hashing not implemented for loong64
-TEXT runtime·memhash<ABIInternal>(SB),NOSPLIT|NOFRAME,$0-32
-	JMP	runtime·memhashFallback<ABIInternal>(SB)
-TEXT runtime·strhash<ABIInternal>(SB),NOSPLIT|NOFRAME,$0-24
-	JMP	runtime·strhashFallback<ABIInternal>(SB)
-TEXT runtime·memhash32<ABIInternal>(SB),NOSPLIT|NOFRAME,$0-24
-	JMP	runtime·memhash32Fallback<ABIInternal>(SB)
-TEXT runtime·memhash64<ABIInternal>(SB),NOSPLIT|NOFRAME,$0-24
-	JMP	runtime·memhash64Fallback<ABIInternal>(SB)
-
 // Called from cgo wrappers, this function returns g->m->curg.stack.hi.
 // Must obey the gcc calling convention.
 TEXT _cgo_topofstack(SB),NOSPLIT,$16
@@ -711,11 +758,6 @@ TEXT runtime·addmoduledata(SB),NOSPLIT,$0-0
 	MOVV	R4, runtime·lastmoduledatap(SB)
 	MOVV	8(R3), R30
 	ADDV	$0x10, R3
-	RET
-
-TEXT ·checkASM(SB),NOSPLIT,$0-1
-	MOVW	$1, R19
-	MOVB	R19, ret+0(FP)
 	RET
 
 // spillArgs stores return values from registers to a *internal/abi.RegArgs in R25.
@@ -1135,76 +1177,29 @@ TEXT runtime·debugCallPanicked(SB),NOSPLIT,$16-16
 	BREAK
 	RET
 
-// Note: these functions use a special calling convention to save generated code space.
-// Arguments are passed in registers, but the space for those arguments are allocated
-// in the caller's stack frame. These stubs write the args into that stack space and
-// then tail call to the corresponding runtime handler.
-// The tail call makes these stubs disappear in backtraces.
-TEXT runtime·panicIndex<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R20, R4
-	MOVV	R21, R5
-	JMP	runtime·goPanicIndex<ABIInternal>(SB)
-TEXT runtime·panicIndexU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R20, R4
-	MOVV	R21, R5
-	JMP	runtime·goPanicIndexU<ABIInternal>(SB)
-TEXT runtime·panicSliceAlen<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R21, R4
-	MOVV	R23, R5
-	JMP	runtime·goPanicSliceAlen<ABIInternal>(SB)
-TEXT runtime·panicSliceAlenU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R21, R4
-	MOVV	R23, R5
-	JMP	runtime·goPanicSliceAlenU<ABIInternal>(SB)
-TEXT runtime·panicSliceAcap<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R21, R4
-	MOVV	R23, R5
-	JMP	runtime·goPanicSliceAcap<ABIInternal>(SB)
-TEXT runtime·panicSliceAcapU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R21, R4
-	MOVV	R23, R5
-	JMP	runtime·goPanicSliceAcapU<ABIInternal>(SB)
-TEXT runtime·panicSliceB<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R20, R4
-	MOVV	R21, R5
-	JMP	runtime·goPanicSliceB<ABIInternal>(SB)
-TEXT runtime·panicSliceBU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R20, R4
-	MOVV	R21, R5
-	JMP	runtime·goPanicSliceBU<ABIInternal>(SB)
-TEXT runtime·panicSlice3Alen<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R23, R4
-	MOVV	R24, R5
-	JMP	runtime·goPanicSlice3Alen<ABIInternal>(SB)
-TEXT runtime·panicSlice3AlenU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R23, R4
-	MOVV	R24, R5
-	JMP	runtime·goPanicSlice3AlenU<ABIInternal>(SB)
-TEXT runtime·panicSlice3Acap<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R23, R4
-	MOVV	R24, R5
-	JMP	runtime·goPanicSlice3Acap<ABIInternal>(SB)
-TEXT runtime·panicSlice3AcapU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R23, R4
-	MOVV	R24, R5
-	JMP	runtime·goPanicSlice3AcapU<ABIInternal>(SB)
-TEXT runtime·panicSlice3B<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R21, R4
-	MOVV	R23, R5
-	JMP	runtime·goPanicSlice3B<ABIInternal>(SB)
-TEXT runtime·panicSlice3BU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R21, R4
-	MOVV	R23, R5
-	JMP	runtime·goPanicSlice3BU<ABIInternal>(SB)
-TEXT runtime·panicSlice3C<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R20, R4
-	MOVV	R21, R5
-	JMP	runtime·goPanicSlice3C<ABIInternal>(SB)
-TEXT runtime·panicSlice3CU<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R20, R4
-	MOVV	R21, R5
-	JMP	runtime·goPanicSlice3CU<ABIInternal>(SB)
-TEXT runtime·panicSliceConvert<ABIInternal>(SB),NOSPLIT,$0-16
-	MOVV	R23, R4
-	MOVV	R24, R5
-	JMP	runtime·goPanicSliceConvert<ABIInternal>(SB)
+TEXT runtime·panicBounds<ABIInternal>(SB),NOSPLIT,$144-0
+	NO_LOCAL_POINTERS
+	// Save all 16 int registers that could have an index in them.
+	// They may be pointers, but if they are they are dead.
+	// Skip R0 aka ZERO, R1 aka LR, R2 aka thread pointer, R3 aka SP.
+	MOVV	R4, 24(R3)
+	MOVV	R5, 32(R3)
+	MOVV	R6, 40(R3)
+	MOVV	R7, 48(R3)
+	MOVV	R8, 56(R3)
+	MOVV	R9, 64(R3)
+	MOVV	R10, 72(R3)
+	MOVV	R11, 80(R3)
+	MOVV	R12, 88(R3)
+	MOVV	R13, 96(R3)
+	MOVV	R14, 104(R3)
+	MOVV	R15, 112(R3)
+	MOVV	R16, 120(R3)
+	MOVV	R17, 128(R3)
+	MOVV	R18, 136(R3)
+	MOVV	R19, 144(R3)
+
+	MOVV	R1, R4		// PC immediately after call to panicBounds
+	ADDV	$24, R3, R5	// pointer to save area
+	CALL	runtime·panicBounds64<ABIInternal>(SB)
+	RET

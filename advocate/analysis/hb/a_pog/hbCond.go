@@ -25,7 +25,7 @@ func UpdateHBCond(graph *PoGraph, co *trace.ElementCond) {
 		gr = &po
 	}
 
-	objId := co.ObjID()
+	objId := co.ResourceID()
 
 	switch co.Type(true) {
 	case trace.CondWait:
@@ -46,7 +46,7 @@ func UpdateHBCond(graph *PoGraph, co *trace.ElementCond) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - co *TraceElementCond: The trace element
 func CondSignal(graph *PoGraph, co *trace.ElementCond) {
-	id := co.ObjID()
+	id := co.ResourceID()
 
 	gr := graph
 	if graph == nil {
@@ -69,7 +69,7 @@ func CondSignal(graph *PoGraph, co *trace.ElementCond) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - co *TraceElementCond: The trace element
 func CondBroadcast(graph *PoGraph, co *trace.ElementCond) {
-	id := co.ObjID()
+	id := co.ResourceID()
 
 	gr := graph
 	if graph == nil {

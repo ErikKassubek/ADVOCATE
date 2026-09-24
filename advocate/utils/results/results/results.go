@@ -100,12 +100,12 @@ type ResultElem interface {
 // TraceElementResult is a type to represent an element that is
 // part of a found bug
 type TraceElementResult struct {
-	RoutineID int
-	ObjID     int
-	TRequest  int
-	ObjType   trace.OperationType
-	File      string
-	Line      int
+	RoutineID  int
+	ResourceID int
+	TRequest   int
+	ObjType    trace.OperationType
+	File       string
+	Line       int
 }
 
 var blockedGC = make(map[string]map[int]struct{}) // file -> line
@@ -132,7 +132,7 @@ func (this TraceElementResult) getLine() int {
 // Returns:
 //   - string: the string representation
 func (this TraceElementResult) stringMachineShort() string {
-	return fmt.Sprintf("T%s%d%s%s%s%s%s%d", consts.PosSep, this.ObjID, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
+	return fmt.Sprintf("T%s%d%s%s%s%s%s%d", consts.PosSep, this.ResourceID, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
 }
 
 // stringMachine returns a machine readable string representation
@@ -141,7 +141,7 @@ func (this TraceElementResult) stringMachineShort() string {
 // Returns:
 //   - string: the string representation
 func (this TraceElementResult) stringMachine() string {
-	return fmt.Sprintf("T%s%d%s%d%s%d%s%s%s%s%s%d", consts.PosSep, this.RoutineID, consts.PosSep, this.ObjID,
+	return fmt.Sprintf("T%s%d%s%d%s%d%s%s%s%s%s%d", consts.PosSep, this.RoutineID, consts.PosSep, this.ResourceID,
 		consts.PosSep, this.TRequest, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
 }
 

@@ -9,6 +9,7 @@ import (
 	"internal/bytealg"
 	"internal/godebug"
 	"internal/nettrace"
+	"net/netip"
 	"syscall"
 	"time"
 )
@@ -159,10 +160,13 @@ type Dialer struct {
 	DualStack bool
 
 	// FallbackDelay specifies the length of time to wait before
-	// spawning a RFC 6555 Fast Fallback connection. That is, this
-	// is the amount of time to wait for IPv6 to succeed before
-	// assuming that IPv6 is misconfigured and falling back to
-	// IPv4.
+	// spawning a RFC 6555 Fast Fallback connection.
+	//
+	// When dialing "tcp" and both IPv6 and IPv4 addresses are
+	// available, the address family of the first resolved address
+	// is treated as the primary. After FallbackDelay, a connection
+	// attempt to the other address family is started if the primary
+	// connection has not yet succeeded.
 	//
 	// If zero, a default delay of 300ms is used.
 	// A negative value disables Fast Fallback support.
@@ -523,30 +527,8 @@ func (d *Dialer) Dial(network, address string) (Conn, error) {
 // See func [Dial] for a description of the network and address
 // parameters.
 func (d *Dialer) DialContext(ctx context.Context, network, address string) (Conn, error) {
-	if ctx == nil {
-		panic("nil context")
-	}
-	deadline := d.deadline(ctx, time.Now())
-	if !deadline.IsZero() {
-		testHookStepTime()
-		if d, ok := ctx.Deadline(); !ok || deadline.Before(d) {
-			subCtx, cancel := context.WithDeadline(ctx, deadline)
-			defer cancel()
-			ctx = subCtx
-		}
-	}
-	if oldCancel := d.Cancel; oldCancel != nil {
-		subCtx, cancel := context.WithCancel(ctx)
-		defer cancel()
-		go func() {
-			select {
-			case <-oldCancel:
-				cancel()
-			case <-subCtx.Done():
-			}
-		}()
-		ctx = subCtx
-	}
+	ctx, cancel := d.dialCtx(ctx)
+	defer cancel()
 
 	// Shadow the nettrace (if any) during resolve so Connect events don't fire for DNS lookups.
 	resolveCtx := ctx
@@ -578,6 +560,98 @@ func (d *Dialer) DialContext(ctx context.Context, network, address string) (Conn
 	return sd.dialParallel(ctx, primaries, fallbacks)
 }
 
+func (d *Dialer) dialCtx(ctx context.Context) (context.Context, context.CancelFunc) {
+	if ctx == nil {
+		panic("nil context")
+	}
+	deadline := d.deadline(ctx, time.Now())
+	var cancel1, cancel2 context.CancelFunc
+	if !deadline.IsZero() {
+		testHookStepTime()
+		if d, ok := ctx.Deadline(); !ok || deadline.Before(d) {
+			var subCtx context.Context
+			subCtx, cancel1 = context.WithDeadline(ctx, deadline)
+			ctx = subCtx
+		}
+	}
+	if oldCancel := d.Cancel; oldCancel != nil {
+		var subCtx context.Context
+		subCtx, cancel2 = context.WithCancel(ctx)
+		go func() {
+			select {
+			case <-oldCancel:
+				cancel2()
+			case <-subCtx.Done():
+			}
+		}()
+		ctx = subCtx
+	}
+	return ctx, func() {
+		if cancel1 != nil {
+			cancel1()
+		}
+		if cancel2 != nil {
+			cancel2()
+		}
+	}
+}
+
+// DialTCP acts like Dial for TCP networks using the provided context.
+//
+// The provided Context must be non-nil. If the context expires before
+// the connection is complete, an error is returned. Once successfully
+// connected, any expiration of the context will not affect the
+// connection.
+//
+// The network must be a TCP network name; see func Dial for details.
+func (d *Dialer) DialTCP(ctx context.Context, network string, laddr netip.AddrPort, raddr netip.AddrPort) (*TCPConn, error) {
+	ctx, cancel := d.dialCtx(ctx)
+	defer cancel()
+	return dialTCP(ctx, d, network, TCPAddrFromAddrPort(laddr), TCPAddrFromAddrPort(raddr))
+}
+
+// DialUDP acts like Dial for UDP networks using the provided context.
+//
+// The provided Context must be non-nil. If the context expires before
+// the connection is complete, an error is returned. Once successfully
+// connected, any expiration of the context will not affect the
+// connection.
+//
+// The network must be a UDP network name; see func Dial for details.
+func (d *Dialer) DialUDP(ctx context.Context, network string, laddr netip.AddrPort, raddr netip.AddrPort) (*UDPConn, error) {
+	ctx, cancel := d.dialCtx(ctx)
+	defer cancel()
+	return dialUDP(ctx, d, network, UDPAddrFromAddrPort(laddr), UDPAddrFromAddrPort(raddr))
+}
+
+// DialIP acts like Dial for IP networks using the provided context.
+//
+// The provided Context must be non-nil. If the context expires before
+// the connection is complete, an error is returned. Once successfully
+// connected, any expiration of the context will not affect the
+// connection.
+//
+// The network must be an IP network name; see func Dial for details.
+func (d *Dialer) DialIP(ctx context.Context, network string, laddr netip.Addr, raddr netip.Addr) (*IPConn, error) {
+	ctx, cancel := d.dialCtx(ctx)
+	defer cancel()
+	return dialIP(ctx, d, network, ipAddrFromAddr(laddr), ipAddrFromAddr(raddr))
+}
+
+// DialUnix acts like Dial for Unix networks using the provided context.
+//
+// The provided Context must be non-nil. If the context expires before
+// the connection is complete, an error is returned. Once successfully
+// connected, any expiration of the context will not affect the
+// connection.
+//
+// The network must be a Unix network name; see func Dial for details.
+func (d *Dialer) DialUnix(ctx context.Context, network string, laddr *UnixAddr, raddr *UnixAddr) (*UnixConn, error) {
+	ctx, cancel := d.dialCtx(ctx)
+	defer cancel()
+	return dialUnix(ctx, d, network, laddr, raddr)
+}
+
 // dialParallel races two copies of dialSerial, giving the first a
 // head start. It returns the first established connection and
 // closes the others. Otherwise it returns an error from the first
@@ -592,7 +666,7 @@ func (sd *sysDialer) dialParallel(ctx context.Context, primaries, fallbacks addr
 
 	type dialResult struct {
 		Conn
-		error
+		error   error
 		primary bool
 		done    bool
 	}

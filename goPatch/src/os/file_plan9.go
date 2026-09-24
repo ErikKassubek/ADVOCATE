@@ -8,6 +8,7 @@ import (
 	"internal/bytealg"
 	"internal/poll"
 	"internal/stringslite"
+	"internal/testlog"
 	"io"
 	"runtime"
 	"sync"
@@ -135,7 +136,20 @@ func openFileNolog(name string, flag int, perm FileMode) (*File, error) {
 }
 
 func openDirNolog(name string) (*File, error) {
-	return openFileNolog(name, O_RDONLY, 0)
+	f, e := openFileNolog(name, O_RDONLY, 0)
+	if e != nil {
+		return nil, e
+	}
+	d, e := f.Stat()
+	if e != nil {
+		f.Close()
+		return nil, e
+	}
+	if !d.IsDir() {
+		f.Close()
+		return nil, &PathError{Op: "open", Path: name, Err: syscall.ENOTDIR}
+	}
+	return f, nil
 }
 
 // Close closes the File, rendering it unusable for I/O.
@@ -546,6 +560,12 @@ func (f *File) Chdir() error {
 	defer f.decref()
 	if e := syscall.Fchdir(f.sysfd); e != nil {
 		return &PathError{Op: "chdir", Path: f.name, Err: e}
+	}
+	if log := testlog.Logger(); log != nil {
+		wd, err := Getwd()
+		if err == nil {
+			log.Chdir(wd)
+		}
 	}
 	return nil
 }

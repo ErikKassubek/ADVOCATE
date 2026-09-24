@@ -19,6 +19,8 @@ import (
 	"strconv"
 )
 
+var LastMovedTraceDest = ""
+
 // Function to move results files from the package directory to the destination directory
 //
 // Parameter:
@@ -100,6 +102,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 		if file == "advocateTrace" {
 			movedTraces++
 			dest = filepath.Join(pathTraces, file+"_"+strconv.Itoa(movedTraces))
+			LastMovedTraceDest = dest
 		} else {
 			dest = filepath.Join(pathOut, file)
 		}

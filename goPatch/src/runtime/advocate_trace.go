@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace.go
 // Brief: Functionality for the trace
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -34,7 +33,8 @@ const (
 	OperationRWMutexRUnlock  Operation = "rwmutexrunlock"
 	OperationRWMutexTryRLock Operation = "rwmutexTryrlock"
 
-	OperationOnceDo Operation = "onceDo"
+	OperationOnceDo    Operation = "onceDo"
+	OperationAllocOnce Operation = "allocOnce"
 
 	OperationWaitgroupAddDone Operation = "wgAdddone"
 	OperationWaitgroupWait    Operation = "wgWait"
@@ -70,6 +70,25 @@ const (
 	OperationControllSwitch Operation = "controllSwitch"
 )
 
+type Primitive string
+
+const (
+	PrimitiveNone     Primitive = "none"
+	PrimitiveRoutine  Primitive = "routine"
+	PrimitiveChannel  Primitive = "channel"
+	PrimitiveMutex    Primitive = "mutex"
+	PrimitiveRWMutex  Primitive = "rwmutex"
+	PrimitiveOnce     Primitive = "once"
+	PrimitiveWG       Primitive = "waitgroup"
+	PrimitiveSelect   Primitive = "select"
+	PrimitiveCond     Primitive = "cont"
+	PrimitiveAtomic   Primitive = "atomic"
+	PrimitiveReplay   Primitive = "replay"
+	PrimitiveControll Primitive = "controll"
+	PrimitiveAlloc    Primitive = "alloc"
+	PrimitivUnknown   Primitive = "unknown"
+)
+
 const posSep = "#"
 
 type prePost int // enum for pre/post
@@ -89,35 +108,37 @@ var AdvocateTracingDisabled = true
 //   - op Operation: the operation
 //
 // Return:
-//   - string: the string representation
-func getOperationObjectString(op Operation) string {
+//   - Primitive: the string representation
+func getOperationPrimitive(op Operation) Primitive {
 	switch op {
 	case OperationNone:
-		return "None"
+		return PrimitiveNone
 	case OperationSpawn, OperationSpawned, OperationRoutineExit:
-		return "Routine"
+		return PrimitiveRoutine
 	case OperationChannelSend, OperationChannelRecv, OperationChannelClose:
-		return "Channel"
+		return PrimitiveChannel
 	case OperationMutexLock, OperationMutexUnlock, OperationMutexTryLock:
-		return "Mutex"
+		return PrimitiveMutex
 	case OperationRWMutexLock, OperationRWMutexUnlock, OperationRWMutexTryLock, OperationRWMutexRLock, OperationRWMutexRUnlock, OperationRWMutexTryRLock:
-		return "RWMutex"
+		return PrimitiveRWMutex
 	case OperationOnceDo:
-		return "Once"
+		return PrimitiveOnce
 	case OperationWaitgroupAddDone, OperationWaitgroupWait:
-		return "Waitgroup"
+		return PrimitiveWG
 	case OperationSelect, OperationSelectCase, OperationSelectDefault:
-		return "Select"
+		return PrimitiveSelect
 	case OperationCondSignal, OperationCondBroadcast, OperationCondWait:
-		return "Cond"
+		return PrimitiveCond
 	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap, OperationAtomicAnd, OperationAtomicOr:
-		return "Atomic"
+		return PrimitiveAtomic
 	case OperationReplayEnd:
-		return "Replay"
+		return PrimitiveReplay
 	case OperationControllIf, OperationControllSwitch:
-		return "Controll"
+		return PrimitiveControll
+	case OperationAllocChan, OperationAllocMutex, OperationAllocCond, OperationAllocOnce, OperationAllocWg:
+		return PrimitiveAlloc
 	}
-	return "Unknown"
+	return PrimitivUnknown
 }
 
 // Interface to define an trace element
@@ -357,5 +378,3 @@ func AdvocateWriteTraceToFile() {
 
 	RemoveActive(g.id)
 }
-
-// ADVOCATE-FILE-END

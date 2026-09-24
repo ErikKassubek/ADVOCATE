@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace_channel.go
 // Brief: Functionality for the channel
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -47,7 +46,7 @@ type AdvocateTraceChannel struct {
 	isNil  bool
 }
 
-// AdvocateChanPre adds a channel send/receive to the trace.
+// AdvocateChanReq adds a channel send/receive to the trace.
 //
 // Parameters:
 //   - mem unsafe.Pointer: memory address
@@ -56,7 +55,7 @@ type AdvocateTraceChannel struct {
 //
 // Returns:
 //   - int: index of the operation in the trace, return -1 if it is a atomic operation
-func AdvocateChanPre(c *hchan, op Operation, isNil bool) int {
+func AdvocateChanReq(c *hchan, op Operation, isNil bool) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -120,13 +119,13 @@ func AdvocateChanClose(c *hchan) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateChanPost sets the operation as successfully finished
+// AdvocateChanCom sets the operation as successfully finished
 //
 // Parameters:
 //   - index: index of the operation in the trace
 //   - c: the channel
 //   - op: the operation
-func AdvocateChanPost(index int, c *hchan, op Operation) {
+func AdvocateChanCom(index int, c *hchan, op Operation) {
 	if AdvocateTracingDisabled {
 		return
 	}

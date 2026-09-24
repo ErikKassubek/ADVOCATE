@@ -49,7 +49,7 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 	}
 
 	elem := ElementRoutineEnd{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tPostInt,
 		ci:          newConcInfo(),
 	}
@@ -79,12 +79,20 @@ func (this *ElementRoutineEnd) setID(ID int) {
 	this.id = ID
 }
 
-// ObjID is a dummy function to implement the traceElement interface
+// ResourceID is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - int: 0
-func (this *ElementRoutineEnd) ObjID() int {
+func (this *ElementRoutineEnd) ResourceID() int {
 	return 0
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementRoutineEnd) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -136,7 +144,7 @@ func (this *ElementRoutineEnd) Committed() bool {
 // Returns:
 //   - position: the position
 func (this *ElementRoutineEnd) Pos() Position {
-	return newPosition("", 0)
+	return NewPosition("", 0)
 }
 
 // File is a dummy function to implement the traceElement interface
@@ -153,27 +161,6 @@ func (this *ElementRoutineEnd) File() string {
 //   - int: 0
 func (this *ElementRoutineEnd) Line() int {
 	return 0
-}
-
-// ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementRoutineEnd) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementRoutineEnd) TraceIndex() (int, int) {
-	return this.routine, this.index
 }
 
 // ========================================================
@@ -233,16 +220,28 @@ func (this *ElementRoutineEnd) String() string {
 	return "E" + "," + strconv.Itoa(this.t)
 }
 
+func (this *ElementRoutineEnd) StringLocal() string {
+	return "E" + "," + strconv.Itoa(this.t)
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementRoutineEnd) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementRoutineEnd) StringGui() string {
+	return "E"
 }
 
 // ========================================================
@@ -314,22 +313,23 @@ func (this *ElementRoutineEnd) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementRoutineEnd) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementRoutineEnd) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementRoutineEnd{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			t:           0,
 			ci:          newConcInfo(),
 		}
 	}
 
 	return &ElementRoutineEnd{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		ci:          this.ci.copy(),
 	}

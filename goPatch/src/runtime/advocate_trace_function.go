@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_routine.go
 // Brief: Functionality for the routines
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -46,14 +45,14 @@ type AdvocateTraceFunctionReturn struct {
 
 // AdvocateFunctionCall adds a function stall to the trace
 func advocateFunctionCall() {
-	if AdvocateTracingDisabled {
+	pc, fileDef, lineDef, _ := Caller(1)
+	funcName := FuncForPC(pc).Name()
+
+	if AdvocateTracingDisabled && funcName != "main.main" {
 		return
 	}
 
 	timer := GetNextTimeStep()
-
-	pc, fileDef, lineDef, _ := Caller(1)
-	funcName := FuncForPC(pc).Name()
 
 	// fix return of init
 	if funcName == "main.main" {

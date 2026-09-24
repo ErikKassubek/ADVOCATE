@@ -4,9 +4,9 @@
 
 //go:build 386 || arm || mips || mipsle
 
-// ADVOCATE-START
-
 package atomic
+
+// ADVOCATE-START
 
 // SwapInt64 atomically stores new into *addr and returns the previous *addr value.
 // Consider using the more ergonomic and less error-prone [Int64.Swap] instead

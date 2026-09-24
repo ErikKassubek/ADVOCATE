@@ -7,10 +7,12 @@ package asn1
 import (
 	"bytes"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -1215,4 +1217,127 @@ func TestImplicitTypeRoundtrip(t *testing.T) {
 	if !reflect.DeepEqual(a, b) {
 		t.Fatalf("Unexpected diff after roundtripping struct\na: %#v\nb: %#v", a, b)
 	}
+}
+
+func TestParsingMemoryConsumption(t *testing.T) {
+	// Craft a syntatically valid, but empty, ~10 MB DER bomb. A successful
+	// unmarshal of this bomb should yield ~280 MB. However, the parsing should
+	// fail due to the empty content; and, in such cases, we want to make sure
+	// that we do not unnecessarily allocate memories.
+	derBomb := make([]byte, 10_000_000)
+	for i := range derBomb {
+		derBomb[i] = 0x30
+	}
+	derBomb = append([]byte{0x30, 0x83, 0x98, 0x96, 0x80}, derBomb...)
+
+	var m runtime.MemStats
+	runtime.GC()
+	runtime.ReadMemStats(&m)
+	memBefore := m.TotalAlloc
+
+	var out []struct {
+		Id       []int
+		Critical bool `asn1:"optional"`
+		Value    []byte
+	}
+	_, err := Unmarshal(derBomb, &out)
+	if !errors.As(err, &SyntaxError{}) {
+		t.Fatalf("Incorrect error result: want (%v), but got (%v) instead", &SyntaxError{}, err)
+	}
+
+	runtime.ReadMemStats(&m)
+	memDiff := m.TotalAlloc - memBefore
+
+	// Ensure that the memory allocated does not exceed 10<<21 (~20 MB) when
+	// the parsing fails.
+	if memDiff > 10<<21 {
+		t.Errorf("Too much memory allocated while parsing DER: %v MiB", memDiff/1024/1024)
+	}
+}
+
+func TestUnmarshalNestingLimitSlice(t *testing.T) {
+	type Recursive []Recursive
+
+	limit := 10000
+	if runtime.GOARCH == "wasm" {
+		limit = 5000
+	}
+
+	makeData := func(t *testing.T, depth int) []byte {
+		var r Recursive
+		for range depth - 1 {
+			r = Recursive{r}
+		}
+		data, err := Marshal(r)
+		if err != nil {
+			t.Fatalf("Marshal failed: %v", err)
+		}
+		return data
+	}
+
+	t.Run("below limit", func(t *testing.T) {
+		data := makeData(t, limit)
+		var r Recursive
+		if _, err := Unmarshal(data, &r); err != nil {
+			t.Errorf("Unmarshal failed at depth %d: %v", limit, err)
+		}
+	})
+
+	t.Run("above limit", func(t *testing.T) {
+		data := makeData(t, limit+1)
+		var r Recursive
+		_, err := Unmarshal(data, &r)
+		if err == nil {
+			t.Fatalf("Unmarshal succeeded at depth %d, want error", limit+1)
+		}
+		if got, want := err.Error(), "asn1: structure error: nesting depth exceeded"; got != want {
+			t.Errorf("Unmarshal error mismatch\ngot:  %q\nwant: %q", got, want)
+		}
+	})
+}
+
+// Note that recursive structs fail in half the normal limit because each level
+// of nesting in a struct (with a slice field) involves two depth increments
+// (one for the struct and one for the slice).
+func TestUnmarshalNestingLimitStruct(t *testing.T) {
+	type Recursive struct {
+		Next []Recursive `asn1:"optional"`
+	}
+
+	limit := 5000
+	if runtime.GOARCH == "wasm" {
+		limit = 2500
+	}
+
+	makeData := func(t *testing.T, depth int) []byte {
+		var r Recursive
+		for range depth - 1 {
+			r = Recursive{Next: []Recursive{r}}
+		}
+		data, err := Marshal(r)
+		if err != nil {
+			t.Fatalf("Marshal failed: %v", err)
+		}
+		return data
+	}
+
+	t.Run("below limit", func(t *testing.T) {
+		data := makeData(t, limit)
+		var r Recursive
+		if _, err := Unmarshal(data, &r); err != nil {
+			t.Errorf("Unmarshal failed at depth %d: %v", limit, err)
+		}
+	})
+
+	t.Run("above limit", func(t *testing.T) {
+		data := makeData(t, limit+1)
+		var r Recursive
+		_, err := Unmarshal(data, &r)
+		if err == nil {
+			t.Fatalf("Unmarshal succeeded at depth %d, want error", limit+1)
+		}
+		if got, want := err.Error(), "asn1: structure error: nesting depth exceeded"; got != want {
+			t.Errorf("Unmarshal error mismatch\ngot:  %q\nwant: %q", got, want)
+		}
+	})
 }

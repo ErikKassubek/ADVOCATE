@@ -82,9 +82,9 @@ func (this *constraint) toString() string {
 
 	res += fmt.Sprintf("%s;", this.first.Type(false))
 
-	res += fmt.Sprintf("%d,%s;", this.first.Routine(), this.first.Pos())
+	res += fmt.Sprintf("%d,%s;", this.first.RoutineID(), this.first.Pos())
 	if this.twoElem {
-		res += fmt.Sprintf("%d,%s", this.second.Routine(), this.second.Pos())
+		res += fmt.Sprintf("%d,%s", this.second.RoutineID(), this.second.Pos())
 	}
 
 	return res

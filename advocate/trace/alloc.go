@@ -90,12 +90,12 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 	}
 
 	elem := ElementAlloc{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tInt,
 		objId:       idInt,
 		elemType:    et,
 		num:         numInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -120,11 +120,11 @@ func (this *Trace) AddTraceElementAllocFromElem(elem Element) {
 		et = NewWait
 	}
 
-	rout := elem.Routine()
-	id := elem.ObjID()
+	rout := elem.RoutineID()
+	id := elem.ResourceID()
 
 	al := ElementAlloc{
-		ElementBase: this.newElementBase(rout),
+		ElementBase: this.newElementBase(this, rout),
 		t:           elem.T(Request) - 1,
 		objId:       id,
 		elemType:    et,
@@ -143,12 +143,20 @@ func (this *Trace) AddTraceElementAllocFromElem(elem Element) {
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementAlloc) ObjID() int {
+func (this *ElementAlloc) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementAlloc) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // setObjId sets the object id
@@ -163,12 +171,12 @@ func (this *ElementAlloc) setObjId(id int) {
 // MARK: Index
 // ========================================================
 
-// Routine returns the routine ID of the element.
+// RoutineID returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementAlloc) Routine() int {
-	return this.routine
+func (this *ElementAlloc) RoutineID() int {
+	return this.routineId
 }
 
 // TraceIndex returns trace local index of the element in the trace
@@ -177,7 +185,7 @@ func (this *ElementAlloc) Routine() int {
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
 func (this *ElementAlloc) TraceIndex() (int, int) {
-	return this.routine, this.index
+	return this.routineId, this.index
 }
 
 // ========================================================
@@ -288,7 +296,7 @@ func (this *ElementAlloc) Line() int {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementAlloc) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -300,7 +308,7 @@ func (this *ElementAlloc) IsEqual(elem Element) bool {
 // Returns:
 //   - bool: always false
 func (this *ElementAlloc) IsSameElement(elem Element) bool {
-	return this.objId == elem.ObjID()
+	return this.objId == elem.ResourceID()
 }
 
 // ========================================================
@@ -315,16 +323,28 @@ func (this *ElementAlloc) String() string {
 	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.Pos())
 }
 
+func (this *ElementAlloc) StringLocal() string {
+	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.Pos().Short())
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementAlloc) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the gui string representation of the element
+//
+// Returns:
+//   - string: The gui string representation of the element
+func (this *ElementAlloc) StringGui() string {
+	return fmt.Sprintf("N,%d,%s,%d\n%s", this.objId, string(this.elemType), this.num, this.Pos().Short())
 }
 
 // ========================================================
@@ -391,7 +411,7 @@ func (this *ElementAlloc) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - int: The replayId of the element
 func (this *ElementAlloc) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================
@@ -401,20 +421,21 @@ func (this *ElementAlloc) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementAlloc) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementAlloc) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	return &ElementAlloc{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           0,
 		objId:       this.objId,
 		elemType:    this.elemType,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 
@@ -463,5 +484,5 @@ func (this *ElementAlloc) SetRequest(_ bool) {
 // Argument:
 //   - int: new routine id
 func (this *ElementAlloc) SetRoutine(id int) {
-	this.routine = id
+	this.routineId = id
 }

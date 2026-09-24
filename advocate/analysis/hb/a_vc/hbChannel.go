@@ -21,7 +21,7 @@ import (
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
 func UpdateHBChannel(ch *trace.ElementChannel) {
-	routine := ch.Routine()
+	routine := ch.RoutineID()
 
 	ch.Vc(a_clock.Strong, CurrentVC[routine])
 	ch.Vc(a_clock.Weak, CurrentWVC[routine])
@@ -54,7 +54,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		case trace.ChannelSend:
 			partner := ch.GetPartner()
 			if partner != nil {
-				partnerRout := partner.Routine()
+				partnerRout := partner.RoutineID()
 				partner.Vc(a_clock.Strong, CurrentVC[partnerRout])
 				sel := partner.GetSelect()
 				if sel != nil {
@@ -71,7 +71,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		case trace.ChannelRecv: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
 			if partner != nil {
-				partnerRout := partner.Routine()
+				partnerRout := partner.RoutineID()
 				partner.Vc(a_clock.Strong, CurrentVC[partnerRout])
 				Unbuffered(partner, ch)
 				// increase index for recv is done in analysis/elements/channel.go
@@ -98,7 +98,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 func UpdateHBSelect(se *trace.ElementSelect) {
 	noChannel := se.GetChosenDefault() || !se.Committed()
 
-	routine := se.Routine()
+	routine := se.RoutineID()
 
 	se.Vc(a_clock.Strong, CurrentVC[routine])
 	se.Vc(a_clock.Weak, CurrentVC[routine])
@@ -131,15 +131,15 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 //   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender trace.Element, recv trace.Element) {
 	if sender.Committed() && recv.Committed() {
-		CurrentVC[recv.Routine()].Sync(CurrentVC[sender.Routine()])
-		CurrentVC[sender.Routine()] = CurrentVC[recv.Routine()].Copy()
-		CurrentVC[sender.Routine()].Inc(sender.Routine())
-		CurrentVC[recv.Routine()].Inc(recv.Routine())
-		CurrentWVC[sender.Routine()].Inc(sender.Routine())
-		CurrentWVC[recv.Routine()].Inc(recv.Routine())
+		CurrentVC[recv.RoutineID()].Sync(CurrentVC[sender.RoutineID()])
+		CurrentVC[sender.RoutineID()] = CurrentVC[recv.RoutineID()].Copy()
+		CurrentVC[sender.RoutineID()].Inc(sender.RoutineID())
+		CurrentVC[recv.RoutineID()].Inc(recv.RoutineID())
+		CurrentWVC[sender.RoutineID()].Inc(sender.RoutineID())
+		CurrentWVC[recv.RoutineID()].Inc(recv.RoutineID())
 	} else {
-		CurrentVC[sender.Routine()].Inc(sender.Routine())
-		CurrentWVC[sender.Routine()].Inc(sender.Routine())
+		CurrentVC[sender.RoutineID()].Inc(sender.RoutineID())
+		CurrentWVC[sender.RoutineID()].Inc(sender.RoutineID())
 	}
 }
 
@@ -148,7 +148,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 func Send(ch *trace.ElementChannel) {
-	routine := ch.Routine()
+	routine := ch.RoutineID()
 
 	if !ch.Committed() {
 		CurrentVC[routine].Inc(routine)
@@ -156,7 +156,7 @@ func Send(ch *trace.ElementChannel) {
 		return
 	}
 
-	id := ch.ObjID()
+	id := ch.ResourceID()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
@@ -209,8 +209,8 @@ func Send(ch *trace.ElementChannel) {
 //   - vc map[int]*VectorClock: the current vector clocks
 //   - wVc map[int]*VectorClock: the current weak vector clocks
 func Recv(ch *trace.ElementChannel, vc, wVc map[int]*a_clock.VectorClock) {
-	id := ch.ObjID()
-	routine := ch.Routine()
+	id := ch.ResourceID()
+	routine := ch.RoutineID()
 	qSize := ch.GetQSize()
 
 	if !ch.Committed() {
@@ -258,7 +258,7 @@ func Close(ch *trace.ElementChannel) {
 		return
 	}
 
-	routine := ch.Routine()
+	routine := ch.RoutineID()
 
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)
@@ -274,8 +274,8 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 		return
 	}
 
-	id := ch.ObjID()
-	routine := ch.Routine()
+	id := ch.ResourceID()
+	routine := ch.RoutineID()
 
 	if _, ok := a_base.CloseData[id]; ok {
 		c := a_base.CloseData[id]

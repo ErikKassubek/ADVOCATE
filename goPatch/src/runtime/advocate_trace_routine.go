@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace_routine.go
 // Brief: Functionality for routines
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -49,9 +48,9 @@ func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file stri
 
 	timer := GetNextTimeStep()
 
-	if AdvocateIgnore(file) {
-		return
-	}
+	// if AdvocateIgnore(file)  {
+	// 	return
+	// }
 
 	elem := AdvocateTraceSpawn{
 		t:     timer,

@@ -83,7 +83,7 @@ func selparkcommit(gp *g, _ unsafe.Pointer) bool {
 	// channels in lock order.
 	var lastc *hchan
 	for sg := gp.waiting; sg != nil; sg = sg.waitlink {
-		if sg.c != lastc && lastc != nil {
+		if sg.c.get() != lastc && lastc != nil {
 			// As soon as we unlock the channel, fields in
 			// any sudog with that channel may change,
 			// including c and waitlink. Since multiple
@@ -92,7 +92,7 @@ func selparkcommit(gp *g, _ unsafe.Pointer) bool {
 			// of a channel.
 			unlock(&lastc.lock)
 		}
-		lastc = sg.c
+		lastc = sg.c.get()
 	}
 	if lastc != nil {
 		unlock(&lastc.lock)
@@ -101,7 +101,7 @@ func selparkcommit(gp *g, _ unsafe.Pointer) bool {
 }
 
 func block() {
-	gopark(nil, nil, WaitReasonSelectNoCases, traceBlockForever, 1) // forever
+	gopark(nil, nil, waitReasonSelectNoCases, traceBlockForever, 1) // forever
 }
 
 // selectgo implements the select statement.
@@ -231,7 +231,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	pollorder = pollorder[:norder]
 	lockorder = lockorder[:norder]
 
-	waitReason := WaitReasonSelect
+	waitReason := waitReasonSelect
 	if gp.bubble != nil && allSynctest {
 		// Every channel selected on is in a synctest bubble,
 		// so this goroutine will count as idle while selecting.
@@ -292,7 +292,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// cases exists (channel / direction) and weather a default statement is present.
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
-	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block)
+	advocateIndex := AdvocateSelectReq(&scases, nsends, ncases, block)
 	advocateRClose := false // case was chosen, because channel was closed
 	wasTimeout := false
 	// ADVOCATE-END
@@ -374,12 +374,12 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		sg.isSelect = true
 		// No stack splits between assigning elem and enqueuing
 		// sg on gp.waiting where copystack can find it.
-		sg.elem = cas.elem
+		sg.elem.set(cas.elem)
 		sg.releasetime = 0
 		if t0 != 0 {
 			sg.releasetime = -1
 		}
-		sg.c = c
+		sg.c.set(c)
 		// Construct waiting list in lock order.
 		*nextp = sg
 		nextp = &sg.waitlink
@@ -431,8 +431,8 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// Clear all elem before unlinking from gp.waiting.
 	for sg1 := gp.waiting; sg1 != nil; sg1 = sg1.waitlink {
 		sg1.isSelect = false
-		sg1.elem = nil
-		sg1.c = nil
+		sg1.elem.set(nil)
+		sg1.c.set(nil)
 	}
 	gp.waiting = nil
 
@@ -525,7 +525,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	}
 
 	advocateRClose = !caseSuccess
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -558,7 +558,7 @@ bufrecv:
 	c.qcount--
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -584,7 +584,7 @@ bufsend:
 	c.qcount++
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -599,7 +599,7 @@ recv:
 	recvOK = true
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	goto retc
@@ -609,7 +609,7 @@ rclose:
 
 	// ADVOCATE-START
 	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -636,7 +636,7 @@ send:
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	if debugSelect {
@@ -656,7 +656,7 @@ sclose:
 	// send on closed channel
 	// ADVOCATE-START
 	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -667,7 +667,6 @@ sclose:
 
 // ADVOCATE-START
 func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, advocateIndex int) (int, bool) {
-	// ADVOCATE-END
 	gp := getg()
 	if debugSelect {
 		print("select: cas0=", cas0, "\n")
@@ -726,7 +725,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 		if cas.c.bubble != nil {
 			if getg().bubble != cas.c.bubble {
-				panic(plainError("select on synctest channel from outside bubble"))
+				fatal("select on synctest channel from outside bubble")
 			}
 		} else {
 			allSynctest = false
@@ -744,7 +743,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	pollorder = pollorder[:norder]
 	lockorder = lockorder[:norder]
 
-	waitReason := WaitReasonSelect
+	waitReason := waitReasonSelect
 	if gp.bubble != nil && allSynctest {
 		// Every channel selected on is in a synctest bubble,
 		// so this goroutine will count as idle while selecting.
@@ -755,7 +754,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// simple heap sort, to guarantee n log n time and constant stack footprint.
 	for i := range lockorder {
 		j := i
-		// Start with the pollorder to perint(casei)mute cases on the same channel.
+		// Start with the pollorder to permute cases on the same channel.
 		c := scases[pollorder[i]].c
 		for j > 0 && scases[lockorder[(j-1)/2]].c.sortkey() < c.sortkey() {
 			k := (j - 1) / 2
@@ -806,7 +805,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
 	if advocateIndex == -1 {
-		advocateIndex = AdvocateSelectPre(&scases, nsends, ncases, block)
+		advocateIndex = AdvocateSelectReq(&scases, nsends, ncases, block)
 	}
 	advocateRClose := false // case was chosen, because channel was closed
 	// ADVOCATE-END
@@ -880,12 +879,12 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		sg.isSelect = true
 		// No stack splits between assigning elem and enqueuing
 		// sg on gp.waiting where copystack can find it.
-		sg.elem = cas.elem
+		sg.elem.set(cas.elem)
 		sg.releasetime = 0
 		if t0 != 0 {
 			sg.releasetime = -1
 		}
-		sg.c = c
+		sg.c.set(c)
 		// Construct waiting list in lock order.
 		*nextp = sg
 		nextp = &sg.waitlink
@@ -909,7 +908,6 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
 	gopark(selparkcommit, nil, waitReason, traceBlockSelect, 1)
-	gp.advocateRoutineInfo.wokenButTimeout = false
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)
@@ -929,8 +927,8 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// Clear all elem before unlinking from gp.waiting.
 	for sg1 := gp.waiting; sg1 != nil; sg1 = sg1.waitlink {
 		sg1.isSelect = false
-		sg1.elem = nil
-		sg1.c = nil
+		sg1.elem.set(nil)
+		sg1.c.set(nil)
 	}
 	gp.waiting = nil
 
@@ -1003,7 +1001,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 	// ADVOCATE-START
 	advocateRClose = !caseSuccess
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -1036,7 +1034,7 @@ bufrecv:
 	c.qcount--
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -1062,7 +1060,7 @@ bufsend:
 	c.qcount++
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -1077,7 +1075,7 @@ recv:
 	recvOK = true
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	goto retc
@@ -1087,7 +1085,7 @@ rclose:
 
 	// ADVOCATE-START
 	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -1114,7 +1112,7 @@ send:
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	if debugSelect {
@@ -1130,9 +1128,10 @@ retc:
 
 sclose:
 	// send on closed channel
+
 	// ADVOCATE-START
 	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
+	AdvocateSelectCom(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)

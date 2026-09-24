@@ -6,16 +6,20 @@ package x509
 
 import (
 	"crypto"
+	"crypto/dsa"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/rsa"
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"encoding/pem"
 	"errors"
 	"fmt"
 	"internal/testenv"
+	"log"
 	"math/big"
+	"net"
 	"os"
 	"os/exec"
 	"runtime"
@@ -87,6 +91,26 @@ var verifyTests = []verifyTest{
 		dnsName:       "www.example.com",
 
 		errorCallback: expectHostnameError("certificate is valid for"),
+	},
+	{
+		name:        "TooManyDNS",
+		leaf:        generatePEMCertWithRepeatSAN(1677615892, 200, "fake.dns"),
+		roots:       []string{generatePEMCertWithRepeatSAN(1677615892, 200, "fake.dns")},
+		currentTime: 1677615892,
+		dnsName:     "www.example.com",
+		systemSkip:  true, // does not chain to a system root
+
+		errorCallback: expectHostnameError("certificate is valid for 200 names, but none matched"),
+	},
+	{
+		name:        "TooManyIPs",
+		leaf:        generatePEMCertWithRepeatSAN(1677615892, 150, "4.3.2.1"),
+		roots:       []string{generatePEMCertWithRepeatSAN(1677615892, 150, "4.3.2.1")},
+		currentTime: 1677615892,
+		dnsName:     "1.2.3.4",
+		systemSkip:  true, // does not chain to a system root
+
+		errorCallback: expectHostnameError("certificate is valid for 150 IP SANs, but none matched"),
 	},
 	{
 		name:          "IPMissing",
@@ -549,6 +573,30 @@ func chainToDebugString(chain []*Certificate) string {
 
 func nameToKey(name *pkix.Name) string {
 	return strings.Join(name.Country, ",") + "/" + strings.Join(name.Organization, ",") + "/" + strings.Join(name.OrganizationalUnit, ",") + "/" + name.CommonName
+}
+
+func generatePEMCertWithRepeatSAN(currentTime int64, count int, san string) string {
+	cert := Certificate{
+		NotBefore: time.Unix(currentTime, 0),
+		NotAfter:  time.Unix(currentTime, 0),
+	}
+	if ip := net.ParseIP(san); ip != nil {
+		cert.IPAddresses = slices.Repeat([]net.IP{ip}, count)
+	} else {
+		cert.DNSNames = slices.Repeat([]string{san}, count)
+	}
+	privKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		log.Fatal(err)
+	}
+	certBytes, err := CreateCertificate(rand.Reader, &cert, &cert, &privKey.PublicKey, privKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(pem.EncodeToMemory(&pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: certBytes,
+	}))
 }
 
 const gtsIntermediate = `-----BEGIN CERTIFICATE-----
@@ -1330,45 +1378,6 @@ func TestUnknownAuthorityError(t *testing.T) {
 	}
 }
 
-var nameConstraintTests = []struct {
-	constraint, domain string
-	expectError        bool
-	shouldMatch        bool
-}{
-	{"", "anything.com", false, true},
-	{"example.com", "example.com", false, true},
-	{"example.com.", "example.com", true, false},
-	{"example.com", "example.com.", true, false},
-	{"example.com", "ExAmPle.coM", false, true},
-	{"example.com", "exampl1.com", false, false},
-	{"example.com", "www.ExAmPle.coM", false, true},
-	{"example.com", "sub.www.ExAmPle.coM", false, true},
-	{"example.com", "notexample.com", false, false},
-	{".example.com", "example.com", false, false},
-	{".example.com", "www.example.com", false, true},
-	{".example.com", "www..example.com", true, false},
-}
-
-func TestNameConstraints(t *testing.T) {
-	for i, test := range nameConstraintTests {
-		result, err := matchDomainConstraint(test.domain, test.constraint)
-
-		if err != nil && !test.expectError {
-			t.Errorf("unexpected error for test #%d: domain=%s, constraint=%s, err=%s", i, test.domain, test.constraint, err)
-			continue
-		}
-
-		if err == nil && test.expectError {
-			t.Errorf("unexpected success for test #%d: domain=%s, constraint=%s", i, test.domain, test.constraint)
-			continue
-		}
-
-		if result != test.shouldMatch {
-			t.Errorf("unexpected result for test #%d: domain=%s, constraint=%s, result=%t", i, test.domain, test.constraint, result)
-		}
-	}
-}
-
 const selfSignedWithCommonName = `-----BEGIN CERTIFICATE-----
 MIIDCjCCAfKgAwIBAgIBADANBgkqhkiG9w0BAQsFADAaMQswCQYDVQQKEwJjYTEL
 MAkGA1UEAxMCY2EwHhcNMTYwODI4MTcwOTE4WhcNMjEwODI3MTcwOTE4WjAcMQsw
@@ -1520,10 +1529,13 @@ func TestValidHostname(t *testing.T) {
 	}
 }
 
-func generateCert(cn string, isCA bool, issuer *Certificate, issuerKey crypto.PrivateKey) (*Certificate, crypto.PrivateKey, error) {
-	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		return nil, nil, err
+func generateCert(cn string, isCA bool, issuer *Certificate, issuerKey crypto.PrivateKey, priv crypto.PrivateKey) (*Certificate, crypto.PrivateKey, error) {
+	if priv == nil {
+		var err error
+		priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 
 	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
@@ -1534,6 +1546,7 @@ func generateCert(cn string, isCA bool, issuer *Certificate, issuerKey crypto.Pr
 		Subject:      pkix.Name{CommonName: cn},
 		NotBefore:    time.Now().Add(-1 * time.Hour),
 		NotAfter:     time.Now().Add(24 * time.Hour),
+		DNSNames:     []string{rand.Text()},
 
 		KeyUsage:              KeyUsageKeyEncipherment | KeyUsageDigitalSignature | KeyUsageCertSign,
 		ExtKeyUsage:           []ExtKeyUsage{ExtKeyUsageServerAuth},
@@ -1545,7 +1558,7 @@ func generateCert(cn string, isCA bool, issuer *Certificate, issuerKey crypto.Pr
 		issuerKey = priv
 	}
 
-	derBytes, err := CreateCertificate(rand.Reader, template, issuer, priv.Public(), issuerKey)
+	derBytes, err := CreateCertificate(rand.Reader, template, issuer, priv.(crypto.Signer).Public(), issuerKey)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -1557,81 +1570,77 @@ func generateCert(cn string, isCA bool, issuer *Certificate, issuerKey crypto.Pr
 	return cert, priv, nil
 }
 
-func TestPathologicalChain(t *testing.T) {
+func TestPathologicalChains(t *testing.T) {
 	if testing.Short() {
-		t.Skip("skipping generation of a long chain of certificates in short mode")
+		t.Skip("skipping generation of a long chains of certificates in short mode")
 	}
 
-	// Build a chain where all intermediates share the same subject, to hit the
-	// path building worst behavior.
-	roots, intermediates := NewCertPool(), NewCertPool()
+	// Test four pathological cases, where the intermediates in the chain have
+	// the same/different subjects and the same/different keys. This covers a
+	// number of cases where the chain building algorithm might be inefficient,
+	// such as when there are many intermediates with the same subject but
+	// different keys, many intermediates with the same key but different
+	// subjects, many intermediates with the same subject and key, or many
+	// intermediates with different subjects and keys.
+	//
+	// The worst case for our algorithm is when all of the intermediates share
+	// both subject and key, in which case all of the intermediates appear to
+	// have signed each other, causing us to see a large number of potential
+	// parents for each intermediate.
+	//
+	// All of these cases, Certificate.Verify should return errSignatureLimit.
+	//
+	// In all cases, don't have a root in the pool, so a valid chain cannot actually be built.
 
-	parent, parentKey, err := generateCert("Root CA", true, nil, nil)
-	if err != nil {
-		t.Fatal(err)
+	for _, test := range []struct {
+		sameSubject bool
+		sameKey     bool
+	}{
+		{sameSubject: false, sameKey: false},
+		{sameSubject: true, sameKey: false},
+		{sameSubject: false, sameKey: true},
+		{sameSubject: true, sameKey: true},
+	} {
+		t.Run(fmt.Sprintf("sameSubject=%t,sameKey=%t", test.sameSubject, test.sameKey), func(t *testing.T) {
+			intermediates := NewCertPool()
+
+			var intermediateKey crypto.PrivateKey
+			if test.sameKey {
+				var err error
+				intermediateKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+
+			var leafSigner crypto.PrivateKey
+			var intermediate *Certificate
+			for i := range 100 {
+				cn := "Intermediate CA"
+				if !test.sameSubject {
+					cn += fmt.Sprintf(" #%d", i)
+				}
+				var err error
+				intermediate, leafSigner, err = generateCert(cn, true, intermediate, leafSigner, intermediateKey)
+				if err != nil {
+					t.Fatal(err)
+				}
+				intermediates.AddCert(intermediate)
+			}
+
+			leaf, _, err := generateCert("Leaf", false, intermediate, leafSigner, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			start := time.Now()
+			_, err = leaf.Verify(VerifyOptions{
+				Roots:         NewCertPool(),
+				Intermediates: intermediates,
+			})
+			t.Logf("verification took %v", time.Since(start))
+		})
 	}
-	roots.AddCert(parent)
-
-	for i := 1; i < 100; i++ {
-		parent, parentKey, err = generateCert("Intermediate CA", true, parent, parentKey)
-		if err != nil {
-			t.Fatal(err)
-		}
-		intermediates.AddCert(parent)
-	}
-
-	leaf, _, err := generateCert("Leaf", false, parent, parentKey)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	start := time.Now()
-	_, err = leaf.Verify(VerifyOptions{
-		Roots:         roots,
-		Intermediates: intermediates,
-	})
-	t.Logf("verification took %v", time.Since(start))
-
-	if err == nil || !strings.Contains(err.Error(), "signature check attempts limit") {
-		t.Errorf("expected verification to fail with a signature checks limit error; got %v", err)
-	}
-}
-
-func TestLongChain(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping generation of a long chain of certificates in short mode")
-	}
-
-	roots, intermediates := NewCertPool(), NewCertPool()
-
-	parent, parentKey, err := generateCert("Root CA", true, nil, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	roots.AddCert(parent)
-
-	for i := 1; i < 15; i++ {
-		name := fmt.Sprintf("Intermediate CA #%d", i)
-		parent, parentKey, err = generateCert(name, true, parent, parentKey)
-		if err != nil {
-			t.Fatal(err)
-		}
-		intermediates.AddCert(parent)
-	}
-
-	leaf, _, err := generateCert("Leaf", false, parent, parentKey)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	start := time.Now()
-	if _, err := leaf.Verify(VerifyOptions{
-		Roots:         roots,
-		Intermediates: intermediates,
-	}); err != nil {
-		t.Error(err)
-	}
-	t.Logf("verification took %v", time.Since(start))
 }
 
 func TestSystemRootsError(t *testing.T) {
@@ -3030,7 +3039,7 @@ func TestInvalidPolicyWithAnyKeyUsage(t *testing.T) {
 	testOID3 := mustNewOIDFromInts([]uint64{1, 2, 840, 113554, 4, 1, 72585, 2, 3})
 	root, intermediate, leaf := loadTestCert(t, "testdata/policy_root.pem"), loadTestCert(t, "testdata/policy_intermediate_require.pem"), loadTestCert(t, "testdata/policy_leaf.pem")
 
-	expectedErr := "x509: no valid chains built: all candidate chains have invalid policies"
+	expectedErr := "x509: no valid chains built: 1 candidate chains with invalid policies"
 
 	roots, intermediates := NewCertPool(), NewCertPool()
 	roots.AddCert(root)
@@ -3046,5 +3055,167 @@ func TestInvalidPolicyWithAnyKeyUsage(t *testing.T) {
 		t.Fatal("unexpected success, invalid policy shouldn't be bypassed by passing VerifyOptions.KeyUsages with ExtKeyUsageAny")
 	} else if err.Error() != expectedErr {
 		t.Fatalf("unexpected error, got %q, want %q", err, expectedErr)
+	}
+}
+
+func TestCertificateChainSignedByECDSA(t *testing.T) {
+	caKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := &Certificate{
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{CommonName: "X"},
+		NotBefore:             time.Now().Add(-time.Hour),
+		NotAfter:              time.Now().Add(365 * 24 * time.Hour),
+		IsCA:                  true,
+		KeyUsage:              KeyUsageCertSign | KeyUsageCRLSign,
+		BasicConstraintsValid: true,
+	}
+	caDER, err := CreateCertificate(rand.Reader, root, root, &caKey.PublicKey, caKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root, err = ParseCertificate(caDER)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	leafKey, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	leaf := &Certificate{
+		SerialNumber:          big.NewInt(42),
+		Subject:               pkix.Name{CommonName: "leaf"},
+		NotBefore:             time.Now().Add(-10 * time.Minute),
+		NotAfter:              time.Now().Add(24 * time.Hour),
+		KeyUsage:              KeyUsageDigitalSignature,
+		ExtKeyUsage:           []ExtKeyUsage{ExtKeyUsageServerAuth},
+		BasicConstraintsValid: true,
+	}
+	leafDER, err := CreateCertificate(rand.Reader, leaf, root, &leafKey.PublicKey, caKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	leaf, err = ParseCertificate(leafDER)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	inter, err := ParseCertificate(dsaSelfSignedCNX(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	inters := NewCertPool()
+	inters.AddCert(root)
+	inters.AddCert(inter)
+
+	wantErr := "certificate signed by unknown authority"
+	_, err = leaf.Verify(VerifyOptions{Intermediates: inters, Roots: NewCertPool()})
+	if !strings.Contains(err.Error(), wantErr) {
+		t.Errorf("got %v, want %q", err, wantErr)
+	}
+}
+
+// dsaSelfSignedCNX produces DER-encoded
+// certificate with the properties:
+//
+//	Subject=Issuer=CN=X
+//	DSA SPKI
+//	Matching inner/outer signature OIDs
+//	Dummy ECDSA signature
+func dsaSelfSignedCNX(t *testing.T) []byte {
+	t.Helper()
+	var params dsa.Parameters
+	if err := dsa.GenerateParameters(&params, rand.Reader, dsa.L1024N160); err != nil {
+		t.Fatal(err)
+	}
+
+	var dsaPriv dsa.PrivateKey
+	dsaPriv.Parameters = params
+	if err := dsa.GenerateKey(&dsaPriv, rand.Reader); err != nil {
+		t.Fatal(err)
+	}
+	dsaPub := &dsaPriv.PublicKey
+
+	type dsaParams struct{ P, Q, G *big.Int }
+	paramDER, err := asn1.Marshal(dsaParams{dsaPub.P, dsaPub.Q, dsaPub.G})
+	if err != nil {
+		t.Fatal(err)
+	}
+	yDER, err := asn1.Marshal(dsaPub.Y)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	spki := publicKeyInfo{
+		Algorithm: pkix.AlgorithmIdentifier{
+			Algorithm:  oidPublicKeyDSA,
+			Parameters: asn1.RawValue{FullBytes: paramDER},
+		},
+		PublicKey: asn1.BitString{Bytes: yDER, BitLength: 8 * len(yDER)},
+	}
+
+	rdn := pkix.Name{CommonName: "X"}.ToRDNSequence()
+	b, err := asn1.Marshal(rdn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rawName := asn1.RawValue{FullBytes: b}
+
+	algoIdent := pkix.AlgorithmIdentifier{Algorithm: oidSignatureDSAWithSHA256}
+	tbs := tbsCertificate{
+		Version:            0,
+		SerialNumber:       big.NewInt(1002),
+		SignatureAlgorithm: algoIdent,
+		Issuer:             rawName,
+		Validity:           validity{NotBefore: time.Now().Add(-time.Hour), NotAfter: time.Now().Add(24 * time.Hour)},
+		Subject:            rawName,
+		PublicKey:          spki,
+	}
+	c := certificate{
+		TBSCertificate:     tbs,
+		SignatureAlgorithm: algoIdent,
+		SignatureValue:     asn1.BitString{Bytes: []byte{0}, BitLength: 8},
+	}
+	dsaDER, err := asn1.Marshal(c)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return dsaDER
+}
+
+func TestVerifyHostnameIPAddresses(t *testing.T) {
+	cert := &Certificate{
+		IPAddresses: []net.IP{
+			net.ParseIP("192.0.2.1"),
+			net.ParseIP("fe80::1"),
+		},
+	}
+
+	tests := []struct {
+		name  string
+		host  string
+		match bool
+	}{
+		{name: "IPv4", host: "192.0.2.1", match: true},
+		{name: "IPv4 bracketed", host: "[192.0.2.1]", match: true},
+		{name: "IPv4 mismatch", host: "192.0.2.2"},
+		{name: "IPv6", host: "fe80::1", match: true},
+		{name: "IPv6 bracketed", host: "[fe80::1]", match: true},
+		{name: "IPv6 with zone", host: "fe80::1%eth0", match: true},
+		{name: "IPv6 with zone bracketed", host: "[fe80::1%eth0]", match: true},
+		{name: "IPv6 mismatch", host: "fe80::2"},
+		{name: "IPv6 with zone mismatch", host: "fe80::2%eth0"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := cert.VerifyHostname(tc.host)
+			if tc.match && err != nil {
+				t.Errorf("VerifyHostname(%q) = %v, want nil", tc.host, err)
+			}
+			if !tc.match && err == nil {
+				t.Errorf("VerifyHostname(%q) = nil, want error", tc.host)
+			}
+		})
 	}
 }

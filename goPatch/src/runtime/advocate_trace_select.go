@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace_select.go
 // Brief: Functionality for selects
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -39,7 +38,7 @@ type AdvocateTraceSelect struct {
 	line     int
 }
 
-// AdvocateSelectPre adds a select to the trace
+// AdvocateSelectReq adds a select to the trace
 //
 // Parameter:
 //   - cases: cases of the select
@@ -49,7 +48,7 @@ type AdvocateTraceSelect struct {
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
+func AdvocateSelectReq(cases *[]scase, nsends int, ncases int, block bool) int {
 	if AdvocateTracingDisabled || cases == nil {
 		return -1
 	}
@@ -105,14 +104,14 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateSelectPost adds a post event for select in case of an non-default case
+// AdvocateSelectCom adds a post event for select in case of an non-default case
 //
 // Parameter:
 //   - index: index of the operation in the trace
 //   - c: channel of the chosen case
 //   - selIndex: index of the chosen case in the select
 //   - rClosed: true if the channel was closed at another routine
-func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
+func AdvocateSelectCom(index int, c *hchan, selIndex int, rClosed bool) {
 	if AdvocateTracingDisabled {
 		return
 	}
@@ -151,7 +150,7 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 	currentGoRoutineInfo().updateElement(index, elem)
 }
 
-// AdvocateSelectPreOneNonDef adds a new select element to the trace if the
+// AdvocateSelectReqOneNonDef adds a new select element to the trace if the
 // select has exactly one non-default case and a default case
 //
 // Parameter:
@@ -160,7 +159,7 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
+func AdvocateSelectReqOneNonDef(c *hchan, send bool) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -211,14 +210,14 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateSelectPostOneNonDef adds the selected case for a select with one
+// AdvocateSelectComOneNonDef adds the selected case for a select with one
 // non-default and one default case
 //
 // Parameter:
 //   - index: index of the operation in the trace
 //   - res: true for channel, false for default
 //   - c *hchan: the channel in the select cases
-func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
+func AdvocateSelectComOneNonDef(index int, res bool, c *hchan) {
 	if AdvocateTracingDisabled {
 		return
 	}

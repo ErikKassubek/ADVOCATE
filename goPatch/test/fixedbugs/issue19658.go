@@ -47,7 +47,7 @@ func main() {
 		Input  string
 		Expect string
 	}{
-		{"", "nil", "panic: panic called with nil argument"},
+		{"", "nil", "panic: runtime error: panic called with nil argument"},
 		{"errors.New", `"test"`, "panic: test"},
 		{"S", "S{}", "panic: s-stringer"},
 		{"byte", "8", "panic: 8"},
@@ -64,8 +64,8 @@ func main() {
 		{"uint64", "8", "panic: 8"},
 		{"uintptr", "8", "panic: 8"},
 		{"bool", "true", "panic: true"},
-		{"complex64", "8 + 16i", "panic: (+8.000000e+000+1.600000e+001i)"},
-		{"complex128", "8+16i", "panic: (+8.000000e+000+1.600000e+001i)"},
+		{"complex64", "8 + 16i", "panic: (8+16i)"},
+		{"complex128", "8+16i", "panic: (8+16i)"},
 		{"string", `"test"`, "panic: test"}} {
 
 		b := bytes.Buffer{}

@@ -86,12 +86,12 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	}
 
 	elem := ElementCond{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		tReq:        tPreInt,
 		tCom:        tPostInt,
 		objId:       idInt,
 		op:          op,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -104,12 +104,20 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementCond) ObjID() int {
+func (this *ElementCond) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementCond) Resource() Resource {
+	return this.trace.resources[this.objId]
 }
 
 // ========================================================
@@ -222,27 +230,6 @@ func (this *ElementCond) Line() int {
 }
 
 // ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine id
-func (this *ElementCond) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementCond) TraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// ========================================================
 // MARK: Operation
 // ========================================================
 
@@ -262,6 +249,14 @@ func (this *ElementCond) Type(operation bool) OperationType {
 }
 
 // ========================================================
+// MARK: Request (gui)
+// ========================================================
+
+func (this *ElementCond) CanBeRequest() bool {
+	return this.op == CondWait
+}
+
+// ========================================================
 // MARK: Equal
 // ========================================================
 
@@ -273,7 +268,7 @@ func (this *ElementCond) Type(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementCond) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -289,7 +284,7 @@ func (this *ElementCond) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.objId == elem.ObjID()
+	return this.objId == elem.ResourceID()
 }
 
 // ========================================================
@@ -316,16 +311,42 @@ func (this *ElementCond) String() string {
 	return res
 }
 
+func (this *ElementCond) StringLocal() string {
+	res := "D,"
+	res += strconv.Itoa(this.tReq) + "," + strconv.Itoa(this.tCom) + ","
+	res += strconv.Itoa(this.objId) + ","
+	switch this.op {
+	case CondWait:
+		res += "W"
+	case CondSignal:
+		res += "S"
+	case CondBroadcast:
+		res += "B"
+	}
+	res += "," + this.Pos().Short()
+	return res
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementCond) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the simple gui representation of the element.
+//
+// Returns:
+//   - string: The simple gui representation of the element
+func (this *ElementCond) StringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("D,%d,%s\n%s", this.objId, opString, this.Pos().Short())
 }
 
 // ========================================================
@@ -392,7 +413,7 @@ func (this *ElementCond) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementCond) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================
@@ -402,6 +423,7 @@ func (this *ElementCond) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //     since conds do not contain reference to other elements and no other
 //     elements contain referents to conds, this is not used
@@ -409,29 +431,29 @@ func (this *ElementCond) ReplayID() string {
 
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementCond) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementCond) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementCond{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			tReq:        0,
 			tCom:        0,
 			objId:       this.objId,
 			op:          this.op,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementCond{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		tReq:        this.tReq,
 		tCom:        this.tCom,
 		objId:       this.objId,
 		op:          this.op,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

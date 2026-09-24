@@ -45,7 +45,7 @@ func CheckForDoneBeforeAddChange(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: the trace wait element
 func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
-	id := wa.ObjID()
+	id := wa.ResourceID()
 
 	// if necessary, create maps and lists
 	if _, ok := a_base.WGAddData[id]; !ok {
@@ -61,7 +61,7 @@ func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: the trace done element
 func CheckForDoneBeforeAddDone(wa *trace.ElementWait) {
-	id := wa.ObjID()
+	id := wa.ResourceID()
 
 	// if necessary, create maps and lists
 	if _, ok := a_base.WgDoneData[id]; !ok {
@@ -145,12 +145,12 @@ func CheckForDoneBeforeAdd() {
 				}
 
 				args1 = append(args1, results.TraceElementResult{
-					RoutineID: done.Routine(),
-					ObjID:     id,
-					TRequest:  done.T(trace.Request),
-					ObjType:   "WD",
-					File:      done.File(),
-					Line:      done.Line(),
+					RoutineID:  done.RoutineID(),
+					ResourceID: id,
+					TRequest:   done.T(trace.Request),
+					ObjType:    "WD",
+					File:       done.File(),
+					Line:       done.Line(),
 				})
 			}
 
@@ -160,12 +160,12 @@ func CheckForDoneBeforeAdd() {
 				}
 
 				args2 = append(args2, results.TraceElementResult{
-					RoutineID: add.Routine(),
-					ObjID:     id,
-					TRequest:  add.T(trace.Request),
-					ObjType:   "WA",
-					File:      add.File(),
-					Line:      add.Line(),
+					RoutineID:  add.RoutineID(),
+					ResourceID: id,
+					TRequest:   add.T(trace.Request),
+					ObjType:    "WA",
+					File:       add.File(),
+					Line:       add.Line(),
 				})
 
 			}

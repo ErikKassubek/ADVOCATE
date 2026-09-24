@@ -247,18 +247,6 @@ func readAnalysisResults(path string, index int, fileWithHeader string) (helper.
 			file := fields[5]
 			line := fields[6]
 
-			// correct the line number, if the file is the main file of the program
-			// because of the inserted preamble
-			if file == fileWithHeader {
-				lineInt, err := strconv.Atoi(line)
-				if err != nil {
-					log.Error(err.Error())
-				}
-
-				line = fmt.Sprint(lineInt - 1) // only import
-
-			}
-
 			pos := file + consts.PosSep + line
 
 			if slices.Contains(posAlreadyKnown, pos) {

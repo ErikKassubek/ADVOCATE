@@ -57,7 +57,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	// add in all the elements in the chain
 	mapping := make(map[int]trace.Element)
 	for i, elem := range mut.Elems {
-		c := elem.Copy(mapping, true)
+		c := elem.Copy(&traceCopy, mapping, true)
 		c.SetT(trace.Sorting, t1+i*2)
 		traceCopy.AddElement(c)
 	}
@@ -225,11 +225,11 @@ func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Constraint, p
 	for _, elem := range mut.Elems {
 		routPos := getRoutPos(elem)
 		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
-		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.Routine(), elem.Pos(), mutTime[routPos], mutCounter[routPos])
+		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.RoutineID(), elem.Pos(), mutTime[routPos], mutCounter[routPos])
 		f.WriteString(key)
 	}
 }
 
 func getRoutPos(elem trace.Element) string {
-	return fmt.Sprintf("%d:%s", elem.Routine(), elem.Pos())
+	return fmt.Sprintf("%d:%s", elem.RoutineID(), elem.Pos())
 }

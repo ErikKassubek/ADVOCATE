@@ -4,7 +4,6 @@
 // Brief: Struct and functions for fork operations in the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -67,10 +66,10 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 	}
 
 	elem := ElementFork{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tPostInt,
 		objId:       idInt,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		ci:          newConcInfo(),
 		function:    getLastCall(routine),
 	}
@@ -88,12 +87,20 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the newly created routine
+// ResourceID returns the ID of the newly created routine
 //
 // Returns:
 //   - int: The id of the new routine
-func (this *ElementFork) ObjID() int {
+func (this *ElementFork) ResourceID() int {
 	return this.objId
+}
+
+// ResourceID returns the resource
+//
+// Returns:
+//   - Resource: resource
+func (this *ElementFork) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -164,27 +171,6 @@ func (this *ElementFork) Line() int {
 }
 
 // ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementFork) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementFork) TraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// ========================================================
 // MARK: Operation
 // ========================================================
 
@@ -214,7 +200,7 @@ func (this *ElementFork) Type(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementFork) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+	return this.objId == elem.ResourceID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -243,16 +229,30 @@ func (this *ElementFork) String() string {
 		"," + this.Pos().String()
 }
 
+func (this *ElementFork) StringLocal() string {
+	return "G" + "," + strconv.Itoa(this.t) + "," + strconv.Itoa(this.objId) +
+		"," + this.Pos().Short()
+}
+
 // String returns the simple string representation of the element with leading routine
 //
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementFork) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
+}
+
+// StringGui returns the simple gui representation of the element
+//
+// Returns:
+//   - string: The simple gui representation of the element
+func (this *ElementFork) StringGui() string {
+	return "G" + "," + strconv.Itoa(this.objId) +
+		"\n" + this.Pos().Short()
 }
 
 // ========================================================
@@ -319,7 +319,7 @@ func (this *ElementFork) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementFork) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
 }
 
 // ========================================================
@@ -329,30 +329,31 @@ func (this *ElementFork) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementFork) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementFork) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementFork{
-			ElementBase: this.ElementBase.Copy(),
+			ElementBase: this.ElementBase.Copy(trace),
 			t:           0,
 			objId:       this.objId,
 			pos:         this.pos.copy(),
 			ci:          newConcInfo(),
-			function:    this.function.CopyFunc(mapping, keep),
+			function:    this.function.CopyFunc(trace, mapping, keep),
 		}
 	}
 
 	return &ElementFork{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		objId:       this.objId,
 		pos:         this.pos.copy(),
 		ci:          this.ci.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

@@ -99,7 +99,7 @@ import (
 //
 //	<symbolic constant name>
 //		Special symbolic constants for ARM64 (such as conditional flags, tlbi_op and so on)
-//		and RISCV64 (such as names for vector configuration instruction arguments).
+//		and RISCV64 (such as names for vector configuration instruction arguments and CSRs).
 //		Encoding:
 //			type = TYPE_SPECIAL
 //			offset = The constant value corresponding to this symbol
@@ -211,7 +211,7 @@ type Addr struct {
 	//	for TYPE_FCONST, a float64
 	//	for TYPE_BRANCH, a *Prog (optional)
 	//	for TYPE_TEXTSIZE, an int32 (optional)
-	Val interface{}
+	Val any
 }
 
 type AddrName int8
@@ -456,15 +456,16 @@ const (
 // It represents Go symbols in a flat pkg+"."+name namespace.
 type LSym struct {
 	Name string
-	Type objabi.SymKind
 	Attribute
+	Type objabi.SymKind
 
+	Align  int16
 	Size   int64
 	Gotype *LSym
 	P      []byte
 	R      []Reloc
 
-	Extra *interface{} // *FuncInfo, *VarInfo, *FileInfo, or *TypeInfo, if present
+	Extra *any // *FuncInfo, *VarInfo, *FileInfo, *TypeInfo, or *ItabInfo, if present
 
 	Pkg    string
 	PkgIdx int32
@@ -475,7 +476,6 @@ type LSym struct {
 type FuncInfo struct {
 	Args      int32
 	Locals    int32
-	Align     int32
 	FuncID    abi.FuncID
 	FuncFlag  abi.FuncFlag
 	StartLine int32
@@ -523,7 +523,7 @@ func (s *LSym) NewFuncInfo() *FuncInfo {
 		panic(fmt.Sprintf("invalid use of LSym - NewFuncInfo with Extra of type %T", *s.Extra))
 	}
 	f := new(FuncInfo)
-	s.Extra = new(interface{})
+	s.Extra = new(any)
 	*s.Extra = f
 	return f
 }
@@ -547,7 +547,7 @@ func (s *LSym) NewVarInfo() *VarInfo {
 		panic(fmt.Sprintf("invalid use of LSym - NewVarInfo with Extra of type %T", *s.Extra))
 	}
 	f := new(VarInfo)
-	s.Extra = new(interface{})
+	s.Extra = new(any)
 	*s.Extra = f
 	return f
 }
@@ -574,7 +574,7 @@ func (s *LSym) NewFileInfo() *FileInfo {
 		panic(fmt.Sprintf("invalid use of LSym - NewFileInfo with Extra of type %T", *s.Extra))
 	}
 	f := new(FileInfo)
-	s.Extra = new(interface{})
+	s.Extra = new(any)
 	*s.Extra = f
 	return f
 }
@@ -591,7 +591,7 @@ func (s *LSym) File() *FileInfo {
 // A TypeInfo contains information for a symbol
 // that contains a runtime._type.
 type TypeInfo struct {
-	Type interface{} // a *cmd/compile/internal/types.Type
+	Type any // a *cmd/compile/internal/types.Type
 }
 
 func (s *LSym) NewTypeInfo() *TypeInfo {
@@ -599,15 +599,24 @@ func (s *LSym) NewTypeInfo() *TypeInfo {
 		panic(fmt.Sprintf("invalid use of LSym - NewTypeInfo with Extra of type %T", *s.Extra))
 	}
 	t := new(TypeInfo)
-	s.Extra = new(interface{})
+	s.Extra = new(any)
 	*s.Extra = t
+	return t
+}
+
+// TypeInfo returns the *TypeInfo associated with s, or else nil.
+func (s *LSym) TypeInfo() *TypeInfo {
+	if s.Extra == nil {
+		return nil
+	}
+	t, _ := (*s.Extra).(*TypeInfo)
 	return t
 }
 
 // An ItabInfo contains information for a symbol
 // that contains a runtime.itab.
 type ItabInfo struct {
-	Type interface{} // a *cmd/compile/internal/types.Type
+	Type any // a *cmd/compile/internal/types.Type
 }
 
 func (s *LSym) NewItabInfo() *ItabInfo {
@@ -615,9 +624,18 @@ func (s *LSym) NewItabInfo() *ItabInfo {
 		panic(fmt.Sprintf("invalid use of LSym - NewItabInfo with Extra of type %T", *s.Extra))
 	}
 	t := new(ItabInfo)
-	s.Extra = new(interface{})
+	s.Extra = new(any)
 	*s.Extra = t
 	return t
+}
+
+// ItabInfo returns the *ItabInfo associated with s, or else nil.
+func (s *LSym) ItabInfo() *ItabInfo {
+	if s.Extra == nil {
+		return nil
+	}
+	i, _ := (*s.Extra).(*ItabInfo)
+	return i
 }
 
 // WasmImport represents a WebAssembly (WASM) imported function with
@@ -735,12 +753,12 @@ func (ft *WasmFuncType) Read(b []byte) {
 	ft.Params = make([]WasmField, readUint32())
 	for i := range ft.Params {
 		ft.Params[i].Type = WasmFieldType(readByte())
-		ft.Params[i].Offset = int64(readInt64())
+		ft.Params[i].Offset = readInt64()
 	}
 	ft.Results = make([]WasmField, readUint32())
 	for i := range ft.Results {
 		ft.Results[i].Type = WasmFieldType(readByte())
-		ft.Results[i].Offset = int64(readInt64())
+		ft.Results[i].Offset = readInt64()
 	}
 }
 
@@ -781,6 +799,7 @@ const (
 	WasmF32
 	WasmF64
 	WasmPtr
+	WasmV128
 
 	// bool is not really a wasm type, but we allow it on wasmimport/wasmexport
 	// function parameters/results. 32-bit on Wasm side, 8-bit on Go side.
@@ -959,6 +978,9 @@ const (
 	// Linkname indicates this is a go:linkname'd symbol.
 	AttrLinkname
 
+	// LinknameStd indicates this is a go:linknamestd'd symbol.
+	AttrLinknameStd
+
 	// attrABIBase is the value at which the ABI is encoded in
 	// Attribute. This must be last; all bits after this are
 	// assumed to be an ABI value.
@@ -989,6 +1011,7 @@ func (a *Attribute) ABIWrapper() bool         { return a.load()&AttrABIWrapper !
 func (a *Attribute) IsPcdata() bool           { return a.load()&AttrPcdata != 0 }
 func (a *Attribute) IsPkgInit() bool          { return a.load()&AttrPkgInit != 0 }
 func (a *Attribute) IsLinkname() bool         { return a.load()&AttrLinkname != 0 }
+func (a *Attribute) IsLinknameStd() bool      { return a.load()&AttrLinknameStd != 0 }
 
 func (a *Attribute) Set(flag Attribute, value bool) {
 	for {
@@ -1039,6 +1062,7 @@ var textAttrStrings = [...]struct {
 	{bit: AttrABIWrapper, s: "ABIWRAPPER"},
 	{bit: AttrPkgInit, s: "PKGINIT"},
 	{bit: AttrLinkname, s: "LINKNAME"},
+	{bit: AttrLinknameStd, s: "LINKNAMESTD"},
 }
 
 // String formats a for printing in as part of a TEXT prog.
@@ -1135,36 +1159,38 @@ type Func interface {
 // Link holds the context for writing object code from a compiler
 // to be linker input or for reading that input into the linker.
 type Link struct {
-	Headtype           objabi.HeadType
-	Arch               *LinkArch
-	Debugasm           int
-	Debugvlog          bool
-	Debugpcln          string
-	Flag_shared        bool
-	Flag_dynlink       bool
-	Flag_linkshared    bool
-	Flag_optimize      bool
-	Flag_locationlists bool
-	Flag_noRefName     bool   // do not include referenced symbol names in object file
-	Retpoline          bool   // emit use of retpoline stubs for indirect jmp/call
-	Flag_maymorestack  string // If not "", call this function before stack checks
-	Bso                *bufio.Writer
-	Pathname           string
-	Pkgpath            string           // the current package's import path
-	hashmu             sync.Mutex       // protects hash, funchash
-	hash               map[string]*LSym // name -> sym mapping
-	funchash           map[string]*LSym // name -> sym mapping for ABIInternal syms
-	statichash         map[string]*LSym // name -> sym mapping for static syms
-	PosTable           src.PosTable
-	InlTree            InlTree // global inlining tree used by gc/inl.go
-	DwFixups           *DwarfFixupTable
-	DwTextCount        int
-	Imports            []goobj.ImportedPkg
-	DiagFunc           func(string, ...interface{})
-	DiagFlush          func()
-	DebugInfo          func(ctxt *Link, fn *LSym, info *LSym, curfn Func) ([]dwarf.Scope, dwarf.InlCalls)
-	GenAbstractFunc    func(fn *LSym)
-	Errors             int
+	Headtype             objabi.HeadType
+	Arch                 *LinkArch
+	CompressInstructions bool // use compressed instructions where possible (if supported by architecture)
+	Debugasm             int
+	Debugvlog            bool
+	Debugpcln            string
+	Flag_shared          bool
+	Flag_dynlink         bool
+	Flag_linkshared      bool
+	Flag_optimize        bool
+	Flag_locationlists   bool
+	Flag_noRefName       bool   // do not include referenced symbol names in object file
+	Retpoline            bool   // emit use of retpoline stubs for indirect jmp/call
+	Flag_maymorestack    string // If not "", call this function before stack checks
+	Bso                  *bufio.Writer
+	Pathname             string
+	Pkgpath              string // the current package's import path
+
+	hashmu          sync.Mutex       // protects hash, funchash
+	hash            sync.Map         // name(string) -> sym(*syncOnce) mapping
+	funchash        sync.Map         // name(string) -> sym(*syncOnce) mapping for ABIInternal syms
+	statichash      map[string]*LSym // name -> sym mapping for static syms
+	PosTable        src.PosTable
+	InlTree         InlTree // global inlining tree used by gc/inl.go
+	DwFixups        *DwarfFixupTable
+	DwTextCount     int
+	Imports         []goobj.ImportedPkg
+	DiagFunc        func(string, ...any)
+	DiagFlush       func()
+	DebugInfo       func(ctxt *Link, fn *LSym, info *LSym, curfn Func) ([]dwarf.Scope, dwarf.InlCalls)
+	GenAbstractFunc func(fn *LSym)
+	Errors          int
 
 	InParallel    bool // parallel backend phase in effect
 	UseBASEntries bool // use Base Address Selection Entries in location lists and PC ranges
@@ -1198,12 +1224,26 @@ type Link struct {
 	Fingerprint goobj.FingerprintType // fingerprint of symbol indices, to catch index mismatch
 }
 
-func (ctxt *Link) Diag(format string, args ...interface{}) {
+// symOnce is a "marker" value for our sync.Maps. We insert it on lookup and
+// use the atomic value to check whether initialization has been completed.
+type symOnce struct {
+	sym    LSym
+	inited atomic.Bool
+}
+
+// Assert to vet's printf checker that Link.DiagFunc is a printf-like.
+func _(ctxt *Link) {
+	ctxt.DiagFunc = func(format string, args ...any) {
+		_ = fmt.Sprintf(format, args...)
+	}
+}
+
+func (ctxt *Link) Diag(format string, args ...any) {
 	ctxt.Errors++
 	ctxt.DiagFunc(format, args...)
 }
 
-func (ctxt *Link) Logf(format string, args ...interface{}) {
+func (ctxt *Link) Logf(format string, args ...any) {
 	fmt.Fprintf(ctxt.Bso, format, args...)
 	ctxt.Bso.Flush()
 }

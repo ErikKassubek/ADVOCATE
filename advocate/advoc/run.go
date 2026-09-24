@@ -56,9 +56,6 @@ func Run() error {
 		return err
 	}
 
-	progPathDir := paths.GetDirectory(flags.ProgPath)
-
-	timer.Init(progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
 
@@ -111,9 +108,10 @@ func Run() error {
 	// 	flags.DeleteTraces = false
 	// 	err = modeToolchain(modeMainTest, record, analysis, !replay)
 	// 	err = s_blocking.BuildStaticBlockingAnalysis()
+
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
-		log.Error("Select one mode from  'analysis', 'fuzzing', 'replay' or 'record'")
+		log.Error("Select one mode from  'analysis', 'fuzzing', 'replay', 'record' or 'gui' (only if -tags nogui not set)")
 		err = fmt.Errorf("Unknown mode %s", os.Args[1])
 		helper.PrintHelp()
 	}
@@ -146,4 +144,9 @@ func Run() error {
 	timer.UpdateTimeFileOverview("*Total*")
 
 	return nil
+}
+
+func Initialize() {
+	progPathDir := paths.GetDirectory(flags.ProgPath)
+	timer.Init(progPathDir)
 }

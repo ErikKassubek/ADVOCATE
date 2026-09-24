@@ -1,12 +1,11 @@
 // ADVOCATE-FILE_START
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_trace_cond.go
 // Brief: Functionality for the conditional variables
 //
 // Author: Erik Kassubek
-// Created: 2024-02-16
 //
 // License: BSD-3-Clause
 
@@ -33,14 +32,14 @@ type AdvocateTraceCond struct {
 }
 
 /*
- * AdvocateCondPre adds a cond wait to the trace
+ * AdvocateCondReq adds a cond wait to the trace
  * Args:
  * 	id: id of the cond
  * 	op: Operation
  * Return:
  * 	index of the operation in the trace
  */
-func AdvocateCondPre(mem unsafe.Pointer, id uint64, op Operation) int {
+func AdvocateCondReq(mem unsafe.Pointer, id uint64, op Operation) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -66,11 +65,11 @@ func AdvocateCondPre(mem unsafe.Pointer, id uint64, op Operation) int {
 }
 
 /*
- * AdvocateCondPost adds the end counter to an operation of the trace
+ * AdvocateCondCom adds the end counter to an operation of the trace
  * Args:
  * 	index: index of the operation in the trace
  */
-func AdvocateCondPost(index int) {
+func AdvocateCondCom(index int) {
 	if AdvocateTracingDisabled {
 		return
 	}

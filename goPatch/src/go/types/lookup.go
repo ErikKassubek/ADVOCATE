@@ -9,7 +9,10 @@
 
 package types
 
-import "bytes"
+import (
+	"bytes"
+	"strings"
+)
 
 // LookupSelection selects the field or method whose ID is Id(pkg,
 // name), on a value of type T. If addressable is set, T is the type
@@ -148,14 +151,14 @@ func lookupFieldOrMethodImpl(T Type, addressable bool, pkg *Package, name string
 		return // blank fields/methods are never found
 	}
 
-	// Importantly, we must not call under before the call to deref below (nor
-	// does deref call under), as doing so could incorrectly result in finding
+	// Importantly, we must not call Underlying before the call to deref below (nor
+	// does deref call Underlying), as doing so could incorrectly result in finding
 	// methods of the pointer base type when T is a (*Named) pointer type.
 	typ, isPtr := deref(T)
 
 	// *typ where typ is an interface (incl. a type parameter) has no methods.
 	if isPtr {
-		if _, ok := under(typ).(*Interface); ok {
+		if _, ok := typ.Underlying().(*Interface); ok {
 			return
 		}
 	}
@@ -205,7 +208,7 @@ func lookupFieldOrMethodImpl(T Type, addressable bool, pkg *Package, name string
 				}
 			}
 
-			switch t := under(typ).(type) {
+			switch t := typ.Underlying().(type) {
 			case *Struct:
 				// look for a matching field and collect embedded types
 				for i, f := range t.fields {
@@ -376,7 +379,7 @@ func MissingMethod(V Type, T *Interface, static bool) (method *Func, wrongType b
 // The comparator is used to compare signatures.
 // If a method is missing and cause is not nil, *cause describes the error.
 func (check *Checker) missingMethod(V, T Type, static bool, equivalent func(x, y Type) bool, cause *string) (method *Func, wrongType bool) {
-	methods := under(T).(*Interface).typeSet().methods // T must be an interface
+	methods := T.Underlying().(*Interface).typeSet().methods // T must be an interface
 	if len(methods) == 0 {
 		return nil, false
 	}
@@ -390,13 +393,14 @@ func (check *Checker) missingMethod(V, T Type, static bool, equivalent func(x, y
 		ambigSel
 		ptrRecv
 		field
+		nointerface
 	)
 
 	state := ok
 	var m *Func // method on T we're trying to implement
 	var f *Func // method on V, if found (state is one of ok, wrongName, wrongSig)
 
-	if u, _ := under(V).(*Interface); u != nil {
+	if u, _ := V.Underlying().(*Interface); u != nil {
 		tset := u.typeSet()
 		for _, m = range methods {
 			_, f = tset.LookupMethod(m.pkg, m.name, false)
@@ -450,7 +454,12 @@ func (check *Checker) missingMethod(V, T Type, static bool, equivalent func(x, y
 
 			// methods may not have a fully set up signature yet
 			if check != nil {
-				check.objDecl(f, nil)
+				check.objDecl(f)
+			}
+
+			if f.nointerface {
+				state = nointerface
+				break
 			}
 
 			if !equivalent(f.typ, m.typ) {
@@ -469,7 +478,7 @@ func (check *Checker) missingMethod(V, T Type, static bool, equivalent func(x, y
 			// This method may be formatted in funcString below, so must have a fully
 			// set up signature.
 			if check != nil {
-				check.objDecl(f, nil)
+				check.objDecl(f)
 			}
 		}
 		switch state {
@@ -512,6 +521,8 @@ func (check *Checker) missingMethod(V, T Type, static bool, equivalent func(x, y
 			*cause = check.sprintf("(method %s has pointer receiver)", m.Name())
 		case field:
 			*cause = check.sprintf("(%s.%s is a field, not a method)", V, m.Name())
+		case nointerface:
+			*cause = check.sprintf("(%s method is marked 'nointerface')", m.Name())
 		default:
 			panic("unreachable")
 		}
@@ -537,7 +548,7 @@ func (check *Checker) hasAllMethods(V, T Type, static bool, equivalent func(x, y
 // hasInvalidEmbeddedFields reports whether T is a struct (or a pointer to a struct) that contains
 // (directly or indirectly) embedded fields with invalid types.
 func hasInvalidEmbeddedFields(T Type, seen map[*Struct]bool) bool {
-	if S, _ := under(derefStructPtr(T)).(*Struct); S != nil && !seen[S] {
+	if S, _ := derefStructPtr(T).Underlying().(*Struct); S != nil && !seen[S] {
 		if seen == nil {
 			seen = make(map[*Struct]bool)
 		}
@@ -552,14 +563,14 @@ func hasInvalidEmbeddedFields(T Type, seen map[*Struct]bool) bool {
 }
 
 func isInterfacePtr(T Type) bool {
-	p, _ := under(T).(*Pointer)
+	p, _ := T.Underlying().(*Pointer)
 	return p != nil && IsInterface(p.base)
 }
 
 // check may be nil.
 func (check *Checker) interfacePtrError(T Type) string {
 	assert(isInterfacePtr(T))
-	if p, _ := under(T).(*Pointer); isTypeParam(p.base) {
+	if p, _ := T.Underlying().(*Pointer); isTypeParam(p.base) {
 		return check.sprintf("type %s is pointer to type parameter, not type parameter", T)
 	}
 	return check.sprintf("type %s is pointer to interface, not interface", T)
@@ -632,8 +643,8 @@ func deref(typ Type) (Type, bool) {
 // derefStructPtr dereferences typ if it is a (named or unnamed) pointer to a
 // (named or unnamed) struct and returns its base. Otherwise it returns typ.
 func derefStructPtr(typ Type) Type {
-	if p, _ := under(typ).(*Pointer); p != nil {
-		if _, ok := under(p.base).(*Struct); ok {
+	if p, _ := typ.Underlying().(*Pointer); p != nil {
+		if _, ok := p.base.Underlying().(*Struct); ok {
 			return p.base
 		}
 	}
@@ -648,19 +659,6 @@ func concat(list []int, i int) []int {
 	return append(t, i)
 }
 
-// fieldIndex returns the index for the field with matching package and name, or a value < 0.
-// See Object.sameId for the meaning of foldCase.
-func fieldIndex(fields []*Var, pkg *Package, name string, foldCase bool) int {
-	if name != "_" {
-		for i, f := range fields {
-			if f.sameId(pkg, name, foldCase) {
-				return i
-			}
-		}
-	}
-	return -1
-}
-
 // methodIndex returns the index of and method with matching package and name, or (-1, nil).
 // See Object.sameId for the meaning of foldCase.
 func methodIndex(methods []*Func, pkg *Package, name string, foldCase bool) (int, *Func) {
@@ -672,4 +670,23 @@ func methodIndex(methods []*Func, pkg *Package, name string, foldCase bool) (int
 		}
 	}
 	return -1, nil
+}
+
+// Given a (possibly pointer to a) struct type and field index sequence,
+// fieldPath returns the dot-separated concatenated field names for the
+// given index sequence (e.g. "a.b.c").
+// Use for error reporting etc. where speed is not important.
+func fieldPath(typ Type, index []int) string {
+	var names []string
+	for _, i := range index {
+		u, ok := derefStructPtr(typ).Underlying().(*Struct)
+		if !ok {
+			// should not happen if index is valid for typ
+			break
+		}
+		fld := u.Field(i)
+		names = append(names, fld.name)
+		typ = fld.typ
+	}
+	return strings.Join(names, ".")
 }

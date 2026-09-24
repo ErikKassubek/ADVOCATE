@@ -80,15 +80,17 @@ func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, cho
 		o = ControllIf
 	case "S":
 		o = ControllSwitch
+	case "L":
+		o = ControllLoop
 	}
 
 	elem := ElementControllFlow{
-		ElementBase: this.newElementBase(routine),
+		ElementBase: this.newElementBase(this, routine),
 		t:           tInt,
 		numCases:    nc,
 		chosenCase:  cc,
 		op:          o,
-		pos:         newPosition(file, line),
+		pos:         NewPosition(file, line),
 		function:    getLastCall(routine),
 	}
 
@@ -101,11 +103,11 @@ func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, cho
 // MARK: ID
 // ========================================================
 
-// ObjID returns the ID of the primitive on which the operation was executed
+// ResourceID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementControllFlow) ObjID() int {
+func (this *ElementControllFlow) ResourceID() int {
 	return -1
 }
 
@@ -116,25 +118,12 @@ func (this *ElementControllFlow) ObjID() int {
 func (this *ElementControllFlow) setObjId(id int) {
 }
 
-// ========================================================
-// MARK: Index
-// ========================================================
-
-// Routine returns the routine ID of the element.
+// ResourceID returns the resource
 //
 // Returns:
-//   - int: The routine of the element
-func (this *ElementControllFlow) Routine() int {
-	return this.routine
-}
-
-// TraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementControllFlow) TraceIndex() (int, int) {
-	return this.routine, this.index
+//   - Resource: resource
+func (this *ElementControllFlow) Resource() Resource {
+	return NewResource(-1, nil)
 }
 
 // ========================================================
@@ -274,10 +263,46 @@ func (this *ElementControllFlow) String() string {
 		opStr = "I"
 	case ControllSwitch:
 		opStr = "S"
+	case ControllLoop:
+		opStr = "L"
 	default:
 		panic("Invalid op in Controll Flow Element")
 	}
 	return fmt.Sprintf("I,%d,%s,%d,%d,%s", this.t, opStr, this.numCases, this.chosenCase, this.Pos())
+}
+
+func (this *ElementControllFlow) StringLocal() string {
+	opStr := ""
+	switch this.op {
+	case ControllIf:
+		opStr = "I"
+	case ControllSwitch:
+		opStr = "S"
+	case ControllLoop:
+		opStr = "L"
+	default:
+		panic("Invalid op in Controll Flow Element")
+	}
+	return fmt.Sprintf("I,%d,%s,%d,%d,%s", this.t, opStr, this.numCases, this.chosenCase, this.Pos().Short())
+}
+
+// StringGui returns the simple gui representation of the element
+//
+// Returns:
+//   - string: The simple gui representation of the element
+func (this *ElementControllFlow) StringGui() string {
+	opStr := ""
+	switch this.op {
+	case ControllIf:
+		opStr = "I"
+	case ControllSwitch:
+		opStr = "S"
+	case ControllLoop:
+		opStr = "L"
+	default:
+		panic("Invalid op in Controll Flow Element")
+	}
+	return fmt.Sprintf("I,%s,%d,%d\n%s", opStr, this.numCases, this.chosenCase, this.Pos().Short())
 }
 
 // String returns the simple string representation of the element with leading routine
@@ -285,11 +310,11 @@ func (this *ElementControllFlow) String() string {
 // Returns:
 //   - string: The simple string representation of the element with leading routine
 func (this *ElementControllFlow) StringDebug() string {
-	routine := fmt.Sprintf("%4d", this.Routine())
+	routine := fmt.Sprintf("%4d", this.RoutineID())
 	if this.ElementBase.init {
 		routine = "   *"
 	}
-	return fmt.Sprintf("%s -> %s", routine, this.String())
+	return fmt.Sprintf("%s@%s", routine, this.String())
 }
 
 // ========================================================
@@ -365,20 +390,21 @@ func (this *ElementControllFlow) ReplayID() string {
 // Copy the element
 //
 // Parameter:
+//   - trace *Trace: the new trace
 //   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementControllFlow) Copy(mapping map[int]Element, keep bool) Element {
+func (this *ElementControllFlow) Copy(trace *Trace, mapping map[int]Element, keep bool) Element {
 	return &ElementControllFlow{
-		ElementBase: this.ElementBase.Copy(),
+		ElementBase: this.ElementBase.Copy(trace),
 		t:           this.t,
 		numCases:    this.numCases,
 		chosenCase:  this.chosenCase,
 		op:          this.op,
 		pos:         this.pos.copy(),
-		function:    this.function.CopyFunc(mapping, keep),
+		function:    this.function.CopyFunc(trace, mapping, keep),
 	}
 }
 

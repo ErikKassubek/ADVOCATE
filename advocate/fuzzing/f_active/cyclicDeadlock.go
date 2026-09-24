@@ -40,7 +40,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	// remove tail after lastTime and the last lock
 	tr.ShortenTrace(lastTime, true)
 	for _, elem := range bug.TraceElement2 {
-		tr.ShortenRoutine(elem.Routine(), elem.T(trace.Sorting))
+		tr.ShortenRoutine(elem.RoutineID(), elem.T(trace.Sorting))
 	}
 
 	var locksetElements []trace.Element
@@ -49,9 +49,9 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	for i, elem := range bug.TraceElement2 {
 		// This is one is guranteed to be in the lockset of elem
 		prevElement := bug.TraceElement2[(i+len(bug.TraceElement2)-1)%len(bug.TraceElement2)]
-		for j := tr.GetRoutineTrace(elem.Routine()).Len() - 1; j >= 0; j-- {
-			locksetElement := tr.GetRoutineTrace(elem.Routine()).At(j)
-			if locksetElement.ObjID() != prevElement.ObjID() {
+		for j := tr.GetRoutineTrace(elem.RoutineID()).Len() - 1; j >= 0; j-- {
+			locksetElement := tr.GetRoutineTrace(elem.RoutineID()).At(j)
+			if locksetElement.ResourceID() != prevElement.ResourceID() {
 				continue
 			}
 			if !locksetElement.(*trace.ElementMutex).IsLock() {
@@ -64,7 +64,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 
 	// If there are any unlocks in the remaining traces, try to ensure that those can happen before we run into the deadlock!
 	for _, relevantRoutineElem := range bug.TraceElement2 {
-		routine := relevantRoutineElem.Routine()                     // Iterate through all relevant routines
+		routine := relevantRoutineElem.RoutineID()                   // Iterate through all relevant routines
 		for _, unlock := range tr.GetRoutineTrace(routine).Elems() { // Iterate through all remaining elements in the routine
 			switch unlock := unlock.(type) {
 			case *trace.ElementMutex:
@@ -72,7 +72,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 					// Check if the unlocked mutex is in the locksets of the deadlock cycle
 					for _, lockElem := range locksetElements {
 						// If yes, make sure the unlock happens before the final lock attempts!
-						if (*unlock).ObjID() == lockElem.ObjID() {
+						if (*unlock).ResourceID() == lockElem.ResourceID() {
 							// Do nothing if the unlock already happens before the lockset element
 							if (*unlock).T(trace.Request) < lockElem.T(trace.Request) {
 								break
@@ -80,7 +80,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 
 							// Move the as much of the routine of the deadlocking element as possible behind this unlock!
 							var concurrentStartElem trace.Element = nil
-							for _, possibleStart := range tr.GetRoutineTrace(lockElem.Routine()).Elems() {
+							for _, possibleStart := range tr.GetRoutineTrace(lockElem.RoutineID()).Elems() {
 								if a_clock.GetHappensBefore(possibleStart.GetVC(a_clock.Weak), (*unlock).GetVC(a_clock.Weak)) == a_hb.Concurrent {
 									concurrentStartElem = possibleStart
 									break
@@ -88,12 +88,12 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 							}
 
 							if concurrentStartElem == nil {
-								log.Info("Could not find concurrent element for Routine", lockElem.Routine(), "so we cannot move it behind unlock", unlock.ObjID(), "in Routine", unlock.Routine())
+								log.Info("Could not find concurrent element for Routine", lockElem.RoutineID(), "so we cannot move it behind unlock", unlock.ResourceID(), "in Routine", unlock.RoutineID())
 								break
 							}
 
-							routineEndElem := tr.GetRoutineTrace(lockElem.Routine()).Last()
-							tr.ShiftRoutine(lockElem.Routine(), concurrentStartElem.T(trace.Request), ((*unlock).T(trace.Sorting)-concurrentStartElem.T(trace.Sorting))+1)
+							routineEndElem := tr.GetRoutineTrace(lockElem.RoutineID()).Last()
+							tr.ShiftRoutine(lockElem.RoutineID(), concurrentStartElem.T(trace.Request), ((*unlock).T(trace.Sorting)-concurrentStartElem.T(trace.Sorting))+1)
 							if routineEndElem.T(trace.Commit) > lastTime {
 								lastTime = routineEndElem.T(trace.Commit)
 							}
@@ -108,7 +108,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	tr.AddTraceElementReplay(lastTime+1, helper.ExitCodeCyclic)
 
 	for _, elem := range bug.TraceElement2 {
-		fmt.Println("Deadlocking Element: ", elem.Routine(), "M", elem.T(trace.Request), elem.T(trace.Commit), elem.ObjID())
+		fmt.Println("Deadlocking Element: ", elem.RoutineID(), "M", elem.T(trace.Request), elem.T(trace.Commit), elem.ResourceID())
 	}
 
 	return nil

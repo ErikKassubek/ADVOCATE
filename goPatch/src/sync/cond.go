@@ -13,22 +13,6 @@ import (
 	// ADVOCATE-END
 )
 
-// ADVOCATE-START
-//
-//go:linkname AdvocateAllocCondVar runtime.AdvocateAllocCondVar
-func AdvocateAllocCondVar(ptr unsafe.Pointer) {
-	if runtime.AdvocateTracingDisabled {
-		return
-	}
-	c := (*Cond)(ptr)
-	if c.id != 0 {
-		return
-	}
-	c.id = runtime.AdvocateAlloc("D", 0)
-}
-
-// ADVOCATE-END
-
 // Cond implements a condition variable, a rendezvous point
 // for goroutines waiting for or announcing the occurrence
 // of an event.
@@ -73,6 +57,22 @@ func NewCond(l Locker) *Cond {
 	return &Cond{L: l}
 }
 
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocCondVar runtime.AdvocateAllocCondVar
+func AdvocateAllocCondVar(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	c := (*Cond)(ptr)
+	if c.id != 0 {
+		return
+	}
+	c.id = runtime.AdvocateAlloc("D", 0)
+}
+
+// ADVOCATE-END
+
 // Wait atomically unlocks c.L and suspends execution
 // of the calling goroutine. After later resuming execution,
 // Wait locks c.L before returning. Unlike in other systems,
@@ -98,8 +98,8 @@ func (c *Cond) Wait() {
 	}
 
 	//record
-	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondWait)
-	defer runtime.AdvocateCondPost(advocateIndex)
+	advocateIndex := runtime.AdvocateCondReq(unsafe.Pointer(c), c.id, runtime.OperationCondWait)
+	defer runtime.AdvocateCondCom(advocateIndex)
 	// ADVOCATE-END
 
 	c.checker.check()
@@ -127,8 +127,8 @@ func (c *Cond) Signal() {
 	}
 
 	// recording
-	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondSignal)
-	defer runtime.AdvocateCondPost(advocateIndex)
+	advocateIndex := runtime.AdvocateCondReq(unsafe.Pointer(c), c.id, runtime.OperationCondSignal)
+	defer runtime.AdvocateCondCom(advocateIndex)
 	// ADVOCATE-END
 
 	c.checker.check()
@@ -137,8 +137,10 @@ func (c *Cond) Signal() {
 
 // Broadcast wakes all goroutines waiting on c.
 //
-// It is allowed but not required for the caller to hold c.L
-// during the call.
+// It is allowed but not required for the caller to hold c.L during the call.
+// The time it takes to run Broadcast is proportional to the number of waiting goroutines;
+// be aware that holding the lock across a call to Broadcast
+// will extend the amount of time that the lock is held.
 func (c *Cond) Broadcast() {
 	// ADVOCATE-START
 
@@ -150,8 +152,8 @@ func (c *Cond) Broadcast() {
 	}
 
 	//recording
-	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondBroadcast)
-	defer runtime.AdvocateCondPost(advocateIndex)
+	advocateIndex := runtime.AdvocateCondReq(unsafe.Pointer(c), c.id, runtime.OperationCondBroadcast)
+	defer runtime.AdvocateCondCom(advocateIndex)
 	// ADVOCATE-END
 
 	c.checker.check()

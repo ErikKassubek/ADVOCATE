@@ -12,7 +12,6 @@ import (
 	"go/token"
 	"internal/asan"
 	"internal/goarch"
-	"internal/goexperiment"
 	"internal/msan"
 	"internal/race"
 	"internal/testenv"
@@ -1277,10 +1276,6 @@ var deepEqualPerfTests = []struct {
 }
 
 func TestDeepEqualAllocs(t *testing.T) {
-	// TODO(prattmic): maps on stack
-	if goexperiment.SwissMap {
-		t.Skipf("Maps on stack not yet implemented")
-	}
 	if asan.Enabled {
 		t.Skip("test allocates more with -asan; see #70079")
 	}
@@ -4182,6 +4177,9 @@ type MyBytesArray [4]byte
 type MyRunes []int32
 type MyFunc func()
 type MyByte byte
+type MyRune rune
+type MyBytes2 []MyByte
+type MyRunes2 []MyRune
 
 type IntChan chan int
 type IntChanRecv <-chan int
@@ -4485,6 +4483,38 @@ var convertTests = []struct {
 	{V(MyString("runes♝")), V(MyRunes("runes♝"))},
 	{V(MyRunes("runes♕")), V(MyString("runes♕"))},
 
+	// []namedByte
+	{V(string("namedByte1")), V([]MyByte("namedByte1"))},
+	{V(MyString("namedByte2")), V([]MyByte("namedByte2"))},
+	{V([]MyByte("namedByte3")), V(string("namedByte3"))},
+	{V([]MyByte("namedByte4")), V(MyString("namedByte4"))},
+
+	// []namedRune
+	{V(string("namedRune1")), V([]MyRune("namedRune1"))},
+	{V(MyString("namedRune2")), V([]MyRune("namedRune2"))},
+	{V([]MyRune("namedRune3")), V(string("namedRune3"))},
+	{V([]MyRune("namedRune4")), V(MyString("namedRune4"))},
+
+	// named []namedByte
+	{V(string("namedByte5")), V(MyBytes2("namedByte5"))},
+	{V(MyString("namedByte6")), V(MyBytes2("namedByte6"))},
+	{V(MyBytes2("namedByte7")), V(string("namedByte7"))},
+	{V(MyBytes2("namedByte8")), V(MyString("namedByte8"))},
+
+	// named []namedRune
+	{V(string("namedRune5")), V(MyRunes2("namedRune5"))},
+	{V(MyString("namedRune6")), V(MyRunes2("namedRune6"))},
+	{V(MyRunes2("namedRune7")), V(string("namedRune7"))},
+	{V(MyRunes2("namedRune8")), V(MyString("namedRune8"))},
+
+	// random ok conversions of the above types
+	{V(MyBytes2("")), V([0]MyByte{})},
+	{V(MyBytes2("AA")), V([2]MyByte{65, 65})},
+	{V(MyBytes2("")), V([]MyByte{})},
+	{V([]MyByte{}), V(MyBytes2(""))},
+	{V([]MyRune("namedRuneA")), V(MyRunes2("namedRuneA"))},
+	{V(MyRunes2("namedRuneB")), V([]MyRune("namedRuneB"))},
+
 	// slice to array
 	{V([]byte(nil)), V([0]byte{})},
 	{V([]byte{}), V([0]byte{})},
@@ -4763,6 +4793,60 @@ func TestConvertPanic(t *testing.T) {
 	}
 	shouldPanic("reflect: cannot convert slice with length 4 to array with length 8", func() {
 		_ = v.Convert(pt.Elem())
+	})
+}
+
+type issue80332ZeroLen struct {
+	Type
+}
+
+func (z issue80332ZeroLen) Len() int {
+	return 0
+}
+
+func TestIssue80332(t *testing.T) {
+	type helper struct {
+		x [1]int
+		y uintptr
+	}
+	var e helper
+	value := ValueOf(e.x[:])
+	fakeType := issue80332ZeroLen{TypeOf([2]int{})}
+
+	shouldPanic("reflect: cannot convert slice with length 1 to array with length 2", func() {
+		_ = value.Convert(fakeType)
+	})
+}
+
+type issue80332FakeChan struct {
+	Type
+}
+
+func (c issue80332FakeChan) Kind() Kind {
+	return Chan
+}
+
+func (c issue80332FakeChan) ChanDir() ChanDir {
+	return BothDir
+}
+
+type issue80332FakeMap struct {
+	Type
+}
+
+func (m issue80332FakeMap) Kind() Kind {
+	return Map
+}
+
+func TestIssue80332Others(t *testing.T) {
+	fakeChan := issue80332FakeChan{TypeOf(0)}
+	shouldPanic("reflect.MakeChan of non-chan type", func() {
+		_ = MakeChan(fakeChan, 0)
+	})
+
+	fakeMap := issue80332FakeMap{TypeOf(0)}
+	shouldPanic("reflect.MakeMapWithSize of non-map type", func() {
+		_ = MakeMapWithSize(fakeMap, 0)
 	})
 }
 
@@ -6203,19 +6287,6 @@ func TestChanOfDir(t *testing.T) {
 }
 
 func TestChanOfGC(t *testing.T) {
-	done := make(chan bool, 1)
-	go func() {
-		select {
-		case <-done:
-		case <-time.After(5 * time.Second):
-			panic("deadlock in TestChanOfGC")
-		}
-	}()
-
-	defer func() {
-		done <- true
-	}()
-
 	type T *uintptr
 	tt := TypeOf(T(nil))
 	ct := ChanOf(BothDir, tt)
@@ -6825,7 +6896,7 @@ func TestMakeFuncStackCopy(t *testing.T) {
 	ValueOf(&concrete).Elem().Set(fn)
 	x := concrete(nil, 7)
 	if x != 9 {
-		t.Errorf("have %#q want 9", x)
+		t.Errorf("have %d want 9", x)
 	}
 }
 
@@ -7343,7 +7414,8 @@ func TestGCBits(t *testing.T) {
 	verifyGCBits(t, TypeOf(([][10000]Xscalar)(nil)), lit(1))
 	verifyGCBits(t, SliceOf(ArrayOf(10000, Tscalar)), lit(1))
 
-	testGCBitsMap(t)
+	// For maps, we don't manually construct GC data, instead using the
+	// public reflect API in groupAndSlotOf.
 }
 
 func rep(n int, b []byte) []byte { return bytes.Repeat(b, n) }
@@ -7532,7 +7604,6 @@ func TestTypeStrings(t *testing.T) {
 func TestOffsetLock(t *testing.T) {
 	var wg sync.WaitGroup
 	for i := 0; i < 4; i++ {
-		i := i
 		wg.Add(1)
 		go func() {
 			for j := 0; j < 50; j++ {
@@ -8114,11 +8185,11 @@ func TestValue_Len(t *testing.T) {
 func TestValue_Comparable(t *testing.T) {
 	var a int
 	var s []int
-	var i interface{} = a
-	var iNil interface{}
-	var iSlice interface{} = s
-	var iArrayFalse interface{} = [2]interface{}{1, map[int]int{}}
-	var iArrayTrue interface{} = [2]interface{}{1, struct{ I interface{} }{1}}
+	var i any = a
+	var iNil any
+	var iSlice any = s
+	var iArrayFalse any = [2]any{1, map[int]int{}}
+	var iArrayTrue any = [2]any{1, struct{ I any }{1}}
 	var testcases = []struct {
 		value      Value
 		comparable bool
@@ -8255,22 +8326,22 @@ func TestValue_Comparable(t *testing.T) {
 			false,
 		},
 		{
-			ValueOf([2]struct{ I interface{} }{{1}, {1}}),
+			ValueOf([2]struct{ I any }{{1}, {1}}),
 			true,
 			false,
 		},
 		{
-			ValueOf([2]struct{ I interface{} }{{[]int{}}, {1}}),
+			ValueOf([2]struct{ I any }{{[]int{}}, {1}}),
 			false,
 			false,
 		},
 		{
-			ValueOf([2]interface{}{1, struct{ I int }{1}}),
+			ValueOf([2]any{1, struct{ I int }{1}}),
 			true,
 			false,
 		},
 		{
-			ValueOf([2]interface{}{[1]interface{}{map[int]int{}}, struct{ I int }{1}}),
+			ValueOf([2]any{[1]any{map[int]int{}}, struct{ I int }{1}}),
 			false,
 			false,
 		},
@@ -8304,10 +8375,10 @@ type ValueEqualTest struct {
 	vDeref, uDeref bool
 }
 
-var equalI interface{} = 1
-var equalSlice interface{} = []int{1}
-var nilInterface interface{}
-var mapInterface interface{} = map[int]int{}
+var equalI any = 1
+var equalSlice any = []int{1}
+var nilInterface any
+var mapInterface any = map[int]int{}
 
 var valueEqualTests = []ValueEqualTest{
 	{
@@ -8486,8 +8557,8 @@ func TestValue_EqualNonComparable(t *testing.T) {
 		// Value of array is non-comparable because of non-comparable elements.
 		ValueOf([0]map[int]int{}),
 		ValueOf([0]func(){}),
-		ValueOf(([1]struct{ I interface{} }{{[]int{}}})),
-		ValueOf(([1]interface{}{[1]interface{}{map[int]int{}}})),
+		ValueOf(([1]struct{ I any }{{[]int{}}})),
+		ValueOf(([1]any{[1]any{map[int]int{}}})),
 	}
 	for _, value := range values {
 		// Panic when reflect.Value.Equal using two valid non-comparable values.
@@ -8509,8 +8580,7 @@ func TestInitFuncTypes(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			ipT := TypeOf(net.IP{})
-			for i := 0; i < ipT.NumMethod(); i++ {
-				_ = ipT.Method(i)
+			for range ipT.Methods() {
 			}
 		}()
 	}
@@ -8552,7 +8622,6 @@ func TestClear(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			if !tc.testFunc(tc.value) {
@@ -8586,7 +8655,6 @@ func TestValuePointerAndUnsafePointer(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.val.Pointer(); got != uintptr(tc.wantUnsafePointer) {
 				t.Errorf("unexpected uintptr result, got %#x, want %#x", got, uintptr(tc.wantUnsafePointer))
@@ -8787,6 +8855,9 @@ func TestTypeAssertAllocs(t *testing.T) {
 
 	typeAssertAllocs[time.Time](t, ValueOf(new(time.Time)).Elem(), 0)
 	typeAssertAllocs[time.Time](t, ValueOf(*new(time.Time)), 0)
+
+	type I interface{ foo() }
+	typeAssertAllocs[I](t, ValueOf(new(string)).Elem(), 0) // assert fail doesn't alloc
 }
 
 func typeAssertAllocs[T any](t *testing.T, val Value, wantAllocs int) {

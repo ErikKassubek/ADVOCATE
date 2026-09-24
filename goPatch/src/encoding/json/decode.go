@@ -19,7 +19,6 @@ import (
 	"unicode"
 	"unicode/utf16"
 	"unicode/utf8"
-	_ "unsafe" // for linkname
 )
 
 // Unmarshal parses the JSON-encoded data and stores the result
@@ -62,8 +61,10 @@ import (
 //   - map[string]any, for JSON objects
 //   - nil for JSON null
 //
-// To unmarshal a JSON array into a slice, Unmarshal resets the slice length
-// to zero and then appends each element to the slice.
+// To unmarshal a JSON array into a slice, Unmarshal decodes each JSON array
+// element into the corresponding slice element, reusing existing slice
+// elements in-place. The slice grows to accommodate additional elements,
+// or is truncated if the JSON array is shorter.
 // As a special case, to unmarshal an empty JSON array into a slice,
 // Unmarshal replaces the slice with a new empty slice.
 //
@@ -482,11 +483,11 @@ func indirect(v reflect.Value, decodingNull bool) (Unmarshaler, encoding.TextUnm
 			v.Set(reflect.New(v.Type().Elem()))
 		}
 		if v.Type().NumMethod() > 0 && v.CanInterface() {
-			if u, ok := v.Interface().(Unmarshaler); ok {
+			if u, ok := reflect.TypeAssert[Unmarshaler](v); ok {
 				return u, nil, reflect.Value{}
 			}
 			if !decodingNull {
-				if u, ok := v.Interface().(encoding.TextUnmarshaler); ok {
+				if u, ok := reflect.TypeAssert[encoding.TextUnmarshaler](v); ok {
 					return nil, u, reflect.Value{}
 				}
 			}
@@ -1190,15 +1191,6 @@ func unquote(s []byte) (t string, ok bool) {
 	return
 }
 
-// unquoteBytes should be an internal detail,
-// but widely used packages access it using linkname.
-// Notable members of the hall of shame include:
-//   - github.com/bytedance/sonic
-//
-// Do not remove or change the type signature.
-// See go.dev/issue/67401.
-//
-//go:linkname unquoteBytes
 func unquoteBytes(s []byte) (t []byte, ok bool) {
 	if len(s) < 2 || s[0] != '"' || s[len(s)-1] != '"' {
 		return
@@ -1213,10 +1205,6 @@ func unquoteBytes(s []byte) (t []byte, ok bool) {
 		c := s[r]
 		if c == '\\' || c == '"' || c < ' ' {
 			break
-		}
-		if c < utf8.RuneSelf {
-			r++
-			continue
 		}
 		rr, size := utf8.DecodeRune(s[r:])
 		if rr == utf8.RuneError && size == 1 {

@@ -260,7 +260,6 @@ func BenchmarkMarshalCorpusFile(b *testing.B) {
 	}
 
 	for sz := 1; sz <= len(buf); sz <<= 1 {
-		sz := sz
 		b.Run(strconv.Itoa(sz), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				b.SetBytes(int64(sz))
@@ -270,7 +269,7 @@ func BenchmarkMarshalCorpusFile(b *testing.B) {
 	}
 }
 
-// BenchmarkUnmarshalCorpusfile measures the time it takes to deserialize
+// BenchmarkUnmarshalCorpusFile measures the time it takes to deserialize
 // files encoding byte slices of various sizes. The slice contains a repeating
 // sequence of bytes 0-255 to mix escaped and non-escaped characters.
 func BenchmarkUnmarshalCorpusFile(b *testing.B) {
@@ -280,7 +279,6 @@ func BenchmarkUnmarshalCorpusFile(b *testing.B) {
 	}
 
 	for sz := 1; sz <= len(buf); sz <<= 1 {
-		sz := sz
 		data := marshalCorpusFile(buf[:sz])
 		b.Run(strconv.Itoa(sz), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {

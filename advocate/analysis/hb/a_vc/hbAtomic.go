@@ -20,7 +20,7 @@ import (
 // Parameter:
 //   - at *trace.TraceElementAtomic: the atomic operation
 func UpdateHBAtomic(at *trace.ElementAtomic) {
-	routine := at.Routine()
+	routine := at.RoutineID()
 
 	at.Vc(a_clock.Strong, CurrentVC[routine])
 	at.Vc(a_clock.Weak, CurrentWVC[routine])
@@ -55,7 +55,7 @@ func Write(at *trace.ElementAtomic, routine int) {
 //   - sync bool: sync reader with last writer
 //   - routine int: the routine of at
 func Read(at *trace.ElementAtomic, sync bool, routine int) {
-	id := at.ObjID()
+	id := at.ResourceID()
 
 	if sync && a_base.LastAtomicWriter[id] != nil {
 		CurrentVC[routine].Sync(a_base.LastAtomicWriter[id].GetVC(a_clock.Strong))

@@ -408,7 +408,7 @@ CALLFN(·call268435456, 268435456)
 CALLFN(·call536870912, 536870912)
 CALLFN(·call1073741824, 1073741824)
 
-TEXT runtime·procyield(SB),NOSPLIT,$0-0
+TEXT runtime·procyieldAsm(SB),NOSPLIT,$0-0
 	RET
 
 // Save state of caller into g->sched,
@@ -452,6 +452,7 @@ TEXT ·asmcgocall(SB),NOSPLIT,$0-20
 	// We get called to create new OS threads too, and those
 	// come in on the m->g0 stack already. Or we might already
 	// be on the m->gsignal stack.
+	BEQ	g, R0, nosave
 	MOVV	g_m(g), R5
 	MOVV	m_gsignal(R5), R6
 	BEQ	R6, g, g0
@@ -481,6 +482,20 @@ g0:
 	SUBVU	R6, R5
 	MOVV	R5, R29
 
+	MOVW	R2, ret+16(FP)
+	RET
+
+nosave:
+	// Running on a system stack, perhaps even without a g.
+	// Having no g can happen during thread creation or thread teardown.
+	MOVV	fn+0(FP), R25
+	MOVV	arg+8(FP), R4
+	MOVV	R29, R3
+	ADDV	$-16, R29
+	MOVV	R0, 0(R29)	// Where above code stores g, in case someone looks during debugging.
+	MOVV	R3, 8(R29)	// Save original stack pointer.
+	JAL	(R25)
+	MOVV	8(R29), R29	// Restore stack pointer.
 	MOVW	R2, ret+16(FP)
 	RET
 
@@ -631,16 +646,6 @@ TEXT runtime·abort(SB),NOSPLIT|NOFRAME,$0-0
 	MOVW	(R0), R0
 	UNDEF
 
-// AES hashing not implemented for mips64
-TEXT runtime·memhash(SB),NOSPLIT|NOFRAME,$0-32
-	JMP	runtime·memhashFallback(SB)
-TEXT runtime·strhash(SB),NOSPLIT|NOFRAME,$0-24
-	JMP	runtime·strhashFallback(SB)
-TEXT runtime·memhash32(SB),NOSPLIT|NOFRAME,$0-24
-	JMP	runtime·memhash32Fallback(SB)
-TEXT runtime·memhash64(SB),NOSPLIT|NOFRAME,$0-24
-	JMP	runtime·memhash64Fallback(SB)
-
 // Called from cgo wrappers, this function returns g->m->curg.stack.hi.
 // Must obey the gcc calling convention.
 TEXT _cgo_topofstack(SB),NOSPLIT,$16
@@ -665,11 +670,6 @@ TEXT runtime·goexit(SB),NOSPLIT|NOFRAME|TOPFRAME,$0-0
 	JAL	runtime·goexit1(SB)	// does not return
 	// traceback from goexit1 must hit code range of goexit
 	NOR	R0, R0	// NOP
-
-TEXT ·checkASM(SB),NOSPLIT,$0-1
-	MOVW	$1, R1
-	MOVB	R1, ret+0(FP)
-	RET
 
 // gcWriteBarrier informs the GC about heap pointer writes.
 //
@@ -791,76 +791,30 @@ TEXT runtime·gcWriteBarrier8<ABIInternal>(SB),NOSPLIT,$0
 	MOVV	$64, R25
 	JMP	gcWriteBarrier<>(SB)
 
-// Note: these functions use a special calling convention to save generated code space.
-// Arguments are passed in registers, but the space for those arguments are allocated
-// in the caller's stack frame. These stubs write the args into that stack space and
-// then tail call to the corresponding runtime handler.
-// The tail call makes these stubs disappear in backtraces.
-TEXT runtime·panicIndex(SB),NOSPLIT,$0-16
-	MOVV	R1, x+0(FP)
-	MOVV	R2, y+8(FP)
-	JMP	runtime·goPanicIndex(SB)
-TEXT runtime·panicIndexU(SB),NOSPLIT,$0-16
-	MOVV	R1, x+0(FP)
-	MOVV	R2, y+8(FP)
-	JMP	runtime·goPanicIndexU(SB)
-TEXT runtime·panicSliceAlen(SB),NOSPLIT,$0-16
-	MOVV	R2, x+0(FP)
-	MOVV	R3, y+8(FP)
-	JMP	runtime·goPanicSliceAlen(SB)
-TEXT runtime·panicSliceAlenU(SB),NOSPLIT,$0-16
-	MOVV	R2, x+0(FP)
-	MOVV	R3, y+8(FP)
-	JMP	runtime·goPanicSliceAlenU(SB)
-TEXT runtime·panicSliceAcap(SB),NOSPLIT,$0-16
-	MOVV	R2, x+0(FP)
-	MOVV	R3, y+8(FP)
-	JMP	runtime·goPanicSliceAcap(SB)
-TEXT runtime·panicSliceAcapU(SB),NOSPLIT,$0-16
-	MOVV	R2, x+0(FP)
-	MOVV	R3, y+8(FP)
-	JMP	runtime·goPanicSliceAcapU(SB)
-TEXT runtime·panicSliceB(SB),NOSPLIT,$0-16
-	MOVV	R1, x+0(FP)
-	MOVV	R2, y+8(FP)
-	JMP	runtime·goPanicSliceB(SB)
-TEXT runtime·panicSliceBU(SB),NOSPLIT,$0-16
-	MOVV	R1, x+0(FP)
-	MOVV	R2, y+8(FP)
-	JMP	runtime·goPanicSliceBU(SB)
-TEXT runtime·panicSlice3Alen(SB),NOSPLIT,$0-16
-	MOVV	R3, x+0(FP)
-	MOVV	R4, y+8(FP)
-	JMP	runtime·goPanicSlice3Alen(SB)
-TEXT runtime·panicSlice3AlenU(SB),NOSPLIT,$0-16
-	MOVV	R3, x+0(FP)
-	MOVV	R4, y+8(FP)
-	JMP	runtime·goPanicSlice3AlenU(SB)
-TEXT runtime·panicSlice3Acap(SB),NOSPLIT,$0-16
-	MOVV	R3, x+0(FP)
-	MOVV	R4, y+8(FP)
-	JMP	runtime·goPanicSlice3Acap(SB)
-TEXT runtime·panicSlice3AcapU(SB),NOSPLIT,$0-16
-	MOVV	R3, x+0(FP)
-	MOVV	R4, y+8(FP)
-	JMP	runtime·goPanicSlice3AcapU(SB)
-TEXT runtime·panicSlice3B(SB),NOSPLIT,$0-16
-	MOVV	R2, x+0(FP)
-	MOVV	R3, y+8(FP)
-	JMP	runtime·goPanicSlice3B(SB)
-TEXT runtime·panicSlice3BU(SB),NOSPLIT,$0-16
-	MOVV	R2, x+0(FP)
-	MOVV	R3, y+8(FP)
-	JMP	runtime·goPanicSlice3BU(SB)
-TEXT runtime·panicSlice3C(SB),NOSPLIT,$0-16
-	MOVV	R1, x+0(FP)
-	MOVV	R2, y+8(FP)
-	JMP	runtime·goPanicSlice3C(SB)
-TEXT runtime·panicSlice3CU(SB),NOSPLIT,$0-16
-	MOVV	R1, x+0(FP)
-	MOVV	R2, y+8(FP)
-	JMP	runtime·goPanicSlice3CU(SB)
-TEXT runtime·panicSliceConvert(SB),NOSPLIT,$0-16
-	MOVV	R3, x+0(FP)
-	MOVV	R4, y+8(FP)
-	JMP	runtime·goPanicSliceConvert(SB)
+TEXT runtime·panicBounds<ABIInternal>(SB),NOSPLIT,$144-0
+	NO_LOCAL_POINTERS
+	// Save all 16 int registers that could have an index in them.
+	// They may be pointers, but if they are they are dead.
+	// Skip R0 aka ZERO.
+	MOVV	R1, 24(R29)
+	MOVV	R2, 32(R29)
+	MOVV	R3, 40(R29)
+	MOVV	R4, 48(R29)
+	MOVV	R5, 56(R29)
+	MOVV	R6, 64(R29)
+	MOVV	R7, 72(R29)
+	MOVV	R8, 80(R29)
+	MOVV	R9, 88(R29)
+	MOVV	R10, 96(R29)
+	MOVV	R11, 104(R29)
+	MOVV	R12, 112(R29)
+	MOVV	R13, 120(R29)
+	MOVV	R14, 128(R29)
+	MOVV	R15, 136(R29)
+	MOVV	R16, 144(R29)
+
+	MOVV	R31, 8(R29)	// PC immediately after call to panicBounds
+	ADDV	$24, R29, R1	// pointer to save area
+	MOVV	R1, 16(R29)
+	CALL	runtime·panicBounds64<ABIInternal>(SB)
+	RET

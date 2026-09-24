@@ -502,11 +502,6 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	timer.Start(timer.Run)
 	defer timer.Stop(timer.Run)
 
-	// Remove header just in case
-	if err := importRemoverUnit(file); err != nil {
-		log.Error("Failed to remove header: ", err)
-	}
-
 	os.Unsetenv("GOROOT")
 
 	log.Info("Run T0")
@@ -543,13 +538,8 @@ func unitTestRecord(pkg, file, testName string,
 
 	isFuzzing := (fuzzing > 0)
 
-	// Remove header just in case
-	if err := importRemoverUnit(file); err != nil {
-		return fmt.Errorf("Failed to remove header: %v", err)
-	}
-
 	// Add header
-	buildFlags, err := importInsertUnit(file, testName, false, fuzzing, fuzzingPath, false)
+	buildFlags, err := buildArgsUnit(file, testName, false, fuzzing, fuzzingPath, false)
 	if err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
@@ -582,9 +572,6 @@ func unitTestRecord(pkg, file, testName string,
 	if err != nil {
 		log.Errorf("Failed to unset GOROOT: ", err.Error())
 	}
-
-	// Remove header after the test
-	err = importRemoverUnit(file)
 
 	return err
 }
@@ -666,7 +653,7 @@ func unitTestReplay(dir, pkg, file,
 			continue
 		}
 
-		buildFlags, _ := importInsertUnit(file, testName, true, -1, traceNum, record)
+		buildFlags, _ := buildArgsUnit(file, testName, true, -1, traceNum, record)
 
 		os.Setenv("GOROOT", paths.GoPatch)
 
@@ -682,9 +669,6 @@ func unitTestReplay(dir, pkg, file,
 		}
 
 		os.Unsetenv("GOROOT")
-
-		// Remove reorder header
-		importRemoverUnit(file)
 	}
 
 	return len(rewrittenTraces)

@@ -20,7 +20,7 @@ import (
 // Parameter:
 //   - wa *trace.TraceElementWait: the wait group operation
 func UpdateHBWait(wa *trace.ElementWait) {
-	routine := wa.Routine()
+	routine := wa.RoutineID()
 	wa.Vc(a_clock.Strong, CurrentVC[routine])
 	wa.Vc(a_clock.Weak, CurrentWVC[routine])
 
@@ -40,8 +40,8 @@ func UpdateHBWait(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Change(wa *trace.ElementWait) {
-	id := wa.ObjID()
-	routine := wa.Routine()
+	id := wa.ResourceID()
+	routine := wa.RoutineID()
 
 	lw := a_base.LastChangeWG[id]
 	if lw != nil {
@@ -58,8 +58,8 @@ func Change(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Wait(wa *trace.ElementWait) {
-	id := wa.ObjID()
-	routine := wa.Routine()
+	id := wa.ResourceID()
+	routine := wa.RoutineID()
 
 	if wa.Committed() {
 		lc := a_base.LastChangeWG[id]

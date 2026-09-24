@@ -23,8 +23,8 @@ const (
 	writeMsgSyscallName = "sendmsg"
 )
 
-func newFD(sysfd, family, sotype int, net string) (*netFD, error) {
-	ret := &netFD{
+func newFD(sysfd, family, sotype int, net string) *netFD {
+	return &netFD{
 		pfd: poll.FD{
 			Sysfd:         sysfd,
 			IsStream:      sotype == syscall.SOCK_STREAM,
@@ -34,7 +34,6 @@ func newFD(sysfd, family, sotype int, net string) (*netFD, error) {
 		sotype: sotype,
 		net:    net,
 	}
-	return ret, nil
 }
 
 func (fd *netFD) init() error {
@@ -74,46 +73,35 @@ func (fd *netFD) connect(ctx context.Context, la, ra syscall.Sockaddr) (rsa sysc
 	if err := fd.pfd.Init(fd.net, true); err != nil {
 		return nil, err
 	}
-	if deadline, hasDeadline := ctx.Deadline(); hasDeadline {
-		fd.pfd.SetWriteDeadline(deadline)
-		defer fd.pfd.SetWriteDeadline(noDeadline)
-	}
 
-	// Start the "interrupter" goroutine, if this context might be canceled.
-	//
-	// The interrupter goroutine waits for the context to be done and
-	// interrupts the dial (by altering the fd's write deadline, which
-	// wakes up waitWrite).
 	ctxDone := ctx.Done()
 	if ctxDone != nil {
-		// Wait for the interrupter goroutine to exit before returning
-		// from connect.
-		done := make(chan struct{})
-		interruptRes := make(chan error)
+		if deadline, hasDeadline := ctx.Deadline(); hasDeadline {
+			fd.pfd.SetWriteDeadline(deadline)
+			defer fd.pfd.SetWriteDeadline(noDeadline)
+		}
+
+		// Load the hook function synchronously to prevent a race
+		// with test code that restores the old value.
+		testHookCanceledDial := testHookCanceledDial
+		stop := context.AfterFunc(ctx, func() {
+			// Force the runtime's poller to immediately give up
+			// waiting for writability, unblocking waitWrite
+			// below.
+			_ = fd.pfd.SetWriteDeadline(aLongTimeAgo)
+			testHookCanceledDial()
+		})
 		defer func() {
-			close(done)
-			if ctxErr := <-interruptRes; ctxErr != nil && ret == nil {
-				// The interrupter goroutine called SetWriteDeadline,
-				// but the connect code below had returned from
-				// waitWrite already and did a successful connect (ret
-				// == nil). Because we've now poisoned the connection
-				// by making it unwritable, don't return a successful
-				// dial. This was issue 16523.
-				ret = mapErr(ctxErr)
-				fd.Close() // prevent a leak
-			}
-		}()
-		go func() {
-			select {
-			case <-ctxDone:
-				// Force the runtime's poller to immediately give up
-				// waiting for writability, unblocking waitWrite
-				// below.
-				fd.pfd.SetWriteDeadline(aLongTimeAgo)
-				testHookCanceledDial()
-				interruptRes <- ctx.Err()
-			case <-done:
-				interruptRes <- nil
+			if !stop() && ret == nil {
+				// The context.AfterFunc has called or is about to call
+				// SetWriteDeadline, but the connect code below had
+				// returned from waitWrite already and did a successful
+				// connect (ret == nil). Because we've now poisoned the
+				// connection by making it unwritable, don't return a
+				// successful dial. This was issue 16523.
+				ret = mapErr(ctx.Err())
+				// The caller closes fd on error, so there's no need to
+				// wait for the SetWriteDeadline call to return.
 			}
 		}()
 	}
@@ -166,10 +154,7 @@ func (fd *netFD) accept() (netfd *netFD, err error) {
 		return nil, err
 	}
 
-	if netfd, err = newFD(d, fd.family, fd.sotype, fd.net); err != nil {
-		poll.CloseFunc(d)
-		return nil, err
-	}
+	netfd = newFD(d, fd.family, fd.sotype, fd.net)
 	if err = netfd.init(); err != nil {
 		netfd.Close()
 		return nil, err

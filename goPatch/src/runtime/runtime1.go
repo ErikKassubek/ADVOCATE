@@ -5,10 +5,12 @@
 package runtime
 
 import (
+	"internal/abi"
 	"internal/bytealg"
 	"internal/goarch"
+	"internal/godebugs"
 	"internal/runtime/atomic"
-	"internal/runtime/strconv"
+	"internal/strconv"
 	"unsafe"
 )
 
@@ -39,7 +41,7 @@ func gotraceback() (level int32, all, crash bool) {
 	gp := getg()
 	t := atomic.Load(&traceback_cache)
 	crash = t&tracebackCrash != 0
-	all = gp.m.throwing >= throwTypeUser || t&tracebackAll != 0
+	all = gp.m.throwing > throwTypeUser || t&tracebackAll != 0
 	if gp.m.traceback != 0 {
 		level = int32(gp.m.traceback)
 	} else if gp.m.throwing >= throwTypeRuntime {
@@ -212,10 +214,6 @@ func check() {
 		throw("bad unsafe.Sizeof y1")
 	}
 
-	if timediv(12345*1000000000+54321, 1000000000, &e) != 12345 || e != 54321 {
-		throw("bad timediv")
-	}
-
 	var z uint32
 	z = 1
 	if !atomic.Cas(&z, 1, 2) {
@@ -290,10 +288,6 @@ func check() {
 	if fixedStack != round2(fixedStack) {
 		throw("FixedStack is not power-of-2")
 	}
-
-	if !checkASM() {
-		throw("assembly checks failed")
-	}
 }
 
 type dbgVar struct {
@@ -355,21 +349,14 @@ var debug struct {
 
 	panicnil atomic.Int32
 
-	// asynctimerchan controls whether timer channels
-	// behave asynchronously (as in Go 1.22 and earlier)
-	// instead of their Go 1.23+ synchronous behavior.
-	// The value can change at any time (in response to os.Setenv("GODEBUG"))
-	// and affects all extant timer channels immediately.
-	// Programs wouldn't normally change over an execution,
-	// but allowing it is convenient for testing and for programs
-	// that do an os.Setenv in main.init or main.main.
-	asynctimerchan atomic.Int32
+	// tracebacklabels controls the inclusion of goroutine labels in the
+	// goroutine status header line.
+	tracebacklabels atomic.Int32
 }
 
 var dbgvars = []*dbgVar{
 	{name: "adaptivestackstart", value: &debug.adaptivestackstart},
 	{name: "asyncpreemptoff", value: &debug.asyncpreemptoff},
-	{name: "asynctimerchan", atomic: &debug.asynctimerchan},
 	{name: "cgocheck", value: &debug.cgocheck},
 	{name: "clobberfree", value: &debug.clobberfree},
 	{name: "containermaxprocs", value: &debug.containermaxprocs, def: 1},
@@ -398,11 +385,12 @@ var dbgvars = []*dbgVar{
 	{name: "traceallocfree", atomic: &debug.traceallocfree},
 	{name: "tracecheckstackownership", value: &debug.traceCheckStackOwnership},
 	{name: "tracebackancestors", value: &debug.tracebackancestors},
+	{name: "tracebacklabels", atomic: &debug.tracebacklabels, def: 1},
 	{name: "tracefpunwindoff", value: &debug.tracefpunwindoff},
 	{name: "updatemaxprocs", value: &debug.updatemaxprocs, def: 1},
 }
 
-func parsedebugvars() {
+func parseRuntimeDebugVars(godebug string) {
 	// defaults
 	debug.cgocheck = 1
 	debug.invalidptr = 1
@@ -420,12 +408,6 @@ func parsedebugvars() {
 	}
 	debug.traceadvanceperiod = defaultTraceAdvancePeriod
 
-	godebug := gogetenv("GODEBUG")
-
-	p := new(string)
-	*p = godebug
-	godebugEnv.Store(p)
-
 	// apply runtime defaults, if any
 	for _, v := range dbgvars {
 		if v.def != 0 {
@@ -437,7 +419,6 @@ func parsedebugvars() {
 			}
 		}
 	}
-
 	// apply compile-time GODEBUG settings
 	parsegodebug(godebugDefault, nil)
 
@@ -463,6 +444,12 @@ func parsedebugvars() {
 	if debug.gccheckmark > 0 {
 		debug.asyncpreemptoff = 1
 	}
+}
+
+func finishDebugVarsSetup() {
+	p := new(string)
+	*p = gogetenv("GODEBUG")
+	godebugEnv.Store(p)
 
 	setTraceback(gogetenv("GOTRACEBACK"))
 	traceback_env = traceback_cache
@@ -482,6 +469,14 @@ func reparsedebugvars(env string) {
 			v.atomic.Store(0)
 		}
 	}
+}
+
+// If an invalid GODEBUG setting is found during startup time,
+// invalidGODEBUG is set to that setting so it can be reported
+// when initialization has progressed sufficiently.
+var invalidGODEBUG struct {
+	key, value string
+	removed    int
 }
 
 // parsegodebug parses the godebug string, updating variables listed in dbgvars.
@@ -522,6 +517,23 @@ func parsegodebug(godebug string, seen map[string]bool) {
 			continue
 		}
 		key, value := field[:i], field[i+1:]
+
+		// Setting a removed GODEBUG is ok unless it's set to an old value.
+		// We only check at startup time per go.dev/issue/76163.
+		if seen == nil {
+			for _, info := range godebugs.Removed {
+				if info.Name == key {
+					if info.Old(value) {
+						invalidGODEBUG.key = key
+						invalidGODEBUG.value = value
+						invalidGODEBUG.removed = info.Removed
+						return // this skips the cgocheck below but we're about to fatal anyway
+					}
+					break
+				}
+			}
+		}
+
 		if seen[key] {
 			continue
 		}
@@ -533,17 +545,17 @@ func parsegodebug(godebug string, seen map[string]bool) {
 		// is int, not int32, and should only be updated
 		// if specified in GODEBUG.
 		if seen == nil && key == "memprofilerate" {
-			if n, ok := strconv.Atoi(value); ok {
+			if n, err := strconv.Atoi(value); err == nil {
 				MemProfileRate = n
 			}
 		} else {
 			for _, v := range dbgvars {
 				if v.name == key {
-					if n, ok := strconv.Atoi32(value); ok {
+					if n, err := strconv.ParseInt(value, 10, 32); err == nil {
 						if seen == nil && v.value != nil {
-							*v.value = n
+							*v.value = int32(n)
 						} else if v.atomic != nil {
-							v.atomic.Store(n)
+							v.atomic.Store(int32(n))
 						}
 					}
 				}
@@ -579,7 +591,7 @@ func setTraceback(level string) {
 		fallthrough
 	default:
 		t = tracebackAll
-		if n, ok := strconv.Atoi(level); ok && n == int(uint32(n)) {
+		if n, err := strconv.Atoi(level); err == nil && n == int(uint32(n)) {
 			t |= uint32(n) << tracebackShift
 		}
 	}
@@ -592,35 +604,6 @@ func setTraceback(level string) {
 	t |= traceback_env
 
 	atomic.Store(&traceback_cache, t)
-}
-
-// Poor mans 64-bit division.
-// This is a very special function, do not use it if you are not sure what you are doing.
-// int64 division is lowered into _divv() call on 386, which does not fit into nosplit functions.
-// Handles overflow in a time-specific manner.
-// This keeps us within no-split stack limits on 32-bit processors.
-//
-//go:nosplit
-func timediv(v int64, div int32, rem *int32) int32 {
-	res := int32(0)
-	for bit := 30; bit >= 0; bit-- {
-		if v >= int64(div)<<uint(bit) {
-			v = v - (int64(div) << uint(bit))
-			// Before this for loop, res was 0, thus all these
-			// power of 2 increments are now just bitsets.
-			res |= 1 << uint(bit)
-		}
-	}
-	if v >= int64(div) {
-		if rem != nil {
-			*rem = 0
-		}
-		return 0x7fffffff
-	}
-	if rem != nil {
-		*rem = int32(v)
-	}
-	return res
 }
 
 // Helpers for Go. Must be NOSPLIT, must only call NOSPLIT functions, and must not block.
@@ -656,16 +639,46 @@ func releasem(mp *m) {
 // Do not remove or change the type signature.
 // See go.dev/issue/67401.
 //
+// This is obsolete and only remains for external packages.
+// New code should use reflect_compiledTypelinks.
+//
 //go:linkname reflect_typelinks reflect.typelinks
 func reflect_typelinks() ([]unsafe.Pointer, [][]int32) {
 	modules := activeModules()
+
+	typesToOffsets := func(md *moduledata) []int32 {
+		types := moduleTypelinks(md)
+		ret := make([]int32, 0, len(types))
+		for _, typ := range types {
+			ret = append(ret, int32(uintptr(unsafe.Pointer(typ))-md.types))
+		}
+		return ret
+	}
+
 	sections := []unsafe.Pointer{unsafe.Pointer(modules[0].types)}
-	ret := [][]int32{modules[0].typelinks}
+	ret := [][]int32{typesToOffsets(modules[0])}
 	for _, md := range modules[1:] {
 		sections = append(sections, unsafe.Pointer(md.types))
-		ret = append(ret, md.typelinks)
+		ret = append(ret, typesToOffsets(md))
 	}
 	return sections, ret
+}
+
+// reflect_compiledTypelinks returns the typelink types
+// generated by the compiler for all current modules.
+// The normal case is a single module, so this returns one
+// slice for the main module, and a slice of slices, normally nil,
+// for other modules.
+//
+//go:linknamestd reflect_compiledTypelinks reflect.compiledTypelinks
+func reflect_compiledTypelinks() ([]*abi.Type, [][]*abi.Type) {
+	modules := activeModules()
+	firstTypes := moduleTypelinks(modules[0])
+	var rest [][]*abi.Type
+	for _, md := range modules[1:] {
+		rest = append(rest, moduleTypelinks(md))
+	}
+	return firstTypes, rest
 }
 
 // reflect_resolveNameOff resolves a name offset from a base pointer.
@@ -749,6 +762,15 @@ func reflect_addReflectOff(ptr unsafe.Pointer) int32 {
 	}
 	reflectOffsUnlock()
 	return id
+}
+
+// reflect_adjustAIXGCDataForRuntime takes a type.GCData address and returns
+// the new address to use. This is only called on AIX.
+// See getGCMaskOnDemand.
+//
+//go:linknamestd reflect_adjustAIXGCDataForRuntime reflect.adjustAIXGCDataForRuntime
+func reflect_adjustAIXGCDataForRuntime(addr *byte) *byte {
+	return (*byte)(add(unsafe.Pointer(addr), aixStaticDataBase-firstmoduledata.data))
 }
 
 //go:linkname fips_getIndicator crypto/internal/fips140.getIndicator

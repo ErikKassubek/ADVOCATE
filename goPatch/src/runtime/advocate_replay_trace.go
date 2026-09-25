@@ -108,7 +108,7 @@ func AdvocateIgnoreReplay(operation Operation, file string) bool {
 		}
 	case PrimitiveRoutine:
 		if containsStr(file, "goPatch/src/testing/testing.go") {
-			return true
+			return false
 		}
 	case PrimitiveAlloc, PrimitiveControll:
 		return true

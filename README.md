@@ -6,10 +6,6 @@ GoCDR allows the user to record and replay executions of concurrent programs in 
 
 <center><img src="./doc/img/Architecture.png" alt="Architecture of GoCDR" width="400px" height=auto></center>
 
-It also implements an analysis and fuzzing mode based on the record and replay feature
-
-<center><img src="./doc/img/Architecture2.png" alt="GoCDR in analysis and fuzzing framework" width="400px" height=auto></center>
-
 ## Modes
 
 GoCDR provides 4 different modes:

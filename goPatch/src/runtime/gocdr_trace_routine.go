@@ -49,9 +49,9 @@ func GoCDRSpawnCaller(callerRoutine *GoCDRRoutine, newID uint64, file string,
 
 	timer := GetNextTimeStep()
 
-	if GoCDRIgnore(file) {
-		return
-	}
+	// if GoCDRIgnore(file) {
+	// 	return
+	// }
 
 	elem := GoCDRTraceSpawn{
 		t:     timer,

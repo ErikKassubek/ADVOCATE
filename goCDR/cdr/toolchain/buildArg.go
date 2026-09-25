@@ -18,7 +18,6 @@ import (
 	"gocdr/utils/log"
 	"gocdr/utils/paths"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -149,7 +148,7 @@ func importInsertMain(fileName string, replay bool, replayNumber string,
 	if replayNumber != "" {
 		replayPath = "rewrittenTrace_" + replayNumber
 	} else if flags.TracePath != "" {
-		replayPath = filepath.Base(flags.TracePath)
+		replayPath = flags.TracePath
 	} else {
 		replayPath = "gocdrTrace"
 	}
@@ -317,7 +316,7 @@ func importInsertUnit(fileName, testName string, replay bool, fuzzing int, repla
 	if replayInfo != "" {
 		replayPath = "rewrittenTrace_" + replayInfo
 	} else if flags.TracePath != "" {
-		replayPath = filepath.Base(flags.TracePath)
+		replayPath = flags.TracePath
 	} else {
 		replayPath = "gocdrTrace"
 	}

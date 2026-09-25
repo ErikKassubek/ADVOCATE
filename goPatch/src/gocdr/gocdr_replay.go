@@ -279,7 +279,6 @@ func readTraceFile(fileName string,
 				(*spawns)[routineID] = make([]int, 0)
 			}
 			(*spawns)[routineID] = append((*spawns)[routineID], index)
-			println("ADD SPAWN ", routineID, " ", index)
 		case "C":
 			switch fields[4] {
 			case "S":

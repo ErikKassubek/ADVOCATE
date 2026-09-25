@@ -37,7 +37,7 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 		if record {
 			buildArg += fmt.Sprintf("-gocctfuzzing -gocctpath=%s -goccttimeout=%d", tracePath, flags.Timeout)
 		} else {
-			buildArg += fmt.Sprintf("-gocctreplay -gocctpath=%s -goccttimeout=%d -gocctatomic=%s", tracePath, replayTimeout, atomicReplayStr)
+			buildArg += fmt.Sprintf("-gocctreplay -gocctpath=%s -goccttimeout=%d -gocctatomics=%s", tracePath, replayTimeout, atomicReplayStr)
 		}
 	} else if fuzzing > 0 {
 		buildArg += fmt.Sprintf("-gocctfuzzing -gocctpath=%s -goccttimeout=%d", fuzzingTrace, replayTimeout)

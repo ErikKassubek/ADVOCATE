@@ -131,6 +131,11 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	_, nextElem := getNextReplayElement()
 
 	nextElemKey := nextElem.Key()
+
+	if printDebug {
+		println("Next: ", nextElemKey)
+	}
+
 	if key == nextElemKey && !waitForAck.waitForAck {
 		_, _ = getSelect(key)
 		// if it is the next element, release directly and add elems to waitForAck

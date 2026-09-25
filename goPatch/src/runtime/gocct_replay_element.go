@@ -66,10 +66,12 @@ func (elem *ReplayElement) Key() string {
 //   - ReplayElement: a replay element that fits to the key
 func replayElemFromKey(key string) ReplayElement {
 	keySplit := split(key, ':')
+	posSplit := split(keySplit[1], '#')
+
 	return ReplayElement{
 		Routine: stringToInt(keySplit[0]),
-		File:    keySplit[1],
-		Line:    stringToInt(keySplit[2]),
+		File:    posSplit[0],
+		Line:    stringToInt(posSplit[1]),
 		Suc:     true,
 		Blocked: false,
 	}

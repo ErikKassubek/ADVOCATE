@@ -96,7 +96,22 @@ func getNextReplayElement() (int, ReplayElement) {
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
 func GoCCTIgnoreReplay(operation Operation, file string) bool {
-	if ignoreAtomicsReplay && getOperationObjectString(operation) == "Atomic" {
+	primitive := getOperationPrimitive(operation)
+
+	if ignoreAtomicsReplay && primitive == PrimitiveAtomic {
+		return true
+	}
+
+	switch primitive {
+	case PrimitiveAtomic:
+		if ignoreAtomicsReplay {
+			return true
+		}
+	case PrimitiveRoutine:
+		if containsStr(file, "goPatch/src/testing/testing.go") {
+			return false
+		}
+	case PrimitiveAlloc, PrimitiveControll:
 		return true
 	}
 

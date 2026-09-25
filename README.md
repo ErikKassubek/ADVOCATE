@@ -6,14 +6,7 @@ GoCDR allows the user to record and replay executions of concurrent programs in 
 
 <center><img src="./doc/img/Architecture.png" alt="Architecture of GoCDR" width="400px" height=auto></center>
 
-## Modes
 
-GoCDR provides 4 different modes:
-
-- record: record the execution of a program or test into a trace
-- replay: given a trace file, execute a program in such a way, that it follows the trace
-- analysis: record a program and analyze the recorded trace to detect potential concurrency bugs.
-- fuzzing: apply different fuzzing approaches to increase the reach of the analysis.
 
 ## Usage
 

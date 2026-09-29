@@ -19,6 +19,9 @@ import (
 	"strings"
 )
 
+var totalPair = 0
+var totalEqual = 0
+
 const k = 5
 
 type stackElem struct {
@@ -137,7 +140,7 @@ const printPairs = false
 
 func CheckForEq() {
 	pairCount := 0
-	totalPairs := 0
+	allPairs := 0
 
 	keys := make([]trace.Element, 0, len(indices))
 	for k := range indices {
@@ -165,15 +168,25 @@ func CheckForEq() {
 				}
 				pairCount += 1
 			}
-			totalPairs += 1
+			allPairs += 1
 		}
 	}
 
+	totalPair += allPairs
+	totalEqual += pairCount
+
 	if pairCount != 0 {
-		log.Errorf("Found Index Violation Pairs: %d (%d)", pairCount, totalPairs)
+		log.Errorf("Found Index Violation Pairs: %d (%d)", pairCount, allPairs)
 	} else {
-		log.Errorf("Found No Violation Pairs (%d)", totalPairs)
+		log.Errorf("Found No Violation Pairs (%d)", allPairs)
 	}
+
+	var perc float64 = 0
+	if totalPair != 0 {
+		perc = float64(totalEqual) / float64(totalPair) * 100
+	}
+
+	log.Errorf("Total: %d / %d (%f %%)", totalEqual, totalPair, perc)
 }
 
 func PrintIndexes() {

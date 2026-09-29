@@ -321,6 +321,11 @@ func isSyncType(t *types.Type, name string) bool {
 // ==================================================
 
 func addControllRec(body ir.Nodes, pos src.XPos, numCases, caseNum int, t string, start bool) ir.Nodes {
+	p := base.Ctxt.PosTable.Pos(pos)
+	if advocateIgnore(p.Filename()) {
+		return body
+	}
+
 	fn := typecheck.LookupRuntime("advocateControllFlow")
 
 	call := typecheck.Call(
@@ -441,6 +446,11 @@ func countSwitchCases(n *ir.SwitchStmt) int {
 // ==================================================
 
 func instrumentLoop(body ir.Nodes, pos src.XPos) ir.Nodes {
+	p := base.Ctxt.PosTable.Pos(pos)
+	if advocateIgnore(p.Filename()) {
+		return body
+	}
+
 	fn := typecheck.LookupRuntime("advocateControllFlow")
 
 	call := typecheck.Call(
@@ -593,4 +603,10 @@ func isUserMain(fn *ir.Func) bool {
 	}
 
 	return pkg.Name == "main" && pkg.Path == "main"
+}
+
+func advocateIgnore(file string) bool {
+	return (strings.Contains(file, "goPatch/src/") || strings.Contains(file, "go/pkg/mod")) &&
+		!strings.Contains(file, "goPatch/src/time/tick.go") &&
+		!strings.Contains(file, "goPatch/src/context/context.go")
 }

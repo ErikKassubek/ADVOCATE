@@ -55,6 +55,8 @@ func advocateControllFlow(ct string, numCases, chosenCase int) {
 		op = OperationControllIf
 	case "S":
 		op = OperationControllSwitch
+	case "L":
+		op = OperationControllLoop
 	default:
 		panic("Unknown Controll Flow type " + ct)
 	}
@@ -78,6 +80,8 @@ func (self AdvocateTraceControllFlow) toString() string {
 		ctString = "I"
 	case OperationControllSwitch:
 		ctString = "S"
+	case OperationControllLoop:
+		ctString = "L"
 	default:
 		panic("Invalid controll flow type: " + string(self.ct))
 	}

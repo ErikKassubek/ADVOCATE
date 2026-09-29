@@ -34,7 +34,7 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	waiterRout := lockWaiter.RoutineID()
 
 	mainRout := 0
-	for rid := range tr.GetTraces() {
+	for rid := range tr.GetRoutines() {
 		if rid != int(holderRout) && rid != int(waiterRout) {
 			if mainRout == 0 || rid < mainRout {
 				mainRout = rid
@@ -91,7 +91,7 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 
 	// Calculate final time
 	newLastTime := 0
-	for _, routSlice := range tr.GetTraces() {
+	for _, routSlice := range tr.GetRoutines() {
 		for _, elem := range routSlice.Elems() {
 			t := elem.T(trace.Sorting)
 			if t > newLastTime && t != math.MaxInt {

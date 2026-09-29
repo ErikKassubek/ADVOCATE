@@ -30,7 +30,7 @@ import (
 func startConstraint(num, length int) []f_base.Constraint {
 	res := make([]f_base.Constraint, 0)
 
-	routines := a_base.MainTrace.GetTraces()
+	routines := a_base.MainTrace.GetRoutines()
 
 	if len(routines) == 0 {
 		return res

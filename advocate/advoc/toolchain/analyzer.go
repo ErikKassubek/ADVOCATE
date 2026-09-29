@@ -12,6 +12,7 @@ package toolchain
 import (
 	"advocate/analysis/a_analysis"
 	"advocate/analysis/a_base"
+	"advocate/analysis/experiments/indexing"
 	"advocate/fuzzing/f_active"
 	"advocate/utils/consts"
 	"advocate/utils/control"
@@ -57,6 +58,9 @@ func runAnalyzer(pathTrace string,
 	results.InitResults(outReadable, outMachine)
 
 	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace)
+
+	indexing.BuildExecutionIndexing()
+	indexing.PrintIndexes()
 
 	if err != nil && fuzzingRun <= 0 {
 		if strings.HasSuffix(err.Error(), "no such file or directory") {

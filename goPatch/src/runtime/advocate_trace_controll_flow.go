@@ -33,7 +33,7 @@ type AdvocateTraceControllFlow struct {
 // AdvocateControllFlow inserts a conditional into the trace
 //
 // Parameter:
-//   - ct string: "I" for if, "S" for switch
+//   - ct string: "I" for if, "S" for switch, "L" for loop
 //   - numCases int: number of cases
 //   - chosenCase int: number of chosen case
 func advocateControllFlow(ct string, numCases, chosenCase int) {
@@ -55,6 +55,8 @@ func advocateControllFlow(ct string, numCases, chosenCase int) {
 		op = OperationControllIf
 	case "S":
 		op = OperationControllSwitch
+	case "L":
+		op = OperationControllLoop
 	default:
 		panic("Unknown Controll Flow type " + ct)
 	}
@@ -78,6 +80,8 @@ func (self AdvocateTraceControllFlow) toString() string {
 		ctString = "I"
 	case OperationControllSwitch:
 		ctString = "S"
+	case OperationControllLoop:
+		ctString = "L"
 	default:
 		panic("Invalid controll flow type: " + string(self.ct))
 	}

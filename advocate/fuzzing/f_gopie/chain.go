@@ -29,7 +29,7 @@ func startChains(num int) []f_base.Constraint {
 	res := make([]f_base.Constraint, 0)
 
 	if f_base.UseHBInfoFuzzing {
-		routines := a_base.MainTrace.GetTraces()
+		routines := a_base.MainTrace.GetRoutines()
 
 		if len(routines) == 0 {
 			return res

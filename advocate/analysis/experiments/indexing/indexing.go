@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-const k = 3
+const k = 5
 
 type stackElem struct {
 	isC bool
@@ -42,6 +42,11 @@ var callStack = make(map[int]*types.Stack[stackElem]) // rout id -> call stack o
 var indices = make(map[trace.Element]string)
 
 func initValues(tr *trace.Trace) {
+	depth = make(map[int]int)                       // rout id -> depth
+	counters = make(map[int]map[int]map[string]int) //  rout id -> d_t -> c (pos string) -> value
+	callStack = make(map[int]*types.Stack[stackElem])
+	indices = make(map[trace.Element]string)
+
 	for rout := range tr.GetRoutines() {
 		depth[rout] = 0
 		counters[rout] = make(map[int]map[string]int)
@@ -127,8 +132,13 @@ func updateAlloc(elem trace.Element, routID, d int, c string) {
 	callStack[routID].Pop()
 }
 
+const onlyRoutine = true
+const printPairs = false
+
 func CheckForEq() {
-	found := false
+	pairCount := 0
+	totalPairs := 0
+
 	keys := make([]trace.Element, 0, len(indices))
 	for k := range indices {
 		keys = append(keys, k)
@@ -137,28 +147,38 @@ func CheckForEq() {
 	for i, e1 := range keys {
 		i1 := indices[e1]
 
+		if _, ok := e1.(*trace.ElementFork); onlyRoutine && !ok {
+			continue
+		}
+
 		for j := i + 1; j < len(keys); j++ {
 			e2 := keys[j]
 			i2 := indices[e2]
 
-			if i1 == i2 {
-				log.Errorf("Same Index for different Objects:\n%s -> %s\n%s -> %s", e1.StringDebug(), i1, e2.StringDebug(), i2)
-				found = true
+			if _, ok := e2.(*trace.ElementFork); onlyRoutine && !ok {
+				continue
 			}
+
+			if i1 == i2 {
+				if printPairs {
+					log.Errorf("Same Index for different Objects:\n%s -> %s\n%s -> %s", e1.StringDebug(), i1, e2.StringDebug(), i2)
+				}
+				pairCount += 1
+			}
+			totalPairs += 1
 		}
 	}
 
-	if !found {
-		log.Debug("No violation found")
+	if pairCount != 0 {
+		log.Errorf("Found Index Violation Pairs: %d (%d)", pairCount, totalPairs)
+	} else {
+		log.Errorf("Found No Violation Pairs (%d)", totalPairs)
 	}
 }
 
 func PrintIndexes() {
 	log.Debug("INDICES")
 	for elem, index := range indices {
-		log.Debug(elem.File())
-		if elem.File() == "/home/advocate/Advocate/Experiments/Indexing/simpleIndexing/main.go" {
-			log.Debug(elem, " -> ", index)
-		}
+		log.Debug(elem.StringDebug(), " -> ", index)
 	}
 }

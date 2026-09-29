@@ -60,7 +60,7 @@ func runAnalyzer(pathTrace string,
 	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace)
 
 	indexing.BuildExecutionIndexing()
-	indexing.PrintIndexes()
+	// indexing.PrintIndexes()
 	indexing.CheckForEq()
 
 	if err != nil && fuzzingRun <= 0 {

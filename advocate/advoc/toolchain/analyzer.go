@@ -61,6 +61,7 @@ func runAnalyzer(pathTrace string,
 
 	indexing.BuildExecutionIndexing()
 	indexing.PrintIndexes()
+	indexing.CheckForEq()
 
 	if err != nil && fuzzingRun <= 0 {
 		if strings.HasSuffix(err.Error(), "no such file or directory") {

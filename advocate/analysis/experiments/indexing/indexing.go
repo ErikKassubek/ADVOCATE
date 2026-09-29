@@ -49,15 +49,6 @@ func initValues(tr *trace.Trace) {
 	}
 }
 
-func initCounters(routID, d int, c string) {
-	if _, ok := counters[routID][d]; !ok {
-		counters[routID][d] = make(map[string]int)
-	}
-	if _, ok := counters[routID][d][c]; ok {
-		counters[routID][d][c] = 0
-	}
-}
-
 func pushToCS(routID, d int, c string) {
 	c_stack_elem := stackElem{true, c, 0}
 	q_stacl_elem := stackElem{false, "", counters[routID][d][c]}
@@ -76,62 +67,96 @@ func BuildExecutionIndexing() {
 		// c := elem.Pos().Short()
 		c := fmt.Sprintf("%d", elem.Line())
 		d := depth[routID]
-		initCounters(routID, d, c)
+
+		if _, ok := counters[routID][d]; !ok {
+			counters[routID][d] = make(map[string]int)
+		}
 
 		switch elem.(type) {
 		case *trace.ElementFunc:
-
-			counters[routID][d][c] = counters[routID][d][c] + 1
-
-			pushToCS(routID, d, c)
-
-			depth[routID] = depth[routID] + 1
-
-			d = depth[routID]
-			for c_iter := range counters[routID][d] {
-				counters[routID][d][c_iter] = 0
-			}
+			updateCall(routID, d, c)
 		case *trace.ElementReturn:
 			depth[routID] = depth[routID] - 1
 			callStack[routID].Pop()
 			callStack[routID].Pop()
-		case *trace.ElementAlloc, *trace.ElementFork: // in the original paper this is applied only to new (alloc). We are also interested in forks to give routines ids
-			counters[routID][d][c] = counters[routID][d][c] + 1
-
-			pushToCS(routID, d, c)
-
-			arr := callStack[routID].AsArray()
-
-			var index strings.Builder
-
-			lastInd := len(arr) - 1
-			for count := 0; count < len(arr); count++ {
-				if count >= 2*k {
-					return
-				}
-
-				i := len(arr) - 1 - count
-
-				if i != lastInd {
-					index.WriteString(",")
-				}
-				val := arr[i]
-				index.WriteString(val.String())
-
-			}
-
-			indices[elem] = index.String()
-
-			callStack[routID].Pop()
-			callStack[routID].Pop()
+		case *trace.ElementAlloc:
+			updateAlloc(elem, routID, d, c)
+		case *trace.ElementFork:
+			updateCall(routID, d, c)
+			updateAlloc(elem, routID, d, c)
 		}
 	}
 
 }
 
+func updateCall(routID, d int, c string) {
+	counters[routID][d][c] = counters[routID][d][c] + 1
+
+	pushToCS(routID, d, c)
+
+	depth[routID] = depth[routID] + 1
+
+	d = depth[routID]
+	for c_iter := range counters[routID][d] {
+		counters[routID][d][c_iter] = 0
+	}
+}
+
+func updateAlloc(elem trace.Element, routID, d int, c string) {
+	counters[routID][d][c] = counters[routID][d][c] + 1
+
+	pushToCS(routID, d, c)
+
+	arr := callStack[routID].AsArray()
+
+	var index strings.Builder
+
+	startVal := max(0, len(arr)-2*k)
+	for i := startVal; i < len(arr); i++ {
+		if i != startVal {
+			index.WriteString(",")
+		}
+		val := arr[i]
+		index.WriteString(val.String())
+
+	}
+
+	indices[elem] = index.String()
+
+	callStack[routID].Pop()
+	callStack[routID].Pop()
+}
+
+func CheckForEq() {
+	found := false
+	keys := make([]trace.Element, 0, len(indices))
+	for k := range indices {
+		keys = append(keys, k)
+	}
+
+	for i, e1 := range keys {
+		i1 := indices[e1]
+
+		for j := i + 1; j < len(keys); j++ {
+			e2 := keys[j]
+			i2 := indices[e2]
+
+			if i1 == i2 {
+				log.Errorf("Same Index for different Objects:\n%s -> %s\n%s -> %s", e1.StringDebug(), i1, e2.StringDebug(), i2)
+				found = true
+			}
+		}
+	}
+
+	if !found {
+		log.Debug("No violation found")
+	}
+}
+
 func PrintIndexes() {
 	log.Debug("INDICES")
 	for elem, index := range indices {
+		log.Debug(elem.File())
 		if elem.File() == "/home/advocate/Advocate/Experiments/Indexing/simpleIndexing/main.go" {
 			log.Debug(elem, " -> ", index)
 		}

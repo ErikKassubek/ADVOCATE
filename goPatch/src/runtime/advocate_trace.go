@@ -324,6 +324,10 @@ func AdvocateIgnore(file string) bool {
 		!containsStr(file, "goPatch/src/context/context.go")
 }
 
+func AdvocateIgnoreRoutine(file string) bool {
+	return containsStr(file, "goPatch/src/runtime/advocate_trace.go") || containsStr(file, "goPatch/src/runtime/advocate_replay.go")
+}
+
 func RemoveActive(id uint64) {
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)

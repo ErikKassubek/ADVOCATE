@@ -68,6 +68,7 @@ const (
 
 	OperationControllIf     Operation = "controllIf"
 	OperationControllSwitch Operation = "controllSwitch"
+	OperationControllLoop   Operation = "controllLoop"
 )
 
 type Primitive string
@@ -133,7 +134,7 @@ func getOperationPrimitive(op Operation) Primitive {
 		return PrimitiveAtomic
 	case OperationReplayEnd:
 		return PrimitiveReplay
-	case OperationControllIf, OperationControllSwitch:
+	case OperationControllIf, OperationControllSwitch, OperationControllLoop:
 		return PrimitiveControll
 	case OperationAllocChan, OperationAllocMutex, OperationAllocCond, OperationAllocOnce, OperationAllocWg:
 		return PrimitiveAlloc

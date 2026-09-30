@@ -321,6 +321,10 @@ func isSyncType(t *types.Type, name string) bool {
 // ==================================================
 
 func addControllRec(body ir.Nodes, pos src.XPos, numCases, caseNum int, t string, start bool) ir.Nodes {
+	if !base.Flag.AdvocateRecordPlus {
+		return body
+	}
+
 	p := base.Ctxt.PosTable.Pos(pos)
 	if advocateIgnore(p.Filename()) {
 		return body

@@ -43,7 +43,7 @@ type AdvocateTraceFunctionReturn struct {
 	t int64
 }
 
-// AdvocateFunctionCall adds a function stall to the trace
+// AdvocateFunctionCall adds a function call to the trace
 func advocateFunctionCall() {
 	pc, fileDef, lineDef, _ := Caller(1)
 	funcName := FuncForPC(pc).Name()

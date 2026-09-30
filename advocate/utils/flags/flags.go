@@ -35,6 +35,11 @@ var (
 	MaxNumberElements int
 )
 
+// recording
+var (
+	RecordPlus bool
+)
+
 // logging
 var (
 	Output     bool

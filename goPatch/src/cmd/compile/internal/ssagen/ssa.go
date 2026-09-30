@@ -572,7 +572,7 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 	s.paramsToHeap()
 
 	// ADVOCATE-START
-	if shouldAdvocate(fn) {
+	if base.Flag.AdvocateRecordPlus && shouldAdvocate(fn) {
 		s.rtcall(
 			typecheck.LookupRuntimeFunc("advocateFunctionCall"),
 			true,
@@ -2418,7 +2418,9 @@ func (s *state) advocateExitCall(fn *ir.Func) {
 		return
 	}
 
-	s.rtcall(typecheck.LookupRuntimeFunc("advocateFunctionReturn"), true, nil)
+	if base.Flag.AdvocateRecordPlus {
+		s.rtcall(typecheck.LookupRuntimeFunc("advocateFunctionReturn"), true, nil)
+	}
 
 	if isUserMain(fn) {
 		if base.Flag.AdvocateTrace {

@@ -31,6 +31,9 @@ var (
 	exec2 = newFlagVal("exec", "", "", "Name of the executable or test")
 	trace = newFlagVal("trace", "", "", "Path to the trace folder to replay")
 
+	// recording
+	recordPlus = newFlagVal("recordPlus", "false", "", "Record functions and flow controll operations.")
+
 	// scenarios
 	scenarios = newFlagVal("scen", "", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d",
 		"If not set, all scenarios are run.",
@@ -212,6 +215,9 @@ func printHelpRun() {
 	// submodes
 	fmt.Println(runMain.toString(false))
 
+	//record plus
+	fmt.Println(recordPlus.toString(false))
+
 	// paths
 	fmt.Println(path.toString(true))
 	fmt.Println(prog.toString(false))
@@ -252,6 +258,9 @@ func printHelpRecord() {
 
 	// submodes
 	fmt.Println(runMain.toString(false))
+
+	//record plus
+	fmt.Println(recordPlus.toString(false))
 
 	// paths
 	fmt.Println(path.toString(true))
@@ -342,6 +351,9 @@ func printHelpAnalysis() {
 	fmt.Println(prog.toString(false))
 	fmt.Println(exec1.toString(false))
 
+	//record plus
+	fmt.Println(recordPlus.toString(false))
+
 	// scenarios
 	fmt.Println(scenarios.toString(false))
 	fmt.Println(noWarning.toString(false))
@@ -395,6 +407,9 @@ func printHelpFuzzing() {
 	// submodes
 	fmt.Println(runMain.toString(false))
 	fmt.Println(fuzzingModes.toString(true))
+
+	//record plus
+	fmt.Println(recordPlus.toString(false))
 
 	// paths
 	fmt.Println(path.toString(true))

@@ -43,6 +43,8 @@ func CommandLine() bool {
 	flag.IntVar(&flags.MaxFuzzingRun, "maxFuzzingRuns", -1, "Maximum number of fuzzing runs per test/prog. Default: -1. To Disable, set to -1")
 	flag.IntVar(&flags.MaxNumberElements, "maxNumberElements", 10000000, "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set -1. Default: 10000000")
 
+	flag.BoolVar(&flags.RecordPlus, "recordPlus", false, "Record functions and flow controll operations.")
+
 	flag.BoolVar(&flags.MeasureTime, "time", false, "measure the runtime")
 	flag.BoolVar(&flags.CreateStatistics, "stats", false, "Create statistics.")
 	flag.BoolVar(&flags.NotExecuted, "notExec", false, "Find never executed operations")

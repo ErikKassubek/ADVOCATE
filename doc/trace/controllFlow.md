@@ -17,6 +17,7 @@ The other fields are set as follows:
 - [ct]: This field shows the operation of the element. Those can be
   - [ct] = `I`: If
   - [ct] = `S`: Switch
+  - [ct] = `L`: Loop
 - [numCases] $\in \mathbb N$: Number of cases in the if or switch
 - [chosenCases] $\in \mathbb N$: Chosen case number in the if or switch (0 based)
 - [pos]: The last field show the position in the code, where the mutex operation

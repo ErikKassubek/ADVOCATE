@@ -351,6 +351,10 @@ func addControllRec(body ir.Nodes, pos src.XPos, numCases, caseNum int, t string
 }
 
 func instrumentIfChain(n *ir.IfStmt) {
+	if !base.Flag.AdvocateRecordPlus {
+		return
+	}
+
 	numCases := countIfCases(n)
 
 	caseNum := 0
@@ -418,6 +422,10 @@ func countIfCases(n *ir.IfStmt) int {
 // ==================================================
 
 func instrumentSwitch(n *ir.SwitchStmt) {
+	if !base.Flag.AdvocateRecordPlus {
+		return
+	}
+
 	numCases := len(n.Cases)
 
 	for i, c := range n.Cases {
@@ -450,6 +458,10 @@ func countSwitchCases(n *ir.SwitchStmt) int {
 // ==================================================
 
 func instrumentLoop(body ir.Nodes, pos src.XPos) ir.Nodes {
+	if !base.Flag.AdvocateRecordPlus {
+		return body
+	}
+
 	p := base.Ctxt.PosTable.Pos(pos)
 	if advocateIgnore(p.Filename()) {
 		return body

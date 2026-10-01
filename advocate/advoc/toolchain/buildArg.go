@@ -48,7 +48,7 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 	}
 
 	if flags.RecordPlus {
-		buildArg += "advocaterecordplus"
+		buildArg += " -advocaterecordplus"
 	}
 
 	// buildArg += "'"

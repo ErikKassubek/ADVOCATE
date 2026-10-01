@@ -14,7 +14,7 @@ git config core.autocrlf false
 ```
 
 
-## Local
+## Build
 
 Before Advocate can be used, it must first be build.
 
@@ -56,7 +56,7 @@ run all recordings, replays, analysis and fuzzing.
 Advocate uses [fyne](https://fyne.io/) for its gui. To build advocate, the required dependencies for fyne must be installed. 
 See [here](https://docs.fyne.io/started/quick/) for details.
 
-If you do not want to install the dependencies, you can disable the gui by building the program with 
+If you do not can/want to install the dependencies, you can disable the gui by building the program with 
 
 ```shell
 go build -tags nogui

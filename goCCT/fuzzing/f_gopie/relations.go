@@ -69,12 +69,25 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 		return
 	}
 
-	id := elem.ObjID()
-	if _, ok := ElemsByID[id]; !ok {
-		ElemsByID[id] = make([]trace.Element, 0)
+	switch elem := elem.(type) {
+	case *trace.ElementSelect:
+		for _, c := range elem.GetCases() {
+			id := c.ObjID()
+			if _, ok := ElemsByID[id]; !ok {
+				ElemsByID[id] = make([]trace.Element, 0)
+			}
+			ElemsByID[id] = append(ElemsByID[id], elem)
+			counterCPOP2++
+		}
+	default:
+		id := elem.ObjID()
+		if _, ok := ElemsByID[id]; !ok {
+			ElemsByID[id] = make([]trace.Element, 0)
+		}
+		ElemsByID[id] = append(ElemsByID[id], elem)
+		counterCPOP2++
 	}
-	ElemsByID[id] = append(ElemsByID[id], elem)
-	counterCPOP2++
+
 }
 
 // CalculateRelRule2And4 applies rule 2 and directly rule 4 for all elements

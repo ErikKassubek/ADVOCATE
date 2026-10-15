@@ -7,13 +7,12 @@
 //
 // License: BSD-3-Clause
 
-//go:build !nogui
+//go:build !gui
 
 package main
 
 import (
 	"advocate/advoc"
-	"advocate/gui"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 )
@@ -33,11 +32,12 @@ func main() {
 	advoc.Initialize()
 
 	if flags.Mode == "gui" {
-		gui.Run()
-	} else {
-		err := advoc.Run()
-		if err != nil {
-			log.Error(err)
-		}
+		log.Error("Gui mode is only available if advocate was build with -tags gui (go build -tags gui).")
+		return
+	}
+
+	err := advoc.Run()
+	if err != nil {
+		log.Error(err)
 	}
 }

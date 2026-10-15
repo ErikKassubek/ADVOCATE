@@ -53,13 +53,13 @@ go build
 command. This will create an `advocate` executable, which will be used to
 run all recordings, replays, analysis and fuzzing.
 
-Advocate uses [fyne](https://fyne.io/) for its gui. To build advocate, the required dependencies for fyne must be installed. 
+Advocate provides an optional gui. For this, it uses [fyne](https://fyne.io/). To build advocate with gui, the required dependencies for fyne must be installed. 
 See [here](https://docs.fyne.io/started/quick/) for details.
 
-If you do not can/want to install the dependencies, you can disable the gui by building the program with 
+If you want to build advocate with gui, you have to enable it by building the program with 
 
 ```shell
-go build -tags nogui
+go build -tags gui
 ```
 
 In this case fyne is not required.

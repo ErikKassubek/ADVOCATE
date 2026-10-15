@@ -111,7 +111,7 @@ func Run() error {
 
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
-		log.Error("Select one mode from  'analysis', 'fuzzing', 'replay', 'record' or 'gui' (only if -tags nogui not set)")
+		log.Error("Select one mode from  'analysis', 'fuzzing', 'replay', 'record' or 'gui' (only if -tags gui is set)")
 		err = fmt.Errorf("Unknown mode %s", os.Args[1])
 		helper.PrintHelp()
 	}

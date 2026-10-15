@@ -61,8 +61,8 @@ func RunCommand(osOut, osErr *os.File, timeout int, name string, args ...string)
 			cmd.Stderr = multiErr
 		}
 	} else {
-		cmd.Stdout = osOut
-		cmd.Stderr = osErr
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
 
 	count++

@@ -146,7 +146,7 @@ func runWorkflowMain(
 
 	rewrittenTraces := make([]string, 0)
 	if runReplay {
-		log.Info("Run replay")
+
 		// Find rewrittenTrace directories
 		if runAnalysis {
 			rewrittenTraces, err = filepath.Glob(filepath.Join(paths.ProgDir, "rewrittenTrace*"))
@@ -157,6 +157,10 @@ func runWorkflowMain(
 			if flags.TracePath != "" {
 				rewrittenTraces = append(rewrittenTraces, flags.TracePath)
 			}
+		}
+
+		if len(rewrittenTraces) > 0 {
+			log.Info("Run replay")
 		}
 
 		timer.Start(timer.Replay)

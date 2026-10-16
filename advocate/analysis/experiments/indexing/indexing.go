@@ -22,7 +22,7 @@ import (
 var totalPair = 0
 var totalEqual = 0
 
-const k = 5
+const k = 15
 
 type stackElem struct {
 	isC bool
@@ -90,8 +90,8 @@ func BuildExecutionIndexing() {
 		case *trace.ElementAlloc:
 			updateAlloc(elem, routID, d, c)
 		case *trace.ElementFork:
-			updateCall(routID, d, c)
 			updateAlloc(elem, routID, d, c)
+			updateCall(routID, d, c)
 		}
 	}
 
@@ -136,7 +136,8 @@ func updateAlloc(elem trace.Element, routID, d int, c string) {
 }
 
 const onlyRoutine = true
-const printPairs = false
+const ignoreInternal = true
+const printPairs = true
 
 func CheckForEq() {
 	pairCount := 0
@@ -154,6 +155,10 @@ func CheckForEq() {
 			continue
 		}
 
+		if ignoreInternal && strings.Contains(e1.File(), "/Advocate/goPatch/src") {
+			continue
+		}
+
 		for j := i + 1; j < len(keys); j++ {
 			e2 := keys[j]
 			i2 := indices[e2]
@@ -162,9 +167,13 @@ func CheckForEq() {
 				continue
 			}
 
+			if ignoreInternal && strings.Contains(e2.File(), "/Advocate/goPatch/src") {
+				continue
+			}
+
 			if i1 == i2 {
 				if printPairs {
-					log.Errorf("Same Index for different Objects:\n%s -> %s\n%s -> %s", e1.StringDebug(), i1, e2.StringDebug(), i2)
+					log.Debugf2("Same Index for different Objects:\n%s -> %s\n%s -> %s", e1.StringDebug(), i1, e2.StringDebug(), i2)
 				}
 				pairCount += 1
 			}
@@ -176,17 +185,19 @@ func CheckForEq() {
 	totalEqual += pairCount
 
 	if pairCount != 0 {
-		log.Errorf("Found Index Violation Pairs: %d (%d)", pairCount, allPairs)
+		log.Debugf2("Found Index Violation Pairs: %d (%d)", pairCount, allPairs)
 	} else {
-		log.Errorf("Found No Violation Pairs (%d)", allPairs)
+		log.Debugf2("Found No Violation Pairs (%d)", allPairs)
 	}
 
 	var perc float64 = 0
 	if totalPair != 0 {
 		perc = float64(totalEqual) / float64(totalPair) * 100
+		log.Debugf2("Total: %d / %d (%f %%)", totalEqual, totalPair, perc)
+	} else {
+		log.Debugf2("Total: 0")
 	}
 
-	log.Errorf("Total: %d / %d (%f %%)", totalEqual, totalPair, perc)
 }
 
 func PrintIndexes() {

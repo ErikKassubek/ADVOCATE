@@ -640,6 +640,10 @@ func unitTestReplay(dir, pkg, file,
 		rewrittenTraces = append(rewrittenTraces, flags.TracePath)
 	}
 
+	if len(rewrittenTraces) != 0 {
+		return 0
+	}
+
 	log.Infof("Found %d rewritten traces", len(rewrittenTraces))
 
 	for i, trace := range rewrittenTraces {

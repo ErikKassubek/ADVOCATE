@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/hb/a_hbcalc"
 	"advocate/trace"
 	"fmt"
+	"sort"
 )
 
 // Constraint is a representation of a scheduling Constraint
@@ -223,4 +224,11 @@ func (this *Constraint) toMap() map[trace.Element]struct{} {
 		res[elem] = struct{}{}
 	}
 	return res
+}
+
+// Sort the Elements by commit time
+func (this *Constraint) sort() {
+	sort.Slice(this.Elems, func(i, j int) bool {
+		return this.Elems[i].T(trace.Commit) < this.Elems[j].T(trace.Commit)
+	})
 }

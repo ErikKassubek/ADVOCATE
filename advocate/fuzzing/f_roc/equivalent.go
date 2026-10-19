@@ -12,7 +12,6 @@ package f_roc
 import (
 	"advocate/analysis/a_hb"
 	"advocate/analysis/hb/a_vc"
-	"advocate/fuzzing/f_base"
 )
 
 // isEquivalent checks if the constraint is sufficiently different from the
@@ -24,7 +23,7 @@ import (
 //
 // Return:
 //   - bool: true if the constraint should be skipped, false if it should be executed
-func isEquivalent(cr f_base.Constraint) bool {
+func IsEquivalent(cr Constraint) bool {
 	for i, elem1 := range cr.Elems {
 		for j := i + 1; j < len(cr.Elems); j++ {
 			elem2 := cr.Elems[j]

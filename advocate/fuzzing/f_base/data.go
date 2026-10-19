@@ -10,6 +10,7 @@
 package f_base
 
 import (
+	"advocate/fuzzing/f_roc"
 	"advocate/utils/results/results"
 	"advocate/utils/types"
 
@@ -43,7 +44,7 @@ var (
 
 	NumberWrittenMutations = 0
 	// for each mutation file, store the file number and the chain
-	ChainFiles = make(map[int]Constraint)
+	ChainFiles = make(map[int]f_roc.Constraint)
 
 	TotalRuns = 0
 	Equiv     = 0
@@ -52,7 +53,7 @@ var (
 func Clear() {
 	MutationQueue = types.NewQueue[Mutation]()
 	AllMutations = make(map[string]int)
-	ChainFiles = make(map[int]Constraint)
+	ChainFiles = make(map[int]f_roc.Constraint)
 }
 
 // ClearDataFull resets the fuzzing data that is unique for each test but used for each fuzzing

@@ -11,6 +11,7 @@ package f_base
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/fuzzing/f_roc"
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/io"
@@ -32,7 +33,7 @@ import (
 // Returns:
 //   - bool: true if max number muts in reached
 //   - error
-func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
+func WriteMutConstraint(mut f_roc.Constraint, first bool) (bool, error) {
 	if MaxNumberRuns != -1 && NumberWrittenMutations > MaxNumberRuns {
 		return true, nil
 	}
@@ -191,7 +192,7 @@ func GetPath(path string) string {
 //   - partTime int: if 0, the replay will partial replay from the beginning
 //     otherwise it will switch to partial replay when the element with this
 //     time is the next element to be replayed
-func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Constraint, partTime int) {
+func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.Constraint, partTime int) {
 	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayActive)
 
 	f, err := os.Create(activePath)

@@ -7,7 +7,7 @@
 //
 // License: BSD-3-Clause
 
-package f_base
+package f_roc
 
 import (
 	"advocate/analysis/a_base"

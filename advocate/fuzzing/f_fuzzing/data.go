@@ -7,7 +7,7 @@
 //
 // License: BSD-3-Clause
 
-package f_roc
+package f_fuzzing
 
 const (
 	maxNumberConstraints    = 10

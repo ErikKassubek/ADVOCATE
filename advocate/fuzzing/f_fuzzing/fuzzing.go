@@ -244,7 +244,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 
 			// add mutation based on guided fuzzing
 			if f_base.FuzzingModeGuided {
-				f_roc.CreateMutations()
+				CreateMutations()
 			}
 			// Add mutation based on GFuzz
 			if f_base.FuzzingModeGFuzz {
@@ -323,7 +323,7 @@ func ResetFuzzing() {
 	f_base.MutationQueue = types.NewQueue[f_base.Mutation]()
 	// count how often a specific mutation has been in the queue
 	f_base.AllMutations = make(map[string]int)
-	f_base.ChainFiles = make(map[int]f_base.Constraint)
+	f_base.ChainFiles = make(map[int]f_roc.Constraint)
 
 }
 

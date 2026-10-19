@@ -14,6 +14,7 @@ import (
 	"advocate/fuzzing/f_base"
 	"advocate/fuzzing/f_gfuzz"
 	"advocate/fuzzing/f_gopie"
+	"advocate/fuzzing/f_roc"
 	"advocate/trace"
 	"advocate/utils/control"
 )
@@ -31,8 +32,8 @@ func ParseTrace(tr *trace.Trace) {
 	f_gfuzz.SelectInfoTrace = make(map[string][]f_base.FuzzingSelect)
 
 	// clear chains for goPie
-	f_gopie.SchedulingChains = make([]f_base.Constraint, 0)
-	f_gopie.CurrentChain = f_base.NewConstraint()
+	f_gopie.SchedulingChains = make([]f_roc.Constraint, 0)
+	f_gopie.CurrentChain = f_roc.NewConstraint()
 	f_gopie.LastRoutine = -1
 
 	for _, routine := range tr.GetTraces() {
@@ -82,7 +83,7 @@ func ParseTrace(tr *trace.Trace) {
 
 	if f_base.FuzzingModeGoPie && f_gopie.CurrentChain.Len() != 0 {
 		f_gopie.SchedulingChains = append(f_gopie.SchedulingChains, f_gopie.CurrentChain)
-		f_gopie.CurrentChain = f_base.NewConstraint()
+		f_gopie.CurrentChain = f_roc.NewConstraint()
 	}
 
 	if f_base.FuzzingModeGoPie && !f_base.UseHBInfoFuzzing {

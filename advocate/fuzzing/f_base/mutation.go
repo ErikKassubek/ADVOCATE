@@ -12,6 +12,7 @@ package f_base
 import (
 	"advocate/analysis/a_base"
 	"advocate/analysis/hb/a_concurrent"
+	"advocate/fuzzing/f_roc"
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/settings"
@@ -30,7 +31,7 @@ import (
 //
 // Returns:
 //   - map[string]chain: Set of mutations
-func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Element]struct{}) map[string]Constraint {
+func Mutate(c f_roc.Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Element]struct{}) map[string]f_roc.Constraint {
 	if energy > 100 {
 		energy = 100
 	}
@@ -47,7 +48,7 @@ func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Ele
 		bound = 3
 	}
 
-	res := make(map[string]Constraint)
+	res := make(map[string]f_roc.Constraint)
 
 	if energy == 0 {
 		return res
@@ -67,7 +68,7 @@ func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Ele
 	for {
 		noNew := false
 		for _, ch := range res {
-			tSet := make(map[string]Constraint, 0)
+			tSet := make(map[string]f_roc.Constraint, 0)
 
 			// Rule 1 -> abridge
 			if flags.FuzzingMode != Guided && ch.Len() >= 2 && rand.Int()%2 == 1 {
@@ -139,7 +140,7 @@ func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Ele
 
 	// mutates selects
 	for _, mut := range res {
-		new := mut.MutSelect()
+		new := MutSelect(&mut)
 		maps.Copy(res, new)
 	}
 
@@ -155,7 +156,7 @@ func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Ele
 // Returns:
 //   - chain: a copy of the chain with the first element removed
 //   - chain: a copy of the chain with the last element removed
-func abridge(c Constraint) (Constraint, Constraint) {
+func abridge(c f_roc.Constraint) (f_roc.Constraint, f_roc.Constraint) {
 	ncHead := c.Copy()
 	ncHead.RemoveHead()
 	ncTail := c.Copy()
@@ -172,8 +173,8 @@ func abridge(c Constraint) (Constraint, Constraint) {
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func flip(c Constraint) []Constraint {
-	res := make([]Constraint, 0)
+func flip(c f_roc.Constraint) []f_roc.Constraint {
+	res := make([]f_roc.Constraint, 0)
 
 	// switch each element with the next element
 	// for each flip create a new chain
@@ -197,8 +198,8 @@ func flip(c Constraint) []Constraint {
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func substitute(c Constraint, rel1 map[trace.Element]map[trace.Element]struct{}) []Constraint {
-	res := make([]Constraint, 0)
+func substitute(c f_roc.Constraint, rel1 map[trace.Element]map[trace.Element]struct{}) []f_roc.Constraint {
+	res := make([]f_roc.Constraint, 0)
 
 	for i, elem := range c.Elems {
 		for rel := range rel1[elem] {
@@ -223,8 +224,8 @@ func substitute(c Constraint, rel1 map[trace.Element]map[trace.Element]struct{})
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func augment(c Constraint, rel2 map[trace.Element]map[trace.Element]struct{}) []Constraint {
-	res := make([]Constraint, 0)
+func augment(c f_roc.Constraint, rel2 map[trace.Element]map[trace.Element]struct{}) []f_roc.Constraint {
+	res := make([]f_roc.Constraint, 0)
 
 	if UseHBInfoFuzzing {
 		concurrent := a_concurrent.GetConcurrent(c.LastElem(), true, false, settings.SameElementTypeInSC, true)
@@ -252,7 +253,7 @@ func augment(c Constraint, rel2 map[trace.Element]map[trace.Element]struct{}) []
 	return res
 }
 
-func shuffle(c *[]Constraint, n int) {
+func shuffle(c *[]f_roc.Constraint, n int) {
 	if len(*c) <= n {
 		return
 	}
@@ -264,10 +265,10 @@ func shuffle(c *[]Constraint, n int) {
 	*c = (*c)[:n]
 }
 
-func (this *Constraint) MutSelect() map[string]Constraint {
-	res := make(map[string]Constraint)
+func MutSelect(cs *f_roc.Constraint) map[string]f_roc.Constraint {
+	res := make(map[string]f_roc.Constraint)
 
-	for i, elem := range this.Elems {
+	for i, elem := range cs.Elems {
 		if elem.Type(false) != trace.Select {
 			continue
 		}
@@ -276,13 +277,13 @@ func (this *Constraint) MutSelect() map[string]Constraint {
 		chosen := sel.GetChosenCase()
 		if chosen != nil {
 			partner := sel.GetChosenCase().GetPartner()
-			if partner != nil && this.Contains(partner) {
+			if partner != nil && cs.Contains(partner) {
 				continue
 			}
 		}
 
 		if sel.GetContainsDefault() && !sel.GetChosenDefault() {
-			c := this.Copy()
+			c := cs.Copy()
 			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(-1)
 			res[c.ToString()] = c
 		}
@@ -292,7 +293,7 @@ func (this *Constraint) MutSelect() map[string]Constraint {
 				continue
 			}
 
-			c := this.Copy()
+			c := cs.Copy()
 			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(ca)
 			res[c.ToString()] = c
 		}

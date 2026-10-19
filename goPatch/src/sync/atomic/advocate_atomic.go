@@ -18,9 +18,8 @@ import (
 // SwapInt32 atomically stores new into *addr and returns the previous *addr value.
 // Consider using the more ergonomic and less error-prone [Int32.Swap] instead.
 func SwapInt32(addr *int32, new int32) (old int32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
@@ -31,9 +30,8 @@ func SwapInt32(addr *int32, new int32) (old int32) {
 // Consider using the more ergonomic and less error-prone [Int64.Swap] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func SwapInt64(addr *int64, new int64) (old int64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
@@ -43,9 +41,8 @@ func SwapInt64(addr *int64, new int64) (old int64) {
 // SwapUint32 atomically stores new into *addr and returns the previous *addr value.
 // Consider using the more ergonomic and less error-prone [Uint32.Swap] instead.
 func SwapUint32(addr *uint32, new uint32) (old uint32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
@@ -56,9 +53,8 @@ func SwapUint32(addr *uint32, new uint32) (old uint32) {
 // Consider using the more ergonomic and less error-prone [Uint64.Swap] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func SwapUint64(addr *uint64, new uint64) (old uint64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
@@ -68,9 +64,8 @@ func SwapUint64(addr *uint64, new uint64) (old uint64) {
 // SwapUintptr atomically stores new into *addr and returns the previous *addr value.
 // Consider using the more ergonomic and less error-prone [Uintptr.Swap] instead.
 func SwapUintptr(addr *uintptr, new uintptr) (old uintptr) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomic)
@@ -86,9 +81,8 @@ func SwapUintptr(addr *uintptr, new uintptr) (old uintptr) {
 // CompareAndSwapInt32 executes the compare-and-swap operation for an int32 value.
 // Consider using the more ergonomic and less error-prone [Int32.CompareAndSwap] instead.
 func CompareAndSwapInt32(addr *int32, old, new int32) (swapped bool) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
@@ -99,9 +93,8 @@ func CompareAndSwapInt32(addr *int32, old, new int32) (swapped bool) {
 // Consider using the more ergonomic and less error-prone [Int64.CompareAndSwap] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func CompareAndSwapInt64(addr *int64, old, new int64) (swapped bool) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
@@ -111,9 +104,8 @@ func CompareAndSwapInt64(addr *int64, old, new int64) (swapped bool) {
 // CompareAndSwapUint32 executes the compare-and-swap operation for a uint32 value.
 // Consider using the more ergonomic and less error-prone [Uint32.CompareAndSwap] instead.
 func CompareAndSwapUint32(addr *uint32, old, new uint32) (swapped bool) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
@@ -124,9 +116,8 @@ func CompareAndSwapUint32(addr *uint32, old, new uint32) (swapped bool) {
 // Consider using the more ergonomic and less error-prone [Uint64.CompareAndSwap] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func CompareAndSwapUint64(addr *uint64, old, new uint64) (swapped bool) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
@@ -136,9 +127,8 @@ func CompareAndSwapUint64(addr *uint64, old, new uint64) (swapped bool) {
 // CompareAndSwapUintptr executes the compare-and-swap operation for a uintptr value.
 // Consider using the more ergonomic and less error-prone [Uintptr.CompareAndSwap] instead.
 func CompareAndSwapUintptr(addr *uintptr, old, new uintptr) (swapped bool) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomic)
@@ -154,9 +144,8 @@ func CompareAndSwapUintptr(addr *uintptr, old, new uintptr) (swapped bool) {
 // AddInt32 atomically adds delta to *addr and returns the new value.
 // Consider using the more ergonomic and less error-prone [Int32.Add] instead.
 func AddInt32(addr *int32, delta int32) (new int32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
@@ -168,9 +157,8 @@ func AddInt32(addr *int32, delta int32) (new int32) {
 // In particular, to decrement x, do AddUint32(&x, ^uint32(0)).
 // Consider using the more ergonomic and less error-prone [Uint32.Add] instead.
 func AddUint32(addr *uint32, delta uint32) (new uint32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
@@ -181,9 +169,8 @@ func AddUint32(addr *uint32, delta uint32) (new uint32) {
 // Consider using the more ergonomic and less error-prone [Int64.Add] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func AddInt64(addr *int64, delta int64) (new int64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
@@ -196,9 +183,8 @@ func AddInt64(addr *int64, delta int64) (new int64) {
 // Consider using the more ergonomic and less error-prone [Uint64.Add] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func AddUint64(addr *uint64, delta uint64) (new uint64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
@@ -208,9 +194,8 @@ func AddUint64(addr *uint64, delta uint64) (new uint64) {
 // AddUintptr atomically adds delta to *addr and returns the new value.
 // Consider using the more ergonomic and less error-prone [Uintptr.Add] instead.
 func AddUintptr(addr *uintptr, delta uintptr) (new uintptr) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomic)
@@ -220,9 +205,8 @@ func AddUintptr(addr *uintptr, delta uintptr) (new uintptr) {
 // LoadInt32 atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Int32.Load] instead.
 func LoadInt32(addr *int32) (val int32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
@@ -233,9 +217,8 @@ func LoadInt32(addr *int32) (val int32) {
 // Consider using the more ergonomic and less error-prone [Int64.Load] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func LoadInt64(addr *int64) (val int64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
@@ -245,9 +228,8 @@ func LoadInt64(addr *int64) (val int64) {
 // LoadUint32 atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Uint32.Load] instead.
 func LoadUint32(addr *uint32) (val uint32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
@@ -258,9 +240,8 @@ func LoadUint32(addr *uint32) (val uint32) {
 // Consider using the more ergonomic and less error-prone [Uint64.Load] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func LoadUint64(addr *uint64) (val uint64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
@@ -270,9 +251,8 @@ func LoadUint64(addr *uint64) (val uint64) {
 // LoadUintptr atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Uintptr.Load] instead.
 func LoadUintptr(addr *uintptr) (val uintptr) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
@@ -282,9 +262,8 @@ func LoadUintptr(addr *uintptr) (val uintptr) {
 // LoadPointer atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Pointer.Load] instead.
 func LoadPointer(addr *unsafe.Pointer) (val unsafe.Pointer) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomic)
@@ -294,9 +273,8 @@ func LoadPointer(addr *unsafe.Pointer) (val unsafe.Pointer) {
 // StoreInt32 atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Int32.Store] instead.
 func StoreInt32(addr *int32, val int32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
@@ -307,9 +285,8 @@ func StoreInt32(addr *int32, val int32) {
 // Consider using the more ergonomic and less error-prone [Int64.Store] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func StoreInt64(addr *int64, val int64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
@@ -319,9 +296,8 @@ func StoreInt64(addr *int64, val int64) {
 // StoreUint32 atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Uint32.Store] instead.
 func StoreUint32(addr *uint32, val uint32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
@@ -332,9 +308,8 @@ func StoreUint32(addr *uint32, val uint32) {
 // Consider using the more ergonomic and less error-prone [Uint64.Store] instead
 // (particularly if you target 32-bit platforms; see the bugs section).
 func StoreUint64(addr *uint64, val uint64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
@@ -344,9 +319,8 @@ func StoreUint64(addr *uint64, val uint64) {
 // StoreUintptr atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Uintptr.Store] instead.
 func StoreUintptr(addr *uintptr, val uintptr) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
@@ -356,9 +330,8 @@ func StoreUintptr(addr *uintptr, val uintptr) {
 // StorePointer atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Pointer.Store] instead.
 // func StorePointer(addr *unsafe.Pointer, val unsafe.Pointer) {
-// 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic, true)
-// 	if wait {
-// 		defer func() { chAck <- struct{}{} }()
+// 	chWait := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
+// 	if chWait != nil {
 // 		<-chWait
 // 	}
 // 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomic)
@@ -366,9 +339,8 @@ func StoreUintptr(addr *uintptr, val uintptr) {
 // }
 
 func AndInt64(addr *int64, mask int64) (old int64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
@@ -376,9 +348,8 @@ func AndInt64(addr *int64, mask int64) (old int64) {
 }
 
 func AndUint64(addr *uint64, mask uint64) (old uint64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
@@ -386,9 +357,8 @@ func AndUint64(addr *uint64, mask uint64) (old uint64) {
 }
 
 func AndInt32(addr *int32, mask int32) (old int32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
@@ -396,9 +366,8 @@ func AndInt32(addr *int32, mask int32) (old int32) {
 }
 
 func AndUint32(addr *uint32, mask uint32) (old uint32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
@@ -406,9 +375,8 @@ func AndUint32(addr *uint32, mask uint32) (old uint32) {
 }
 
 func AndUintptr(addr *uintptr, mask uintptr) (old uintptr) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomic)
@@ -416,9 +384,8 @@ func AndUintptr(addr *uintptr, mask uintptr) (old uintptr) {
 }
 
 func OrInt64(addr *int64, mask int64) (old int64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
@@ -426,9 +393,8 @@ func OrInt64(addr *int64, mask int64) (old int64) {
 }
 
 func OrUint64(addr *uint64, mask uint64) (old uint64) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
@@ -436,9 +402,8 @@ func OrUint64(addr *uint64, mask uint64) (old uint64) {
 }
 
 func OrInt32(addr *int32, mask int32) (old int32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
@@ -446,9 +411,8 @@ func OrInt32(addr *int32, mask int32) (old int32) {
 }
 
 func OrUint32(addr *uint32, mask uint32) (old uint32) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
@@ -456,9 +420,8 @@ func OrUint32(addr *uint32, mask uint32) (old uint32) {
 }
 
 func OrUintptr(addr *uintptr, mask uintptr) (old uintptr) {
-	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	chWait := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomic)
+	if chWait != nil {
 		<-chWait
 	}
 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomic)

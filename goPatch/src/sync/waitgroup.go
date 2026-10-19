@@ -104,9 +104,8 @@ func (wg *WaitGroup) Add(delta int) {
 	if delta > 0 {
 		skip = runtime.CallerSkipWaitGroupAddWait
 	}
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationWaitgroupAddDone, skip, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	ch := runtime.WaitForReplay(runtime.OperationWaitgroupAddDone, skip)
+	if ch != nil {
 		<-ch
 	}
 	// ADVOCATE-END
@@ -215,14 +214,9 @@ func (wg *WaitGroup) Done() {
 // Wait blocks until the [WaitGroup] task counter is zero.
 func (wg *WaitGroup) Wait() {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
-		replayElem := <-ch
-		if replayElem.Blocked {
-			_ = runtime.AdvocateWaitGroupWaitReq(unsafe.Pointer(wg), wg.id)
-			runtime.BlockForever()
-		}
+	ch := runtime.WaitForReplay(runtime.OperationWaitgroupWait, runtime.CallerSkipWaitGroupAddWait)
+	if ch != nil {
+		<-ch
 	}
 
 	// Record the wait of a wait group in the routine's trace.

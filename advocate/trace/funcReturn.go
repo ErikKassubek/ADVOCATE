@@ -171,7 +171,7 @@ func (this *ElementReturn) StringDebug() string {
 }
 
 func (this *ElementReturn) StringGui() string {
-	return fmt.Sprintf("R")
+	return "R"
 }
 
 // ========================================================

@@ -378,7 +378,7 @@ func (self *instructionWithInfo) addReferenceAll(iwi *instructionWithInfo) {
 				continue
 			}
 			if index == 1 {
-				log.Debug2("MAKE: ", ref.Inst)
+				log.Debug("MAKE: ", ref.Inst)
 			}
 			if _, ok := self.Reference[index][ref]; !ok {
 				self.Reference[index][ref] = make(map[int]bool)
@@ -392,7 +392,7 @@ func (self *instructionWithInfo) addReferenceAll(iwi *instructionWithInfo) {
 				continue
 			}
 			if index == 1 {
-				log.Debug2("MAKE: ", ref.Inst)
+				log.Debug("MAKE: ", ref.Inst)
 			}
 			if _, ok := iwi.Reference[index][ref]; !ok {
 				iwi.Reference[index][ref] = make(map[int]bool)

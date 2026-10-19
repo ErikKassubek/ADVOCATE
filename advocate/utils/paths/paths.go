@@ -24,21 +24,22 @@ import (
 
 // names
 const (
-	NameResult         = "advocateResult"
-	NameOutput         = "output.log"
-	NameFuzzingData    = "fuzzingData.log"
-	NameFuzzingTraces  = "fuzzingTraces"
-	NameReplayActive   = "replay_active.log"
-	NameTimes          = "times.log"
-	NameTraceInfo      = "trace_info.log"
-	NameResultMachine  = "results_machine.log"
-	NameResultReadable = "results_readable.log"
-	NameRewrittenInfo  = "rewrite_info.log"
-	NameStats          = "stats"
-	NameStatsTime      = "times"
-	NameBugs           = "bugs"
-	NameTraces         = "traces"
-	NameOut            = "output"
+	NameResult            = "advocateResult"
+	NameOutput            = "output.log"
+	NameFuzzingData       = "fuzzingData.log"
+	NameFuzzingTraces     = "fuzzingTraces"
+	NameReplayConstraints = "replay_constratins.log"
+	NameReplayForkTree    = "replay_forktree.log"
+	NameTimes             = "times.log"
+	NameTraceInfo         = "trace_info.log"
+	NameResultMachine     = "results_machine.log"
+	NameResultReadable    = "results_readable.log"
+	NameRewrittenInfo     = "rewrite_info.log"
+	NameStats             = "stats"
+	NameStatsTime         = "times"
+	NameBugs              = "bugs"
+	NameTraces            = "traces"
+	NameOut               = "output"
 )
 
 // advocate

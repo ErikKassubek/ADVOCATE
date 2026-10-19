@@ -110,7 +110,7 @@ func GetPath(path string) string {
 //     otherwise it will switch to partial replay when the element with this
 //     time is the next element to be replayed
 func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.Constraint, partTime int) {
-	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayActive)
+	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayConstraints)
 
 	f, err := os.Create(activePath)
 	if err != nil {

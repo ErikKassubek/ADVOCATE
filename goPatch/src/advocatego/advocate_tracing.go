@@ -85,6 +85,7 @@ func InitTracing(timeout int, init bool) {
 //
 //go:linkname FinishTracing runtime.AdvocateFinishTracing
 func FinishTracing() {
+	fmt.Println("Write Trace")
 	if hasFinished {
 		// needed to prevent program stop while still writing
 		// otherwise, trace may be empty
@@ -196,16 +197,22 @@ func writeToTraceFileInfo(numberRoutines int) {
 	defer file.Close()
 
 	reachedActive := 0
-	if runtime.NumberActiveReleased > 0 || runtime.NumberActive == 0 {
-		reachedActive = 1
-	}
-	allActiveReleased := 0
-	if runtime.NumberActiveReleased == runtime.NumberActive {
-		allActiveReleased = 1
-	}
 
-	exitCode, exitPos := runtime.GetExitCode()
-	replayOldest, replayDisabled, replayAck := runtime.GetReplayStatus()
+	// TODO: make this work again
+
+	// if runtime.NumberActiveReleased > 0 || runtime.NumberActive == 0 {
+	// 	reachedActive = 1
+	// }
+	// allActiveReleased := 0
+	// if runtime.NumberActiveReleased == runtime.NumberActive {
+	// 	allActiveReleased = 1
+	// }
+
+	// exitCode, exitPos := runtime.GetExitCode()
+	// replayOldest, replayDisabled, replayAck := runtime.GetReplayStatus()
+
+	exitCode, exitPos := 0, ""
+	replayOldest, replayDisabled, replayAck := 0, 0, 0
 
 	file.WriteString(fmt.Sprintf("ExitCode!%d\n", exitCode))
 	file.WriteString(fmt.Sprintf("ExitPosition!%s\n", exitPos))
@@ -214,7 +221,7 @@ func writeToTraceFileInfo(numberRoutines int) {
 	file.WriteString(fmt.Sprintf("ReplayAck!%d\n", replayAck))
 	file.WriteString(fmt.Sprintf("NumberRoutines!%d\n", numberRoutines))
 	file.WriteString(fmt.Sprintf("ActiveReached!%d\n", reachedActive))
-	file.WriteString(fmt.Sprintf("AllActiveReleased!%d\n", allActiveReleased))
+	file.WriteString(fmt.Sprintf("AllActiveReleased!%d\n", true))
 	if timerStarted {
 		file.WriteString(fmt.Sprintf("Runtime!%d", int(duration.Seconds())))
 	} else {

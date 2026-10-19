@@ -201,14 +201,14 @@ func getSpecialMuts() map[string]f_roc.Constraint {
 					if cc.Type(true) == trace.ChannelSend {
 						chain := f_roc.NewConstraint()
 						chain.Add(c, s)
-						res[chain.ToString()] = chain
+						res[chain.String()] = chain
 					}
 				}
 			default:
 				if s.Type(true) == trace.ChannelSend {
 					chain := f_roc.NewConstraint()
 					chain.Add(c, s)
-					res[chain.ToString()] = chain
+					res[chain.String()] = chain
 				}
 			}
 		}
@@ -225,7 +225,7 @@ func getSpecialMuts() map[string]f_roc.Constraint {
 				if a_concurrent.IsConcurrent(done, add) {
 					chain := f_roc.NewConstraint()
 					chain.Add(done, add)
-					res[chain.ToString()] = chain
+					res[chain.String()] = chain
 				}
 			}
 		}

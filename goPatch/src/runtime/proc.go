@@ -5417,7 +5417,7 @@ func newproc(fn *funcval) {
 	}
 	file, line := funcline(f, tracepc)
 
-	wait, ch, ack, notActive := WaitForReplayPath(OperationSpawn, file, int(line), true)
+	ch := WaitForReplayPath(OperationSpawn, file, int(line))
 	index := 1
 
 	// main routine
@@ -5428,20 +5428,22 @@ func newproc(fn *funcval) {
 	}
 
 	// non internal routine
-	if wait {
-		elem := <-ch
-		index = elem.Index
-		defer func() { ack <- struct{}{} }()
-	} else if notActive || advocateFuzzingDelayEnabled {
-		// get the spawn info from spawns slice if the fork is directly released by partial replay
-		if s, ok := spawns[gp.advocateRoutineInfo.replayID]; ok && len(s) > 0 {
-			index, spawns[gp.advocateRoutineInfo.replayID] = s[0], spawns[gp.advocateRoutineInfo.replayID][1:]
-			if index > minReplayRoutine {
-				minReplayRoutine = index
+	if !advocateIgnoreFork(file) {
+		if ch != nil {
+			<-ch
+		}
+
+		if advocateFuzzingEnabled {
+			// get the spawn info from spawns slice if the fork is directly released by partial replay
+			if s, ok := spawns[gp.advocateRoutineInfo.replayID]; ok && len(s) > 0 {
+				index, spawns[gp.advocateRoutineInfo.replayID] = s[0], spawns[gp.advocateRoutineInfo.replayID][1:]
+				if index > minReplayRoutine {
+					minReplayRoutine = index
+				}
+			} else {
+				minReplayRoutine += 1
+				index = minReplayRoutine
 			}
-		} else {
-			minReplayRoutine += 1
-			index = minReplayRoutine
 		}
 	}
 	// ADVOCATE-END
@@ -5465,6 +5467,13 @@ func newproc(fn *funcval) {
 		}
 	})
 }
+
+// ADVOCATE-START
+func advocateIgnoreFork(file string) bool {
+	return (containsStr(file, "goPatch/src/advocatego/advocate_replay.go") || containsStr(file, "goPatch/src/runtime/mgc.go"))
+}
+
+// ADVOCATE-END
 
 // Create a new g in state _Grunnable (or _Gwaiting if parked is true), starting at fn.
 // callerpc is the address of the go statement that created this. The caller is responsible

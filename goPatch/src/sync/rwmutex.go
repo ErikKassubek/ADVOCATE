@@ -74,16 +74,10 @@ const rwmutexMaxReaders = 1 << 30
 // documentation on the [RWMutex] type.
 func (rw *RWMutex) RLock() {
 	// ADVOCATE-START
-	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationRWMutexRLock, runtime.CallerSkipMutex, false)
-	if wait {
-		replayElem := <-ch
-		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexReq(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexRLock)
-			runtime.BlockForever()
-		}
+	ch := runtime.WaitForReplay(runtime.OperationRWMutexRLock, runtime.CallerSkipMutex)
+	if ch != nil {
+		<-ch
 	}
-
-	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
 	// AdvocateMutexReq records, that a routine tries to lock a mutex.
 	// AdvocatePost is called, if the mutex was locked successfully.
@@ -118,17 +112,10 @@ func (rw *RWMutex) RLock() {
 // in a particular use of mutexes.
 func (rw *RWMutex) TryRLock() bool {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexTryRLock, runtime.CallerSkipMutex, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
-		replayElem := <-ch
-		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexReq(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexTryRLock)
-			runtime.BlockForever()
-		}
+	ch := runtime.WaitForReplay(runtime.OperationRWMutexTryRLock, runtime.CallerSkipMutex)
+	if ch != nil {
+		<-ch
 	}
-
-	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
 	// AdvocateMutexReq records, that a routine tries to lock a mutex.
 	// advocateIndex is used for AdvocateMutexCom to find the pre event.
@@ -175,14 +162,9 @@ func (rw *RWMutex) TryRLock() bool {
 // on entry to RUnlock.
 func (rw *RWMutex) RUnlock() {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexRUnlock, runtime.CallerSkipMutex, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
-		replayElem := <-ch
-		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexReq(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexRUnlock)
-			runtime.BlockForever()
-		}
+	ch := runtime.WaitForReplay(runtime.OperationRWMutexRUnlock, runtime.CallerSkipMutex)
+	if ch != nil {
+		<-ch
 	}
 
 	// AdvocateMutexReq is used to record the unlocking of a mutex.
@@ -225,16 +207,10 @@ func (rw *RWMutex) rUnlockSlow(r int32) {
 // Lock blocks until the lock is available.
 func (rw *RWMutex) Lock() {
 	// ADVOCATE-START
-	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationRWMutexLock, runtime.CallerSkipMutex, false)
-	if wait {
-		replayElem := <-ch
-		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexReq(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexLock)
-			runtime.BlockForever()
-		}
+	ch := runtime.WaitForReplay(runtime.OperationRWMutexLock, runtime.CallerSkipMutex)
+	if ch != nil {
+		<-ch
 	}
-
-	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
 	// AdvocateMutexReq records, that a routine tries to lock a mutex.
 	// AdvocatePost is called, if the mutex was locked successfully.
@@ -274,19 +250,10 @@ func (rw *RWMutex) Lock() {
 // in a particular use of mutexes.
 func (rw *RWMutex) TryLock() bool {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexTryLock, 2, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
-		replayElem := <-ch
-		if replayElem.Blocked {
-			// AdvocateMutexReq records, that a routine tries to lock a mutex.
-			// advocateIndex is used for AdvocateMutexCom to find the pre event.
-			_ = runtime.AdvocateMutexReq(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexTryLock)
-			runtime.BlockForever()
-		}
+	ch := runtime.WaitForReplay(runtime.OperationRWMutexTryLock, runtime.CallerSkipMutex)
+	if ch != nil {
+		<-ch
 	}
-
-	runtime.FuzzingFlowWait(2)
 
 	// AdvocateMutexReq records, that a routine tries to lock a mutex.
 	// advocateIndex is used for AdvocateMutexCom to find the pre event.
@@ -346,9 +313,8 @@ func (rw *RWMutex) TryLock() bool {
 // arrange for another goroutine to [RWMutex.RUnlock] ([RWMutex.Unlock]) it.
 func (rw *RWMutex) Unlock() {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexUnlock, 2, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	ch := runtime.WaitForReplay(runtime.OperationRWMutexUnlock, runtime.CallerSkipMutex)
+	if ch != nil {
 		<-ch
 	}
 	// AdvocateMutexReq is used to record the unlocking of a mutex.

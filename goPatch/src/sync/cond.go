@@ -92,8 +92,8 @@ func (c *Cond) Wait() {
 	// ADVOCATE-START
 
 	// replay
-	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationCondWait, runtime.CallerSkipCond, false)
-	if wait {
+	ch := runtime.WaitForReplay(runtime.OperationCondWait, runtime.CallerSkipCond)
+	if ch != nil {
 		<-ch
 	}
 
@@ -120,9 +120,8 @@ func (c *Cond) Signal() {
 	// ADVOCATE-START
 
 	// replay
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondSignal, runtime.CallerSkipCond, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	ch := runtime.WaitForReplay(runtime.OperationCondSignal, runtime.CallerSkipCond)
+	if ch != nil {
 		<-ch
 	}
 
@@ -145,9 +144,8 @@ func (c *Cond) Broadcast() {
 	// ADVOCATE-START
 
 	// replay
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondBroadcast, runtime.CallerSkipCond, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
+	ch := runtime.WaitForReplay(runtime.OperationCondBroadcast, runtime.CallerSkipCond)
+	if ch != nil {
 		<-ch
 	}
 

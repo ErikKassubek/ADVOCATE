@@ -565,7 +565,7 @@ func unitTestRecord(pkg, file, testName string,
 			}
 		}
 	}
-	log.Info("Text executed")
+	log.Info("Test executed")
 
 	err = os.Unsetenv("GOROOT")
 

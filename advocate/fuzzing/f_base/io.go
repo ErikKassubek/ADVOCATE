@@ -10,9 +10,11 @@
 package f_base
 
 import (
+	"advocate/analysis/a_base"
 	"advocate/fuzzing/f_roc"
 	"advocate/trace"
 	"advocate/utils/flags"
+	"advocate/utils/io"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"advocate/utils/settings"
@@ -29,7 +31,7 @@ import (
 //   - first bool: set to true, if it is the first mutation for a given test/prog
 //
 // Returns:
-//   - bool: true if is the first written mutation
+//   - bool: true if max fuzzing number is reached
 //   - error
 func WriteMutConstraint(mut *f_roc.Constraint, first bool) (bool, error) {
 	if MaxNumberRuns != -1 && NumberWrittenMutations > MaxNumberRuns {
@@ -46,12 +48,23 @@ func WriteMutConstraint(mut *f_roc.Constraint, first bool) (bool, error) {
 
 	closure := f_roc.CalcuateStableClosure(*mut)
 
-	// write the active map to a "replay_active.log"
-	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
-		WriteMutActive(fuzzingTracePath, mut, closure)
-	} else {
-		WriteMutActive(fuzzingTracePath, mut, closure)
+	// log.Debug2(closure.StringDebug())
+	// log.Debug2("\n\n")
+
+	err := io.CreateTraceFolder(fuzzingTracePath)
+	if err != nil {
+		return false, err
 	}
+
+	mut.Merge(closure)
+
+	// write the active map to a "replay_constratins.log"
+	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
+		WriteConstraints(fuzzingTracePath, mut)
+	} else {
+		WriteConstraints(fuzzingTracePath, mut)
+	}
+	WriteForkMap(fuzzingTracePath)
 
 	muta := Mutation{MutType: MutPiType, MutPie: NumberWrittenMutations}
 
@@ -151,20 +164,19 @@ func GetPath(path string) string {
 	return filepath.Dir(path)
 }
 
-// WriteMutActive writes the element in the chain into a rewriteActive.log
+// WriteConstraints writes the element in the chain into a rewriteActive.log
 // file for use in GoPie and Guided
 //
 // Parameter
 //   - fuzzingTracePath string: path to the trace folder
 //   - mut *chain: chain to write
-func WriteMutActive(fuzzingTracePath string, mut, closure *f_roc.Constraint) {
+func WriteConstraints(fuzzingTracePath string, mut *f_roc.Constraint) {
 
-	fullConstraint := f_roc.Merge(mut, closure)
-
-	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayActive)
+	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayConstraints)
 
 	f, err := os.Create(activePath)
 	if err != nil {
+		log.Error("Failed to create fuzzing trace folder: ", err.Error())
 		return
 	}
 
@@ -172,17 +184,55 @@ func WriteMutActive(fuzzingTracePath string, mut, closure *f_roc.Constraint) {
 
 	// find the counter for all elements in the mut
 	mutCounter := make(map[string]int)
-	mutTime := make(map[string]int)
-	for _, elem := range fullConstraint.Elems {
+	posCounter := make(map[string]int)
+	for _, elem := range mut.Elems {
 		mutCounter[getRoutPos(elem)] = 0
 	}
 
-	for _, elem := range fullConstraint.Elems {
+	tr := a_base.MainTrace
+	traceIter := tr.AsIterator()
+
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+		routPos := getRoutPos(elem)
+		posCounter[routPos]++
+		if _, ok := mutCounter[routPos]; ok { // is in chain
+			mutCounter[routPos] = posCounter[routPos]
+		}
+	}
+
+	for _, elem := range mut.Elems {
 		routPos := getRoutPos(elem)
 		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
-		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.RoutineID(), elem.Pos(), mutTime[routPos], mutCounter[routPos])
+		key := fmt.Sprintf("%d:%s:%d\n", elem.RoutineID(), elem.Pos(), mutCounter[routPos])
 		f.WriteString(key)
 	}
+}
+
+func WriteForkMap(fuzzingTracePath string) {
+	tree := a_base.MainTrace.ForkTree()
+
+	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayForkTree)
+
+	f, err := os.Create(activePath)
+	if err != nil {
+		log.Error("Failed to create fuzzing trace folder: ", err.Error())
+		return
+	}
+
+	defer f.Close()
+
+	for old, new := range tree {
+		newStr := ""
+		for i, n := range new {
+			if i != 0 {
+				newStr += ","
+			}
+			newStr += fmt.Sprintf("%d", n)
+		}
+		key := fmt.Sprintf("%d#%s\n", old, newStr)
+		f.WriteString(key)
+	}
+
 }
 
 func getRoutPos(elem trace.Element) string {

@@ -33,16 +33,8 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
-	// delete folder if exists
-	if _, err := os.Stat(path); err == nil {
-		log.Info(path + " already exists. Delete folder " + path)
-		if err := os.RemoveAll(path); err != nil {
-			return err
-		}
-	}
-
-	// create new folder
-	if err := os.Mkdir(path, 0755); err != nil {
+	err := CreateTraceFolder(path)
+	if err != nil {
 		return err
 	}
 
@@ -101,6 +93,23 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 	return nil
 }
 
+func CreateTraceFolder(path string) error {
+	// delete folder if exists
+	if _, err := os.Stat(path); err == nil {
+		log.Info(path + " already exists. Delete folder " + path)
+		if err := os.RemoveAll(path); err != nil {
+			return err
+		}
+	}
+
+	// create new folder
+	if err := os.Mkdir(path, 0755); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Check if the element is relevant for replay
 //
 // Parameter:
@@ -142,7 +151,7 @@ func WriteRewriteInfoFile(path string, bug bugs.Bug, exitCode int, resultIndex i
 }
 
 func writeControlFile(path string) {
-	activePath := filepath.Join(path, paths.NameReplayActive)
+	activePath := filepath.Join(path, paths.NameReplayConstraints)
 
 	f, err := os.Create(activePath)
 	if err != nil {

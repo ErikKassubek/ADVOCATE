@@ -31,6 +31,7 @@ func CalcuateStableClosure(s Constraint) *Constraint {
 
 	maxTs := make(map[int]int)
 	forks := make(map[int]bool)
+	elems := make(map[int]bool)
 
 	// (b)
 	for _, scElem := range s.Elems {
@@ -41,16 +42,29 @@ func CalcuateStableClosure(s Constraint) *Constraint {
 		if e, ok := scElem.(*trace.ElementFork); ok {
 			forks[e.ResourceID()] = true
 		}
+
+		elems[scElem.ID()] = true
 	}
 
 	// (c)
 	for _, scElem := range s.Elems {
+		id := scElem.ID()
+		if elems[id] {
+			continue
+		}
+
 		rout := scElem.RoutineID()
 		if forks[rout] {
 			continue
 		}
 		forkElem := t.GetRoutineTrace(rout).Fork()
+
+		if forkElem == nil {
+			continue
+		}
+
 		cl.Add(forkElem)
+		elems[scElem.ID()] = true
 
 		forks[rout] = true
 		maxTs[rout] = max(maxTs[rout], forkElem.T(trace.Commit))
@@ -64,10 +78,16 @@ func CalcuateStableClosure(s Constraint) *Constraint {
 
 		// (b)
 		for elem := tIter.Next(); elem != nil; elem = tIter.Next() {
+			id := elem.ID()
+			if elems[id] {
+				continue
+			}
+
 			rout := elem.RoutineID()
 			ts := elem.T(trace.Commit)
 			if ts < maxTs[rout] {
 				cl.Add(elem)
+				elems[id] = true
 				newElemAdded = true
 			}
 		}
@@ -78,13 +98,26 @@ func CalcuateStableClosure(s Constraint) *Constraint {
 				continue
 			}
 			forkElem := t.GetRoutineTrace(rout).Fork()
+
+			if forkElem == nil {
+				continue
+			}
+
+			id := forkElem.ID()
+			if elems[id] {
+				continue
+			}
+
 			cl.Add(forkElem)
+			elems[id] = true
 
 			forks[rout] = true
 			maxTs[rout] = max(maxTs[rout], forkElem.T(trace.Commit))
 			newElemAdded = true
 		}
 	}
+
+	cl.sort()
 
 	return &cl
 }

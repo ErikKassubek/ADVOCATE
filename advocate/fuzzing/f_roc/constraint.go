@@ -178,7 +178,7 @@ func (this *Constraint) Len() int {
 //
 // Returns:
 //   - A string representation of the chain
-func (this *Constraint) ToString() string {
+func (this *Constraint) String() string {
 	res := ""
 	for _, e := range this.Elems {
 		res += fmt.Sprintf("%d:%s", e.RoutineID(), e.Pos())
@@ -187,6 +187,19 @@ func (this *Constraint) ToString() string {
 			res += fmt.Sprintf("%d", f.GetChosenIndex())
 		}
 		res += "&"
+	}
+	return res
+}
+
+// Get a string representation of a scheduling chain
+//
+// Returns:
+//   - A string representation of the chain
+func (this *Constraint) StringDebug() string {
+	res := ""
+	for _, e := range this.Elems {
+		res += e.StringDebug()
+		res += "\n"
 	}
 	return res
 }
@@ -233,17 +246,10 @@ func (this *Constraint) sort() {
 }
 
 // Merge two constraints
-func Merge(c1, c2 *Constraint) Constraint {
-	res := NewConstraint()
-
-	for _, e := range c1.Elems {
-		res.Add(e)
-	}
-	for _, e := range c2.Elems {
-		res.Add(e)
+func (this *Constraint) Merge(other *Constraint) {
+	for _, e := range other.Elems {
+		this.Add(e)
 	}
 
-	res.sort()
-
-	return res
+	this.sort()
 }

@@ -39,9 +39,9 @@ const (
 	OperationWaitgroupAddDone Operation = "wgAdddone"
 	OperationWaitgroupWait    Operation = "wgWait"
 
-	OperationSelect        Operation = "wgSelect"
-	OperationSelectCase    Operation = "wgSelectcase"
-	OperationSelectDefault Operation = "wgSelectdefault"
+	OperationSelect        Operation = "select"
+	OperationSelectCase    Operation = "selectCase"
+	OperationSelectDefault Operation = "selectDefault"
 
 	OperationCondSignal    Operation = "condSignal"
 	OperationCondBroadcast Operation = "condBroadcast"

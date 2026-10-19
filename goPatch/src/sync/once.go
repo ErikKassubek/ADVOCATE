@@ -92,16 +92,10 @@ func (o *Once) Do(f func()) {
 	// the o.done.Store must be delayed until after f returns.
 
 	// ADVOCATE-START
-	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationOnceDo, runtime.CallerSkipOne, false)
-	if wait {
-		replayElem := <-ch
-		if replayElem.Blocked {
-			_ = runtime.AdvocateOnceReq(unsafe.Pointer(o), o.id)
-			runtime.BlockForever()
-		}
+	ch := runtime.WaitForReplay(runtime.OperationOnceDo, runtime.CallerSkipOne)
+	if ch != nil {
+		<-ch
 	}
-
-	runtime.FuzzingFlowWait(2)
 
 	index := runtime.AdvocateOnceReq(unsafe.Pointer(o), o.id)
 	res := false

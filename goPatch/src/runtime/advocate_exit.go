@@ -13,6 +13,46 @@ package runtime
 
 var advocateExitCode = 0
 var advocateExitCodePos = ""
+var hasPanicked = false
+var hasReturnedExitCode = false
+
+const (
+	ExitCodeDefault          = 0
+	ExitCodePanic            = 3
+	ExitCodeTimeout          = 10
+	ExitCodeLeakUnbuf        = 20
+	ExitCodeLeakBuf          = 21
+	ExitCodeLeakMutex        = 22
+	ExitCodeLeakCond         = 23
+	ExitCodeLeakWG           = 24
+	ExitCodeSendClose        = 30
+	ExitCodeRecvClose        = 31
+	ExitCodeCloseClose       = 32
+	ExitCodeCloseNil         = 33
+	ExitCodeNegativeWG       = 34
+	ExitCodeUnlockBeforeLock = 35
+	ExitCodeCyclic           = 41
+	ExitCodeMixedDeadlock    = 42
+)
+
+var ExitCodeNames = map[int]string{
+	0:  "The replay terminated normally",
+	3:  "The program panicked unexpectedly",
+	10: "Timeout",
+	20: "Leak: Leaking unbuffered channel or select was unstuck",
+	21: "Leak: Leaking buffered channel was unstuck",
+	22: "Leak: Leaking Mutex was unstuck",
+	23: "Leak: Leaking Cond was unstuck",
+	24: "Leak: Leaking WaitGroup was unstuck",
+	30: "Send on close",
+	31: "Receive on close",
+	32: "Close on close",
+	33: "Close on nil",
+	34: "Negative WaitGroup counter",
+	35: "Unlock of unlocked mutex",
+	41: "Cyclic deadlock",
+	42: "Mixed Deadlock",
+}
 
 // GetExitCode returns the exit code and exit position
 //
@@ -79,4 +119,65 @@ func SetExitCodeFromPanicMsg(msg any) {
 	if advocateExitCode == 0 {
 		advocateExitCode = ExitCodePanic
 	}
+}
+
+// Exit the program with the given code if the program panics.
+//
+// Parameter:
+//   - msg: the panic message
+func AdvocatePanic(msg any) {
+	if hasPanicked {
+		exit(1)
+	}
+	hasPanicked = true
+
+	constratins.releaseAllBlocked()
+
+	SetExitCodeFromPanicMsg(msg)
+
+	if IsAdvocateFuzzingEnabled() {
+		finishFuzzingFunc()
+	} else if IsTracingEnabled() {
+		finishTracingFunc()
+	}
+
+	// if !IsReplayEnabled() {
+	// 	return
+	// }
+
+	ExitReplayWithCode(advocateExitCode, msg)
+}
+
+// Exit the program with the given code.
+//
+// Parameter:
+//   - code: the exit code
+//   - msg any: message
+func ExitReplayWithCode(code int, msg any) {
+	if !hasReturnedExitCode {
+		// if !isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
+		// 	return
+		// }
+		println("\nExit Replay with code ", code, ExitCodeNames[code])
+		hasReturnedExitCode = true
+	} else {
+		println("Exit code already returned")
+	}
+
+	if msg != "" {
+		print("Exit Message: ")
+
+		var p _panic
+		p.arg = msg
+		preprintpanics(&p)
+		printpanics(&p)
+		print("\n")
+	}
+
+	exit(int32(code))
+}
+
+func ExitReplayTimeout() {
+	advocateExitCode = ExitCodeTimeout
+	AdvocatePanic("Timeout")
 }

@@ -1,7 +1,9 @@
+// ADVOCATE-FILE_START
+
 // Copyright (c) 2026 Erik Kassubek
 //
 // File: advocate_replay_wait.go
-// Brief: Wait for replay
+// Brief: Functionality to handle operation wait
 //
 // Author: Erik Kassubek
 //
@@ -9,7 +11,34 @@
 
 package runtime
 
-var mgcRoutine uint64 = 0
+type waitingOps struct {
+	waiting map[string]chan int // key -> waiting chan
+	mu      mutex
+}
+
+func (this *waitingOps) add(key string, c chan int) {
+	lock(&this.mu)
+	this.waiting[key] = c
+	unlock(&this.mu)
+}
+
+func (this *waitingOps) contains(elem *ConstraintElem) chan int {
+	key := elem.key
+	lock(&this.mu)
+	if c, ok := this.waiting[key]; ok {
+		unlock(&this.mu)
+		return c
+	}
+	unlock(&this.mu)
+	return nil
+}
+
+func (this *waitingOps) remove(elem *ConstraintElem) {
+	key := elem.key
+	lock(&this.mu)
+	delete(this.waiting, key)
+	unlock(&this.mu)
+}
 
 // Called by operations during replay. If the operations is the next operation
 // to be executed it is release, otherwise the operation is stored into the
@@ -20,24 +49,21 @@ var mgcRoutine uint64 = 0
 // Parameter:
 //   - op: the operation type that is about to be executed
 //   - skip: number of stack frames to skip
-//   - waitForResponse bool: whether the wait should wait for a response after finished
 //
 // Returns:
-//   - bool: true if the operation should wait, otherwise it can immediately execute
-//     and ignore all replay mechanisms, e.g. used if replay is enabled
-//   - chan ReplayElement: channel to wait on
-//   - chan struct{}: chan to report back on when finished
-//   - bool: true if released because not active, false otherwise
-func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}, bool) {
-	// without this the runtime build runs into an deadlock message, no idea why
+//   - chan ReplayElement: channel to wait on, if nil no wait
+//
+// TODO:
+//   - maybe add the bool return back in so we do not need to channel if it is released without additional info
+func WaitForReplay(op Operation, skip int) chan int {
 	if !replayEnabled {
-		return false, nil, nil, false
+		return nil
 	}
 
 	// if Caller is run in the garbage collector, the execution stops
 	// this should prevent this
 	if currentGoRoutineInfo() != nil && mgcRoutine != 0 && currentGoRoutineInfo().id == mgcRoutine {
-		return false, nil, nil, false
+		return nil
 	}
 
 	_, file, line, _ := Caller(skip)
@@ -46,7 +72,7 @@ func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan Rep
 		mgcRoutine = currentGoRoutineInfo().id
 	}
 
-	return WaitForReplayPath(op, file, line, waitForResponse)
+	return WaitForReplayPath(op, file, line)
 }
 
 // Called by operations during replay. If the operations is the next operation
@@ -59,166 +85,130 @@ func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan Rep
 //   - op: the operation type that is about to be executed
 //   - file: file in which the operation is executed
 //   - line: line number of the operation
-//   - waitForResponse bool: whether the wait should wait for a response after finished
 //
 // Returns:
-//   - bool: true if the operation should wait, otherwise it can immediately execute
-//     and ignore all replay mechanisms, e.g. used if replay is enabled
-//   - chan ReplayElement: channel to wait on
-//   - chan struct{}: chan to report back on when finished
-//   - bool: true if released because not active, false otherwise
-func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}, bool) {
+//   - chan int: channel to wait on, if nil the operation does not need to wait
+func WaitForReplayPath(op Operation, file string, line int) chan int {
 	if !replayEnabled {
-		return false, nil, nil, false
+		return nil
 	}
 
 	if AdvocateIgnoreReplay(op, file) {
-		return false, nil, nil, false
+		return nil
 	}
 
 	routine := GetReplayRoutineID()
+	key := intToString(routine) + "$" + file + "#" + intToString(line)
 
-	key := BuildReplayKey(routine, file, line)
+	if !constratins.isInConstraint(key) {
+		if printDebug {
+			println("ReleaseN: ", key)
+		}
+		return nil
+	}
 
-	lock(&partialReplayMutex)
-	partialReplayCounter[key] += 1
-	currentCounter := partialReplayCounter[key]
-	unlock(&partialReplayMutex)
+	chWait := make(chan int, 1)
 
-	chWait := make(chan ReplayElement, 1)
-	chAck := make(chan struct{}, 1)
+	// is next, can be release directly
+	if constratins.isNext(key) {
+		if printDebug {
+			println("ReleaseD: ", key)
+		}
+
+		// TODO: send routine id or select chosen case
+		chWait <- 0
+		constratins.update(key)
+		return chWait
+	}
 
 	if printDebug {
 		println("Wait: ", key)
 	}
 
-	// ignore not active operations if partial replay is active
-	if PartialReplay {
-		// the operation is never active
-		c, ok := active[key]
-		if !ok {
-			repEl, found := getSelect(key)
+	waiting.add(key, chWait)
 
-			chWait <- repEl
-
-			if printDebug {
-				println("ReleaseNonActiveN: ", key)
-			}
-			return found, chWait, nil, true
-		}
-
-		// the operation is sometimes active, but not this time
-		if !IsInSlice(c, currentCounter) {
-			if printDebug {
-				print("ReleaseNonActiveT: ", key)
-				for _, d := range c {
-					print(", ", d, ", ")
-				}
-				println(currentCounter)
-			}
-			repEl, found := getSelect(key)
-
-			chWait <- repEl
-
-			return found, chWait, nil, true
-		}
-
-	}
-
-	replayElem := replayChan{chWait, chAck, counter, waitForResponse, false, currentTime()}
-
-	_, nextElem := getNextReplayElement()
-
-	nextElemKey := nextElem.Key()
-	if printDebug {
-		println("Next: ", nextElemKey)
-	}
-	if key == nextElemKey && !waitForAck.waitForAck {
-		_, _ = getSelect(key)
-		// if it is the next element, release directly and add elems to waitForAck
-		chWait <- nextElem
-
-		releaseActive(key)
-
-		lastTime = currentTime()
-
-		if printDebug {
-			println("ReleaseDir: ", key, waitForResponse)
-		}
-
-		if replayElem.waitAck {
-			waitForAck = released{
-				replayC:    replayElem,
-				replayE:    nextElem,
-				waitForAck: true,
-			}
-		} else {
-			foundReplayElement()
-		}
-	} else {
-		// add to waiting list
-		lock(&waitingOpsMutex)
-		if _, ok := waitingOps[key]; ok {
-			println("Override key: ", key)
-		}
-		waitingOps[key] = replayElem
-		unlock(&waitingOpsMutex)
-
-		CheckForPartialReplay(nextElem)
-	}
-
-	return true, chWait, chAck, false
+	return chWait
 }
 
-// Release a waiting operation and, if required, wait for the acknowledgement
+// AdvocateIgnoreReplay decides if an operation should be ignored for replay.
+// Ignored means it is just executed when called without waiting.
+// All internal operations are ignored
+// Atomic operations are ignored if the corresponding variable is set
 //
 // Parameter:
-//   - elem (replayChan): the element to be released
-//   - elemReplay (ReplayElement): the corresponding replay element
-//   - rel (bool): the waiting channel should be released
-//   - next (bool): true if the next element in the trace was released, false if the oldest has been released
+//   - operation Operation: the operation to check
+//   - file string: the file where the operation is executed
 //
 // Returns:
-//   - bool: true if the element was released, false if not, especially if it already has been released before
-func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) bool {
-	if elem.released {
-		if printDebug {
-			println("Already released: ", elemReplay.Key())
+//   - bool: true if the operation should be ignored, false otherwise
+func AdvocateIgnoreReplay(operation Operation, file string) bool {
+	primitive := getOperationPrimitive(operation)
+
+	switch primitive {
+	case PrimitiveRoutine:
+		if containsStr(file, "goPatch/src/testing/testing.go") {
+			return false
 		}
-		return false
+	case PrimitiveAlloc, PrimitiveControll:
+		return true
 	}
 
-	if rel {
-		key := elemReplay.Key()
-		_, _ = getSelect(key)
-		// if PartialReplay {
-		// 	elemReplay.Index = -1
-		// }
-		elem.chWait <- elemReplay
-		elem.released = true
-		if printDebug {
-			println("Release: ", elemReplay.Key())
-		}
+	if containsStr(file, "go/pkg/mod/") {
+		return true
 	}
 
-	if elem.waitAck {
-		select {
-		case <-elem.chAck:
-		case <-after(sToNs(acknowledgementMaxWaitSec)):
-			if tPostWhenAckFirstTimeout == 0 {
-				tPostWhenAckFirstTimeout = elemReplay.Time
+	return AdvocateIgnore(file)
+}
+
+// func BlockForever() {
+// 	gopark(nil, nil, waitReasonZero, traceBlockForever, 1)
+// }
+
+/*
+ * Wait until all operations in the trace are executed.
+ * This function should be called after the main routine is finished, to prevent
+ * the program to terminate before the trace is finished.
+ *
+ * Returns:
+ *    - bool: true if all events in the pre trace and roc have been executed, false otherwise
+ */
+func WaitForReplayFinish() bool {
+	if printDebug {
+		println("Wait for replay finish")
+		defer println("Finish Wait")
+	}
+
+	startTime := currentTime()
+	allEventExec := true
+
+	if replayEnabled {
+		for {
+			if constratins.isDone() {
+				break
 			}
+
+			if hasTimePast(startTime, 5) {
+				allEventExec = false
+				break
+			}
+
+			sleep(0.001)
 		}
+
+		DisableReplay()
 	}
 
-	lastTime = currentTime()
-	if next {
-		lastTimeWithoutOldest = currentTime()
-		releaseOldestWait = releaseOldestWaitLastMax
-		foundReplayElement()
-	} else {
-		releasedElementOldest(elemReplay.Key())
+	// Ensure that the deadlock detector is finished
+	for {
+		lock(&waitDeadlockDetectLock)
+		if !waitDeadlockDetect {
+			unlock(&waitDeadlockDetectLock)
+			break
+		}
+		unlock(&waitDeadlockDetectLock)
+
+		sleep(0.001)
 	}
 
-	return true
+	return allEventExec
 }

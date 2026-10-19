@@ -58,7 +58,7 @@ func Mutate(c f_roc.Constraint, energy int, rel1, rel2 map[trace.Element]map[tra
 		return res
 	}
 
-	res[c.ToString()] = c
+	res[c.String()] = c
 
 	maxMutPerStep := 6
 	if flags.FuzzingMode == GoPie {
@@ -73,8 +73,8 @@ func Mutate(c f_roc.Constraint, energy int, rel1, rel2 map[trace.Element]map[tra
 			// Rule 1 -> abridge
 			if flags.FuzzingMode != Guided && ch.Len() >= 2 && rand.Int()%2 == 1 {
 				newCh1, newCh2 := abridge(ch)
-				tSet[newCh1.ToString()] = newCh1
-				tSet[newCh2.ToString()] = newCh2
+				tSet[newCh1.String()] = newCh1
+				tSet[newCh2.String()] = newCh2
 			}
 
 			// Rule 2 -> flip (not in original implementation, not in GoPie,
@@ -88,7 +88,7 @@ func Mutate(c f_roc.Constraint, energy int, rel1, rel2 map[trace.Element]map[tra
 					}
 
 					for _, newCh := range newChs {
-						tSet[newCh.ToString()] = newCh
+						tSet[newCh.String()] = newCh
 					}
 				}
 			}
@@ -103,7 +103,7 @@ func Mutate(c f_roc.Constraint, energy int, rel1, rel2 map[trace.Element]map[tra
 				}
 
 				for _, newCh := range newChs {
-					tSet[newCh.ToString()] = newCh
+					tSet[newCh.String()] = newCh
 				}
 			}
 
@@ -116,7 +116,7 @@ func Mutate(c f_roc.Constraint, energy int, rel1, rel2 map[trace.Element]map[tra
 				}
 
 				for _, newCh := range newChs {
-					tSet[newCh.ToString()] = newCh
+					tSet[newCh.String()] = newCh
 				}
 			}
 
@@ -285,7 +285,7 @@ func MutSelect(cs *f_roc.Constraint) map[string]f_roc.Constraint {
 		if sel.GetContainsDefault() && !sel.GetChosenDefault() {
 			c := cs.Copy()
 			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(-1)
-			res[c.ToString()] = c
+			res[c.String()] = c
 		}
 
 		for ca := range sel.GetCases() {
@@ -295,7 +295,7 @@ func MutSelect(cs *f_roc.Constraint) map[string]f_roc.Constraint {
 
 			c := cs.Copy()
 			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(ca)
-			res[c.ToString()] = c
+			res[c.String()] = c
 		}
 	}
 

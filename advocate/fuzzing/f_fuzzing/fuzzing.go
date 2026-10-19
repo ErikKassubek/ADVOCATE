@@ -14,7 +14,6 @@ import (
 	"advocate/analysis/a_base"
 	"advocate/fuzzing/f_base"
 	"advocate/fuzzing/f_roc"
-	"advocate/fuzzing/modes/f_flow"
 	"advocate/fuzzing/modes/f_gfuzz"
 	"advocate/fuzzing/modes/f_gopie"
 	f_guided "advocate/fuzzing/modes/g_guided"
@@ -33,7 +32,7 @@ import (
 
 // Fuzzing creates the fuzzing data and runs the fuzzing executions
 func Fuzzing() error {
-	modes := []string{f_base.GoPie, f_base.GoCR, f_base.GoCRHB, f_base.GFuzz, f_base.GFuzzHBFlow, f_base.GFuzzHB, f_base.Flow, f_base.Guided}
+	modes := []string{f_base.GoPie, f_base.GoCR, f_base.GoCRHB, f_base.GFuzz, f_base.GFuzzHBFlow, f_base.GFuzzHB, f_base.Guided}
 	if !types.Contains(modes, flags.FuzzingMode) {
 		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are Guided, GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", flags.FuzzingMode)
 	}
@@ -47,9 +46,8 @@ func Fuzzing() error {
 	f_base.FuzzingModeGoPie = (flags.FuzzingMode == f_base.GoPie || flags.FuzzingMode == f_base.GoCR || flags.FuzzingMode == f_base.GoCRHB)
 	f_base.FuzzingModeGoCRHBPlus = (flags.FuzzingMode == f_base.GoCR || flags.FuzzingMode == f_base.GoCRHB)
 	f_base.FuzzingModeGFuzz = (flags.FuzzingMode == f_base.GFuzz || flags.FuzzingMode == f_base.GFuzzHBFlow || flags.FuzzingMode == f_base.GFuzzHB)
-	f_base.FuzzingModeFlow = (flags.FuzzingMode == f_base.Flow || flags.FuzzingMode == f_base.GFuzzHBFlow)
 	f_base.FuzzingModeGuided = (flags.FuzzingMode == f_base.Guided || flags.FuzzingMode == f_base.Default)
-	f_base.UseHBInfoFuzzing = (flags.FuzzingMode == f_base.Guided || flags.FuzzingMode == f_base.GFuzzHB || flags.FuzzingMode == f_base.GFuzzHBFlow || flags.FuzzingMode == f_base.Flow || flags.FuzzingMode == f_base.GoCR || flags.FuzzingMode == f_base.GoCRHB)
+	f_base.UseHBInfoFuzzing = (flags.FuzzingMode == f_base.Guided || flags.FuzzingMode == f_base.GFuzzHB || flags.FuzzingMode == f_base.GFuzzHBFlow || flags.FuzzingMode == f_base.GoCR || flags.FuzzingMode == f_base.GoCRHB)
 
 	if flags.Continue {
 		log.Info("Continue fuzzing")
@@ -251,12 +249,6 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			if f_base.FuzzingModeGFuzz {
 				f_gfuzz.CreateMutations(false)
 			}
-
-			// add new mutations based on flow path expansion
-			// if f_base.FuzzingModeFlow {
-			// 	f_flow.CreateMutations()
-			// }
-
 			// add mutations based on GoPie
 			if f_base.FuzzingModeGoPie {
 				f_gopie.CreateMutations(order.MutPie)
@@ -332,11 +324,9 @@ func clearDataFull() {
 	f_base.ClearDataFull()
 	f_gopie.ClearData()
 	f_gfuzz.ClearDataFull()
-	f_flow.ClearData()
 }
 
 func clearDataRun() {
 	f_gopie.ClearDataRun()
 	f_gfuzz.ClearDataRun()
-	f_flow.ClearData()
 }

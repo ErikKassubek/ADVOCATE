@@ -255,7 +255,7 @@ func (this *ElementAtomic) String() string {
 func (this *ElementAtomic) StringLocal() string {
 	opString := string(string(this.op)[1])
 
-	return fmt.Sprintf("A,%d,%d,%s,%s", this.t, this.objId, opString, this.Pos().Short)
+	return fmt.Sprintf("A,%d,%d,%s,%s", this.t, this.objId, opString, this.Pos().Short())
 }
 
 // String returns the simple string representation of the element with leading routine

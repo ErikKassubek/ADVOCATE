@@ -221,21 +221,13 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 
 	// ADVOCATE-START
 	// wait until the replay has reached the current point
-	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {
-		wait, ch, _, _ := WaitForReplay(OperationChannelSend, CallerSkipChanSendRecv, false)
-		if wait {
-			replayElem = <-ch
-			if replayElem.Blocked {
-				lock(&c.lock)
-				_ = AdvocateChanReq(c, OperationChannelSend, false)
-				unlock(&c.lock)
-				BlockForever()
-			}
+		ch := WaitForReplay(OperationChannelSend, CallerSkipChanSendRecv)
+		if ch != nil {
+			<-ch
 		}
 	}
 
-	FuzzingFlowWait(3)
 	// ADVOCATE-END
 
 	// Fast path: check for failed non-blocking operation without acquiring the lock.
@@ -526,10 +518,9 @@ func closechan(c *hchan) {
 	// AdvocateChanClose is called when a channel is closed. It creates a close event
 	// in the trace.
 	if !c.advocateIgnore {
-		wait, chWait, chAck, _ := WaitForReplay(OperationChannelClose, CallerSkipChanClose, true)
-		if wait {
-			defer func() { chAck <- struct{}{} }()
-			<-chWait
+		ch := WaitForReplay(OperationChannelClose, CallerSkipChanClose)
+		if ch != nil {
+			<-ch
 		}
 		AdvocateChanClose(c)
 	}
@@ -669,21 +660,13 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 
 	// ADVOCATE-START
 	// wait until the replay has reached the current point
-	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {
-		wait, ch, _, _ := WaitForReplay(OperationChannelRecv, CallerSkipChanSendRecv, false)
-		if wait {
-			replayElem = <-ch
-			if replayElem.Blocked {
-				lock(&c.lock)
-				_ = AdvocateChanReq(c, OperationChannelRecv, false)
-				unlock(&c.lock)
-				BlockForever()
-			}
+		ch := WaitForReplay(OperationChannelRecv, CallerSkipChanSendRecv)
+		if ch != nil {
+			<-ch
 		}
 	}
 
-	FuzzingFlowWait(2)
 	// ADVOCATE-END
 
 	// Fast path: check for failed non-blocking operation without acquiring the lock.
@@ -982,19 +965,12 @@ func chanparkcommit(gp *g, chanLock unsafe.Pointer) bool {
 //	}
 func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 	// ADVOCATE-START
-	var replayElem ReplayElement
-	var wait bool
-	var ch chan ReplayElement
+	selectedCase := 0
+	var ch chan int = nil
 	if c != nil && !c.advocateIgnore {
-		wait, ch, _, _ = WaitForReplay(OperationSelect, CallerSkipSelectOneDef, false)
-		if wait {
-			replayElem = <-ch
-			if replayElem.Blocked {
-				lock(&c.lock)
-				_ = AdvocateSelectReqOneNonDef(c, true)
-				unlock(&c.lock)
-				BlockForever()
-			}
+		ch = WaitForReplay(OperationSelect, CallerSkipSelectOneDef)
+		if ch != nil {
+			selectedCase = <-ch
 		}
 	}
 
@@ -1007,8 +983,8 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 
 	fuzzingEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
 
-	if wait {
-		fuzzingIndex = min(fuzzingIndex, replayElem.Index)
+	if ch != nil {
+		fuzzingIndex = min(fuzzingIndex, selectedCase)
 	}
 
 	res := false
@@ -1055,19 +1031,12 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 	// ADVOCATE-START
 	// see selectnbsend
-	var replayElem ReplayElement
-	var wait bool
-	var ch chan ReplayElement
+	selectedCase := 0
+	var ch chan int = nil
 	if c != nil && !c.advocateIgnore {
-		wait, ch, _, _ = WaitForReplay(OperationSelect, CallerSkipSelectOneDef, false)
-		if wait {
-			replayElem = <-ch
-			if replayElem.Blocked {
-				lock(&c.lock)
-				_ = AdvocateSelectReqOneNonDef(c, false)
-				unlock(&c.lock)
-				BlockForever()
-			}
+		ch := WaitForReplay(OperationSelect, CallerSkipSelectOneDef)
+		if ch != nil {
+			selectedCase = <-ch
 		}
 	}
 
@@ -1080,13 +1049,13 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 
 	fuzzingEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
 
-	if wait {
-		fuzzingIndex = min(fuzzingIndex, replayElem.Index)
+	if ch != nil {
+		fuzzingIndex = min(fuzzingIndex, selectedCase)
 	}
 
 	res := false
 	recv := false
-	if !fuzzingEnabled && !wait {
+	if !fuzzingEnabled && ch != nil {
 		res, recv = chanrecv(c, elem, false, true)
 	} else {
 		if fuzzingIndex != -1 { // not the default

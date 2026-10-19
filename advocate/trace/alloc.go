@@ -477,7 +477,6 @@ func (this *ElementAlloc) CanBeRequest() bool {
 // Argument:
 //   - bool: element is request
 func (this *ElementAlloc) SetRequest(_ bool) {
-	return
 }
 
 // SetRequest sets the routine id

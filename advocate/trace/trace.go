@@ -50,6 +50,7 @@ type Trace struct {
 	channelIDs            map[int]struct{}
 	blocked               map[int]Element
 	forks                 map[int]*ElementFork
+	forkTree              map[int][]int
 	allocs                map[int]*ElementAlloc
 	resources             map[int]Resource
 	callTree              CallTree
@@ -68,6 +69,7 @@ func NewTrace() Trace {
 		channelWithoutPartner: make(map[int]map[int]*ElementChannel),
 		blocked:               make(map[int]Element),
 		forks:                 make(map[int]*ElementFork),
+		forkTree:              make(map[int][]int),
 		allocs:                make(map[int]*ElementAlloc),
 		resources:             make(map[int]Resource),
 		callTree:              *newCallGraph(),
@@ -82,6 +84,7 @@ func (this *Trace) Clear() {
 	this.channelWithoutPartner = make(map[int]map[int]*ElementChannel)
 	this.blocked = make(map[int]Element)
 	this.forks = make(map[int]*ElementFork)
+	this.forkTree = make(map[int][]int)
 	this.allocs = make(map[int]*ElementAlloc)
 	this.resources = make(map[int]Resource)
 	this.callTree = *newCallGraph()
@@ -101,6 +104,10 @@ func (this *Trace) AddElement(elem Element) {
 	switch e := elem.(type) {
 	case *ElementFork:
 		this.forks[e.objId] = e
+		if _, ok := this.forkTree[routine]; !ok {
+			this.forkTree[routine] = make([]int, 0)
+		}
+		this.forkTree[routine] = append(this.forkTree[routine], e.objId)
 	}
 
 	this.AddRoutine(routine)
@@ -135,10 +142,12 @@ func (this *Trace) AddResource(elem Element) {
 //
 // Parameter:
 //   - routine int: The routine
-func (this *Trace) AddRoutine(routine int) {
+func (this *Trace) AddRoutine(routine int) *Routine {
 	if _, ok := this.routines[routine]; !ok {
 		this.routines[routine] = NewRoutine(routine)
 	}
+
+	return this.routines[routine]
 }
 
 // GetTraces returns the traces
@@ -169,7 +178,11 @@ func (this *Trace) GetTraceSize() (int, int) {
 // Returns:
 //   - []Element: The trace of the routine
 func (this *Trace) GetRoutineTrace(id int) *Routine {
-	return this.routines[id]
+	if r, ok := this.routines[id]; ok {
+		return r
+	}
+
+	return this.AddRoutine(id)
 }
 
 // GetRoutineTrace returns the trace of the given routine
@@ -483,6 +496,10 @@ func (this *Trace) SetTSortAtIndex(tPost, routine, index int) {
 
 func (this *Trace) CallTree() *CallTree {
 	return &this.callTree
+}
+
+func (this *Trace) ForkTree() map[int][]int {
+	return this.forkTree
 }
 
 // ========================================================

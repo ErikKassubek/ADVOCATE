@@ -48,32 +48,34 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 
 	tr := trace.NewTrace()
 
-	if err != nil {
-		log.Error(err)
-	}
-
 	elemCounter := 0
 	for _, file := range files {
+		name := file.Name()
+
 		if file.IsDir() {
 			continue
 		}
 
-		if file.Name() == paths.NameTimes {
+		if name == paths.NameTimes {
 			continue
 		}
 
-		filePath := filepath.Join(folderPath, file.Name())
+		filePath := filepath.Join(folderPath, name)
 
-		if file.Name() == paths.NameTraceInfo {
+		if name == paths.NameTraceInfo {
 			getTraceInfoFromFile(filePath)
 		}
 
-		routine, err := getRoutineFromFileName(file.Name())
+		routine, err := getRoutineFromFileName(name)
 		if err != nil {
+			if name != paths.NameTraceInfo {
+				log.Error("Could not get routine from file name ", name)
+			}
 			continue
 		}
 
 		numberElems, err := createTraceFromFile(&tr, filePath, routine)
+
 		if err != nil {
 			return 0, elemCounter, err
 		}
@@ -90,6 +92,7 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 	}
 
 	tr.Sort()
+
 	a_base.SetMainTrace(&tr)
 
 	return numberRoutines, elemCounter, nil
@@ -197,7 +200,7 @@ func createTraceFromFile(tr *trace.Trace, filePath string, routine int) (int, er
 		line := scanner.Text()
 		err := processElement(tr, line, routine)
 		if err != nil {
-			log.Error("Error in processing trace element %s: ", line, err)
+			log.Errorf("Error in processing trace element %s: ", line, err)
 		}
 		counter++
 

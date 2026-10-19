@@ -22,7 +22,6 @@ import (
 // where two neighboring elements must be from different routines
 type Constraint struct {
 	Elems []trace.Element
-	Old   bool
 }
 
 // NewConstraint create a new, empty chain
@@ -30,7 +29,7 @@ type Constraint struct {
 // Returns: chain: the new chain
 func NewConstraint() Constraint {
 	elems := make([]trace.Element, 0)
-	return Constraint{elems, false}
+	return Constraint{elems}
 }
 
 type ElemWithQual struct {
@@ -231,4 +230,20 @@ func (this *Constraint) sort() {
 	sort.Slice(this.Elems, func(i, j int) bool {
 		return this.Elems[i].T(trace.Commit) < this.Elems[j].T(trace.Commit)
 	})
+}
+
+// Merge two constraints
+func Merge(c1, c2 *Constraint) Constraint {
+	res := NewConstraint()
+
+	for _, e := range c1.Elems {
+		res.Add(e)
+	}
+	for _, e := range c2.Elems {
+		res.Add(e)
+	}
+
+	res.sort()
+
+	return res
 }

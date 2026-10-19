@@ -75,7 +75,7 @@ func CreateMutations() {
 				f_base.TotalRuns++
 
 				firstMut := f_base.NumberFuzzingRuns <= 1 && numberMuts == 0
-				_, err := f_base.WriteMutConstraint(cr, firstMut)
+				_, err := f_base.WriteMutConstraint(&cr, firstMut)
 				if err != nil {
 					log.Error("Error in writing mutation: ", err.Error())
 				}

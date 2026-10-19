@@ -23,7 +23,7 @@ import (
 //
 // THe Stable closure CL is then CL_T(S) \ S
 
-func calcuateStableClosure(s Constraint) Constraint {
+func CalcuateStableClosure(s Constraint) *Constraint {
 	t := a_base.MainTrace
 	tIter := t.AsIterator()
 
@@ -86,5 +86,5 @@ func calcuateStableClosure(s Constraint) Constraint {
 		}
 	}
 
-	return cl
+	return &cl
 }

@@ -10,11 +10,9 @@
 package f_base
 
 import (
-	"advocate/analysis/a_base"
 	"advocate/fuzzing/f_roc"
 	"advocate/trace"
 	"advocate/utils/flags"
-	"advocate/utils/io"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"advocate/utils/settings"
@@ -31,58 +29,29 @@ import (
 //   - first bool: set to true, if it is the first mutation for a given test/prog
 //
 // Returns:
-//   - bool: true if max number muts in reached
+//   - bool: true if is the first written mutation
 //   - error
-func WriteMutConstraint(mut f_roc.Constraint, first bool) (bool, error) {
+func WriteMutConstraint(mut *f_roc.Constraint, first bool) (bool, error) {
 	if MaxNumberRuns != -1 && NumberWrittenMutations > MaxNumberRuns {
 		return true, nil
 	}
 	NumberWrittenMutations++
-
-	traceCopy, err := a_base.CopyMainTrace()
-	if err != nil {
-		return false, err
-	}
-
-	t1 := -1
-	for _, elem := range mut.Elems {
-		tPost := elem.T(trace.Commit)
-		if t1 == -1 || tPost < t1 {
-			t1 = tPost
-		}
-	}
-
-	// remove all elements after the first elem in the chain
-	traceCopy.ShortenTrace(t1, false)
-
-	// add in all the elements in the chain
-	mapping := make(map[int]trace.Element)
-	for i, elem := range mut.Elems {
-		c := elem.Copy(&traceCopy, mapping, true)
-		c.SetT(trace.Sorting, t1+i*2)
-		traceCopy.AddElement(c)
-	}
 
 	if first {
 		AddFuzzingTraceFolder(paths.FuzzingTraces)
 	}
 
 	fuzzingTracePath := filepath.Join(paths.FuzzingTraces, fmt.Sprintf("fuzzingTrace_%d", NumberWrittenMutations))
-	ChainFiles[NumberWrittenMutations] = mut
+	ChainFiles[NumberWrittenMutations] = *mut
 
-	err = io.WriteTrace(&traceCopy, fuzzingTracePath, true, false)
-	if err != nil {
-		return false, fmt.Errorf("Could not create mutation: %s", err.Error())
-	}
+	closure := f_roc.CalcuateStableClosure(*mut)
 
 	// write the active map to a "replay_active.log"
 	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
-		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
+		WriteMutActive(fuzzingTracePath, mut, closure)
 	} else {
-		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().T(trace.Commit))
+		WriteMutActive(fuzzingTracePath, mut, closure)
 	}
-
-	traceCopy.Clear()
 
 	muta := Mutation{MutType: MutPiType, MutPie: NumberWrittenMutations}
 
@@ -187,12 +156,11 @@ func GetPath(path string) string {
 //
 // Parameter
 //   - fuzzingTracePath string: path to the trace folder
-//   - tr *trace.Trace: the trace to write
 //   - mut *chain: chain to write
-//   - partTime int: if 0, the replay will partial replay from the beginning
-//     otherwise it will switch to partial replay when the element with this
-//     time is the next element to be replayed
-func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.Constraint, partTime int) {
+func WriteMutActive(fuzzingTracePath string, mut, closure *f_roc.Constraint) {
+
+	fullConstraint := f_roc.Merge(mut, closure)
+
 	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayActive)
 
 	f, err := os.Create(activePath)
@@ -202,28 +170,14 @@ func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.Constra
 
 	defer f.Close()
 
-	f.WriteString(fmt.Sprintf("%d\n", partTime))
-
 	// find the counter for all elements in the mut
 	mutCounter := make(map[string]int)
-	posCounter := make(map[string]int)
 	mutTime := make(map[string]int)
-	for _, elem := range mut.Elems {
+	for _, elem := range fullConstraint.Elems {
 		mutCounter[getRoutPos(elem)] = 0
 	}
 
-	traceIter := tr.AsIterator()
-
-	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
-		routPos := getRoutPos(elem)
-		posCounter[routPos]++
-		if _, ok := mutCounter[routPos]; ok { // is in chain
-			mutCounter[routPos] = posCounter[routPos]
-			mutTime[routPos] = elem.T(trace.Sorting)
-		}
-	}
-
-	for _, elem := range mut.Elems {
+	for _, elem := range fullConstraint.Elems {
 		routPos := getRoutPos(elem)
 		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
 		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.RoutineID(), elem.Pos(), mutTime[routPos], mutCounter[routPos])

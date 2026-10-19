@@ -64,7 +64,6 @@ func CreateMutations(mutNumber int) error {
 	SchedulingChains = []f_roc.Constraint{}
 	if flags.FuzzingMode == f_base.GoPie {
 		if c, ok := f_base.ChainFiles[mutNumber]; ok {
-			c.Old = true
 			SchedulingChains = []f_roc.Constraint{c}
 		}
 	}
@@ -121,7 +120,7 @@ func CreateMutations(mutNumber int) error {
 	first := f_base.NumberFuzzingRuns <= 1
 
 	for _, mut := range specMutations {
-		done, err := f_base.WriteMutConstraint(mut, first)
+		done, err := f_base.WriteMutConstraint(&mut, first)
 		first = false
 
 		if done { // max number mutations has been reached
@@ -134,7 +133,7 @@ func CreateMutations(mutNumber int) error {
 	}
 
 	for _, mut := range mutations {
-		done, err := f_base.WriteMutConstraint(mut, first)
+		done, err := f_base.WriteMutConstraint(&mut, first)
 		first = false
 
 		if done { // max number mutations has been reached

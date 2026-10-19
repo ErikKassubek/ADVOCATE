@@ -7,7 +7,7 @@
 //
 // License: BSD-3-Clause
 
-package code
+package s_code
 
 import (
 	"advocate/trace"

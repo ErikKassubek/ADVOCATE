@@ -12,7 +12,7 @@ package toolchain
 import (
 	"advocate/analysis/a_analysis"
 	"advocate/analysis/a_base"
-	"advocate/fuzzing/f_active"
+	"advocate/fuzzing/modes/f_active"
 	"advocate/utils/consts"
 	"advocate/utils/control"
 	"advocate/utils/flags"

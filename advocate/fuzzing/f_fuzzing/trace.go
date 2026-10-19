@@ -12,9 +12,9 @@ package f_fuzzing
 import (
 	"advocate/analysis/a_base"
 	"advocate/fuzzing/f_base"
-	"advocate/fuzzing/f_gfuzz"
-	"advocate/fuzzing/f_gopie"
 	"advocate/fuzzing/f_roc"
+	"advocate/fuzzing/modes/f_gfuzz"
+	"advocate/fuzzing/modes/f_gopie"
 	"advocate/trace"
 	"advocate/utils/control"
 )

@@ -7,7 +7,7 @@
 //
 // License: BSD-3-Clause
 
-package f_fuzzing
+package f_guided
 
 const (
 	maxNumberConstraints    = 10

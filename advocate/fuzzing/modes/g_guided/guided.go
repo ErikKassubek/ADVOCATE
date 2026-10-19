@@ -7,14 +7,14 @@
 //
 // License: BSD-3-Clause
 
-package f_fuzzing
+package f_guided
 
 import (
 	"advocate/analysis/a_base"
 	"advocate/analysis/hb/a_concurrent"
 	"advocate/fuzzing/f_base"
-	"advocate/fuzzing/f_gfuzz"
 	"advocate/fuzzing/f_roc"
+	"advocate/fuzzing/modes/f_gfuzz"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/settings"

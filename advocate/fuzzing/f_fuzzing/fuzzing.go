@@ -13,10 +13,11 @@ import (
 	"advocate/advoc/toolchain"
 	"advocate/analysis/a_base"
 	"advocate/fuzzing/f_base"
-	"advocate/fuzzing/f_flow"
-	"advocate/fuzzing/f_gfuzz"
-	"advocate/fuzzing/f_gopie"
 	"advocate/fuzzing/f_roc"
+	"advocate/fuzzing/modes/f_flow"
+	"advocate/fuzzing/modes/f_gfuzz"
+	"advocate/fuzzing/modes/f_gopie"
+	f_guided "advocate/fuzzing/modes/g_guided"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/log"
@@ -244,7 +245,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 
 			// add mutation based on guided fuzzing
 			if f_base.FuzzingModeGuided {
-				CreateMutations()
+				f_guided.CreateMutations()
 			}
 			// Add mutation based on GFuzz
 			if f_base.FuzzingModeGFuzz {

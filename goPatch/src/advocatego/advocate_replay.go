@@ -61,7 +61,9 @@ func InitReplay(tracePath string, timeout int, init bool) {
 // Parameter:
 //   - timeout int: timeout in seconds
 func startReplay(timeout int) {
-	println("Reading constraints from " + tracePathRewritten)
+	if printDebug {
+		println("Reading constraints from " + tracePathRewritten)
+	}
 
 	// if trace folder does not exist, panic
 	if _, err := os.Stat(tracePathRewritten); os.IsNotExist(err) {

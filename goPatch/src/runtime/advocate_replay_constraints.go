@@ -62,8 +62,8 @@ func NewConstraint() {
 
 func (this *Constraint) Add(elem ConstraintElem) {
 	this.order = append(this.order, elem)
-	
-	if printDebug { 
+
+	if printDebug {
 		println(elem.key, " -> ", elem.index)
 	}
 

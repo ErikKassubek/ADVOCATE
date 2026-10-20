@@ -120,7 +120,7 @@ func CreateMutations(mutNumber int) error {
 	first := f_base.NumberFuzzingRuns <= 1
 
 	for _, mut := range specMutations {
-		done, err := f_base.WriteMutConstraint(&mut, first)
+		done, err := f_base.WriteMutConstraint(&a_base.MainTrace, &mut, first)
 		first = false
 
 		if done { // max number mutations has been reached
@@ -133,7 +133,7 @@ func CreateMutations(mutNumber int) error {
 	}
 
 	for _, mut := range mutations {
-		done, err := f_base.WriteMutConstraint(&mut, first)
+		done, err := f_base.WriteMutConstraint(&a_base.MainTrace, &mut, first)
 		first = false
 
 		if done { // max number mutations has been reached

@@ -306,6 +306,11 @@ func (this *ElementRoutineEnd) ReplayID() string {
 	return ""
 }
 
+// Replayable returns if element can be part of replay
+func (this *ElementRoutineEnd) Replayable() bool {
+	return false
+}
+
 // ========================================================
 // MARK: Copy
 // ========================================================

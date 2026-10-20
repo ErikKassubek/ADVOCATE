@@ -5433,7 +5433,7 @@ func newproc(fn *funcval) {
 			<-ch
 		}
 
-		if advocateFuzzingEnabled {
+		if replayEnabled {
 			// get the spawn info from spawns slice if the fork is directly released by partial replay
 			if s, ok := spawns[gp.advocateRoutineInfo.replayID]; ok && len(s) > 0 {
 				index, spawns[gp.advocateRoutineInfo.replayID] = s[0], spawns[gp.advocateRoutineInfo.replayID][1:]

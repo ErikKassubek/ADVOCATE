@@ -182,7 +182,7 @@ func runWorkflowUnit(runRecord, runAnalysis, runReplay bool,
 			collect(paths.Prog, packagePath, paths.CurrentResult, total)
 
 			if err != nil {
-				log.Errorf(err.Error())
+				log.Error(err.Error())
 				skippedTests++
 			}
 
@@ -570,7 +570,7 @@ func unitTestRecord(pkg, file, testName string,
 	err = os.Unsetenv("GOROOT")
 
 	if err != nil {
-		log.Errorf("Failed to unset GOROOT: ", err.Error())
+		log.Error("Failed to unset GOROOT: ", err.Error())
 	}
 
 	return err
@@ -640,7 +640,7 @@ func unitTestReplay(dir, pkg, file,
 		rewrittenTraces = append(rewrittenTraces, flags.TracePath)
 	}
 
-	log.Infof("Found %d rewritten traces", len(rewrittenTraces))
+	log.Infof("Found %d traces to replay", len(rewrittenTraces))
 
 	for i, trace := range rewrittenTraces {
 		traceNum, bugString := extractTraceNumber(trace)

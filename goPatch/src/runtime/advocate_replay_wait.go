@@ -16,6 +16,14 @@ type waitingOps struct {
 	mu      mutex
 }
 
+func newWaitingOps() waitingOps {
+	return waitingOps{
+		waiting: make(map[string]chan int),
+		mu:      mutex{},
+	}
+}
+
+// TODO: locks
 func (this *waitingOps) add(key string, c chan int) {
 	lock(&this.mu)
 	this.waiting[key] = c
@@ -110,13 +118,12 @@ func WaitForReplayPath(op Operation, file string, line int) chan int {
 	chWait := make(chan int, 1)
 
 	// is next, can be release directly
-	if constratins.isNext(key) {
+	if ok, info := constratins.isNext(key); ok {
 		if printDebug {
 			println("ReleaseD: ", key)
 		}
 
-		// TODO: send routine id or select chosen case
-		chWait <- 0
+		chWait <- info
 		constratins.update(key)
 		return chWait
 	}

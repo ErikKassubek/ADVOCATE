@@ -110,8 +110,8 @@ func runWorkflowMain(
 			timer.Stop(timer.Run)
 		}
 
-		// Add header
-		buildFlags, err := buildArgsMain(paths.Prog, false, "1", flags.Timeout, false, fuzzing, fuzzingTrace, false)
+		// Build args
+		buildFlags, err := buildArgsMain(paths.Prog, false, "1", false, fuzzing, fuzzingTrace, false)
 		if err != nil {
 			return 0, 0, fmt.Errorf("Error in adding header: %v", err)
 		}
@@ -163,7 +163,7 @@ func runWorkflowMain(
 		for _, trace := range rewrittenTraces {
 			traceNum := extractTraceNum(trace)
 			fmt.Printf("Apply replay header for file f %s and trace %s\n", paths.Prog, traceNum)
-			buildFlags, err := buildArgsMain(paths.Prog, true, traceNum, flags.Timeout, false, fuzzing, fuzzingTrace, false)
+			buildFlags, err := buildArgsMain(paths.Prog, true, traceNum, false, fuzzing, fuzzingTrace, false)
 			if err != nil {
 				return 0, 0, err
 			}

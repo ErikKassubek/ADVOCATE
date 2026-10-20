@@ -12,27 +12,29 @@
 package runtime
 
 type ConstraintElem struct {
-	time  string
 	key   string
 	index int
+	info  int
 }
 
-func NewConstraintElem(routine int, file string, line int, index int) *ConstraintElem {
+func NewConstraintElem(routine int, file string, line, index, info int) *ConstraintElem {
 	return &ConstraintElem{
 		key:   intToString(routine) + "$" + file + "#" + intToString(line),
 		index: index,
+		info:  info,
 	}
 }
 
 func AddConstraintElemFromString(info string) {
 	fields := split(info, ':')
-	if len(fields) != 3 {
+	if len(fields) != 4 {
 		return
 	}
 
 	newConst := ConstraintElem{
 		key:   fields[0] + "$" + fields[1],
 		index: stringToInt(fields[2]),
+		info:  stringToInt(fields[3]),
 	}
 
 	constratins.Add(newConst)
@@ -54,12 +56,17 @@ func NewConstraint() {
 		elems:       make(map[string]map[int]bool),
 		elemIndex:   make(map[string]int),
 		replayIndex: 0,
+		mu:          mutex{},
 	}
 }
 
 func (this *Constraint) Add(elem ConstraintElem) {
 	this.order = append(this.order, elem)
-	println(elem.key, " -> ", elem.index)
+	
+	if printDebug { 
+		println(elem.key, " -> ", elem.index)
+	}
+
 	if _, ok := this.elems[elem.key]; !ok {
 		this.elems[elem.key] = make(map[int]bool)
 	}
@@ -74,14 +81,18 @@ func (this *Constraint) Add(elem ConstraintElem) {
 // 	return elem
 // }
 
-func (this *Constraint) isNext(key string) bool {
+func (this *Constraint) isNext(key string) (bool, int) {
 	lock(&this.mu)
 	next := this.order[this.replayIndex]
 	unlock(&this.mu)
-	return next.key == key
+	return next.key == key, next.info
 }
 
 func (this *Constraint) getNext() *ConstraintElem {
+	if this.replayIndex >= len(this.order) {
+		return nil
+	}
+
 	lock(&this.mu)
 	next := &this.order[this.replayIndex]
 	unlock(&this.mu)
@@ -98,30 +109,25 @@ func (this *Constraint) isDone() bool {
 //	   bool: true if it should block, false if it can be released
 */
 func (this *Constraint) isInConstraint(key string) bool {
-	print("IS IN CONSTRAINT: ", key, " -> ")
-	lock(&this.mu)
+	// lock(&this.mu)
 	info, ok := this.elems[key]
-	unlock(&this.mu)
+	// unlock(&this.mu)
 
 	// is never in constratins
 	if !ok {
-		println("FALSE 1")
 		return false
 	}
 
 	// is in constraints with this index
 	lock(&this.mu)
 	index := this.elemIndex[key]
-	print(index, " -> ")
 	if info[index] {
 		unlock(&this.mu)
-		println("TRUE")
 		return true
 	}
 	unlock(&this.mu)
 
 	// is in constraints but not with this index
-	println("FALSE 2")
 	return false
 }
 
@@ -137,10 +143,17 @@ func (this *Constraint) update(key string) {
 func (this *Constraint) releaseBlocked() {
 	next := this.getNext()
 
+	if next == nil {
+		return
+	}
+
 	if c := waiting.contains(next); c != nil {
-		c <- 0 // TODO: select index
+		if printDebug {
+			println("ReleaseW: ", next.key)
+		}
+		c <- next.info
 		waiting.remove(next)
-		this.releaseBlocked()
+		this.update(next.key)
 	}
 }
 
@@ -148,7 +161,6 @@ func (this *Constraint) releaseAllBlocked() {
 	lock(&this.mu)
 
 	for _, ch := range waiting.waiting {
-		// TODO: send select id or chosen case
 		ch <- -1
 	}
 	waiting.waiting = make(map[string]chan int)

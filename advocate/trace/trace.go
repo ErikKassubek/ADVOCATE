@@ -120,7 +120,7 @@ func (this *Trace) AddElement(elem Element) {
 // AddElement adds a resouce if elem has a resource and if it is not created yet
 func (this *Trace) AddResource(elem Element) {
 	switch elem.(type) {
-	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay, *ElementControllFlow:
+	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementControllFlow, *ElementSelect:
 		return
 	}
 
@@ -1081,7 +1081,7 @@ func (this *Trace) GetResources(elem Element) []Resource {
 	res := make([]Resource, 0)
 
 	switch elem := elem.(type) {
-	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay:
+	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd:
 	case *ElementSelect:
 		for _, c := range elem.GetCases() {
 			r, ok := this.resources[c.ResourceID()]

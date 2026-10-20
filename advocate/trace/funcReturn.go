@@ -212,6 +212,11 @@ func (this *ElementReturn) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routineId, "", -1)
 }
 
+// Replayable returns if element can be part of replay
+func (this *ElementReturn) Replayable() bool {
+	return false
+}
+
 // ========================================================
 // MARK: Copy
 // ========================================================

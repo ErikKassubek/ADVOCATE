@@ -87,6 +87,8 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 		et = NewMutex
 	case "W":
 		et = NewWait
+	default:
+		panic("Unknown alloc type: " + elemType)
 	}
 
 	elem := ElementAlloc{
@@ -109,15 +111,17 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 
 func (this *Trace) AddTraceElementAllocFromElem(elem Element) {
 	var et OperationType
-	switch elem.Type(false) {
-	case "C":
+	switch elem.Type(true) {
+	case "AC":
 		et = NewChannel
-	case "D":
+	case "AD":
 		et = NewCond
-	case "M":
+	case "AM":
 		et = NewMutex
-	case "W":
+	case "AW":
 		et = NewWait
+	default:
+		panic("Unknown alloc type: " + elem.Type(true))
 	}
 
 	rout := elem.RoutineID()
@@ -412,6 +416,11 @@ func (this *ElementAlloc) SetNumberConcurrent(c int, weak, sameElem bool) {
 //   - int: The replayId of the element
 func (this *ElementAlloc) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routineId, this.pos.file, this.pos.line)
+}
+
+// Replayable returns if element can be part of replay
+func (this *ElementAlloc) Replayable() bool {
+	return false
 }
 
 // ========================================================

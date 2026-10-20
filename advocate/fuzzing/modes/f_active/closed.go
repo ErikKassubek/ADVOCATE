@@ -54,7 +54,7 @@ import (
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteClosedChannel(tr *trace.Trace, bug bugs.Bug, exitCode int) error {
+func rewriteClosedChannel(tr *trace.Trace, bug bugs.Bug) error {
 	log.Info("Start rewrite for send/receive on closed channel...")
 
 	if len(bug.TraceElement1) == 0 || bug.TraceElement1[0] == nil { // close
@@ -81,9 +81,6 @@ func rewriteClosedChannel(tr *trace.Trace, bug bugs.Bug, exitCode int) error {
 	bug.TraceElement1[0].SetT(trace.Both, t2+1)
 
 	tr.AddElement(bug.TraceElement1[0])
-
-	// add a stop marker -> T1 ++ T2' ++ [c, a, X']
-	tr.AddTraceElementReplay(t2+2, exitCode)
 
 	return nil
 }

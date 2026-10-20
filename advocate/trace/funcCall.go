@@ -261,6 +261,11 @@ func (this *ElementFunc) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routineId, this.posCall.file, this.posCall.line)
 }
 
+// Replayable returns if element can be part of replay
+func (this *ElementFunc) Replayable() bool {
+	return false
+}
+
 // ========================================================
 // MARK: Copy
 // ========================================================

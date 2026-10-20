@@ -55,11 +55,11 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	case helper.PSendOnClosed:
 		code = helper.ExitCodeSendClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(tr, bug, code)
+		err = rewriteClosedChannel(tr, bug)
 	case helper.PRecvOnClosed:
 		code = helper.ExitCodeRecvClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(tr, bug, code)
+		err = rewriteClosedChannel(tr, bug)
 	case helper.PNegWG:
 		code = helper.ExitCodeNegativeWG
 		rewriteNeeded = true

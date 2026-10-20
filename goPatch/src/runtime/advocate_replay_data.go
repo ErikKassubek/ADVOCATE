@@ -13,7 +13,7 @@ package runtime
 
 var (
 	constratins Constraint
-	waiting     waitingOps
+	waiting     = newWaitingOps()
 
 	spawns  = make(map[int][]int)
 	selects = make(map[string][]int)
@@ -29,17 +29,20 @@ var (
 	mgcRoutine uint64 = 0
 )
 
-var printDebug = true
+const printDebug = false
 
 func SetSpawns(sp map[int][]int) {
-	println("SET SPAWN")
-	for i, j := range sp {
-		print(i, " -> ")
-		for _, e := range j {
-			print(e, ", ")
+	if printDebug {
+		println("SET SPAWN")
+		for i, j := range sp {
+			print(i, " -> ")
+			for _, e := range j {
+				print(e, ", ")
+			}
+			println("")
 		}
-		println("")
+		println("SPAWN SET")
 	}
-	println("SPAWN SET")
+
 	spawns = sp
 }

@@ -11,12 +11,14 @@
 package toolchain
 
 import (
+	"advocate/fuzzing/f_base"
+	"advocate/fuzzing/f_roc"
 	"advocate/utils/flags"
+	"advocate/utils/io"
 	"bufio"
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -26,16 +28,11 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 
 	buildArg = buildFlagsDefault + " "
 
-	atomicReplayStr := "true"
-	if flags.IgnoreAtomics {
-		atomicReplayStr = "false"
-	}
-
 	if replay { // replay
 		if record {
 			buildArg += fmt.Sprintf("-advocatefuzzing -advocatepath=%s -advocatetimeout=%d", tracePath, flags.Timeout)
 		} else {
-			buildArg += fmt.Sprintf("-advocatereplay -advocatepath=%s -advocatetimeout=%d -advocateatomics=%s", tracePath, replayTimeout, atomicReplayStr)
+			buildArg += fmt.Sprintf("-advocatereplay -advocatepath=%s -advocatetimeout=%d", tracePath, replayTimeout)
 		}
 	} else if fuzzing > 0 {
 		buildArg += fmt.Sprintf("-advocatefuzzing -advocatepath=%s -advocatetimeout=%d", fuzzingTrace, replayTimeout)
@@ -76,7 +73,7 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 //   - string: build parameters
 //   - error
 func buildArgsMain(fileName string, replay bool, replayNumber string,
-	replayTimeout int, record bool, fuzzing int, fuzzingTrace string, static bool) (string, error) {
+	record bool, fuzzing int, fuzzingTrace string, static bool) (string, error) {
 	if fileName == "" {
 		return "", errors.New("Please provide a file  name")
 	}
@@ -104,12 +101,18 @@ func buildArgsMain(fileName string, replay bool, replayNumber string,
 	fmt.Println("TestName: Main")
 
 	replayPath := ""
-	if replayNumber != "" {
-		replayPath = "rewrittenTrace_" + replayNumber
-	} else if flags.TracePath != "" {
-		replayPath = filepath.Base(flags.TracePath)
-	} else {
-		replayPath = "advocateTrace"
+	if replay {
+		if replayNumber != "" {
+			replayPath = "rewrittenConstratins_" + replayNumber
+		} else if flags.TracePath != "" {
+			replayPath = flags.TracePath
+		} else {
+			replayPath = "rewrittenConstraints"
+		}
+
+		tr, _, _, _ := io.CreateTraceFromFiles(replayPath, false)
+		trConst := f_roc.TraceToConstraint(tr)
+		f_base.WriteConstraint(replayPath, tr, trConst)
 	}
 
 	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, fuzzingTrace, true), nil
@@ -186,12 +189,18 @@ func buildArgsUnit(fileName, testName string, replay bool, fuzzing int, replayIn
 	fmt.Println("TestName: ", testName)
 
 	replayPath := ""
-	if replayInfo != "" {
-		replayPath = "rewrittenTrace_" + replayInfo
-	} else if flags.TracePath != "" {
-		replayPath = filepath.Base(flags.TracePath)
-	} else {
-		replayPath = "advocateTrace"
+	if replay {
+		if replayInfo != "" {
+			replayPath = "rewrittenConstratins_" + replayInfo
+		} else if flags.TracePath != "" {
+			replayPath = flags.TracePath
+		} else {
+			replayPath = "rewrittenConstraints"
+		}
+
+		tr, _, _, _ := io.CreateTraceFromFiles(replayPath, false)
+		trConst := f_roc.TraceToConstraint(tr)
+		f_base.WriteConstraint(replayPath, tr, trConst)
 	}
 
 	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, replayInfo, false), nil

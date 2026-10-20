@@ -74,11 +74,13 @@ type Element interface {
 	IsValid() bool
 
 	InInit() bool
+
+	Replayable() bool
 }
 
 func IsOp(elem Element) bool {
 	switch elem.(type) {
-	case *ElementAlloc, *ElementReplay, *ElementRoutineEnd:
+	case *ElementAlloc, *ElementRoutineEnd:
 		return false
 	}
 

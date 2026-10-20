@@ -106,9 +106,6 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	blockElement(cdHolder)
 	blockElement(lockWaiter)
 
-	tr.AddTraceElementReplay(newLastTime+1, code)
-	//fmt.Printf("rewriteMixedDeadlock: replay marker at t=%d, code=%d\n", newLastTime+1, code)
-
 	return nil
 }
 

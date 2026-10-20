@@ -85,7 +85,6 @@ func InitTracing(timeout int, init bool) {
 //
 //go:linkname FinishTracing runtime.AdvocateFinishTracing
 func FinishTracing() {
-	fmt.Println("Write Trace")
 	if hasFinished {
 		// needed to prevent program stop while still writing
 		// otherwise, trace may be empty

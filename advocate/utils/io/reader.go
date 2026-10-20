@@ -30,12 +30,14 @@ import (
 //
 // Parameter:
 //   - filePath string: The path to the folder
+//   - asMain bool: if true, set as main trace
 //
 // Returns:
+//   - *trace.Trace: the trace
 //   - int: The number of routines
 //   - int: The number of elements
 //   - error: An error if the trace could not be created
-func CreateTraceFromFiles(folderPath string) (int, int, error) {
+func CreateTraceFromFiles(folderPath string, asMain bool) (*trace.Trace, int, int, error) {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -43,7 +45,7 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 	// traverse all files in the folder
 	files, err := os.ReadDir(folderPath)
 	if err != nil {
-		return 0, 0, err
+		return nil, 0, 0, err
 	}
 
 	tr := trace.NewTrace()
@@ -68,7 +70,7 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 
 		routine, err := getRoutineFromFileName(name)
 		if err != nil {
-			if name != paths.NameTraceInfo {
+			if name != paths.NameTraceInfo && name != paths.NameReplayConstraints && name != paths.NameReplayForkTree {
 				log.Error("Could not get routine from file name ", name)
 			}
 			continue
@@ -77,25 +79,27 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 		numberElems, err := createTraceFromFile(&tr, filePath, routine)
 
 		if err != nil {
-			return 0, elemCounter, err
+			return nil, 0, elemCounter, err
 		}
 		elemCounter += numberElems
 		numberRoutines++
 
 		if elemCounter > flags.MaxNumberElements {
-			return numberRoutines, elemCounter, fmt.Errorf("Too many elements")
+			return &tr, numberRoutines, elemCounter, fmt.Errorf("Too many elements")
 		}
 
 		if control.WasCanceled() {
-			return numberRoutines, elemCounter, fmt.Errorf("Canceled by memory")
+			return &tr, numberRoutines, elemCounter, fmt.Errorf("Canceled by memory")
 		}
 	}
 
 	tr.Sort()
 
-	a_base.SetMainTrace(&tr)
+	if asMain {
+		a_base.SetMainTrace(&tr)
+	}
 
-	return numberRoutines, elemCounter, nil
+	return &tr, numberRoutines, elemCounter, nil
 }
 
 // getTraceInfoFromFile reads in the information from a the trace_info.log file

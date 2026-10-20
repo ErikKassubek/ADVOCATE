@@ -13,7 +13,6 @@ import (
 	"advocate/analysis/a_hb"
 	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
-	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/results/bugs"
 	"errors"
@@ -104,8 +103,6 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 			}
 		}
 	}
-
-	tr.AddTraceElementReplay(lastTime+1, helper.ExitCodeCyclic)
 
 	for _, elem := range bug.TraceElement2 {
 		fmt.Println("Deadlocking Element: ", elem.RoutineID(), "M", elem.T(trace.Request), elem.T(trace.Commit), elem.ResourceID())

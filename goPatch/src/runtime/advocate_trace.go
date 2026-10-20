@@ -320,8 +320,7 @@ func DeleteTrace() {
 //   - bool: true if the operation should be ignored, false otherwise
 func AdvocateIgnore(file string) bool {
 	return (containsStr(file, "goPatch/src/") || containsStr(file, "go/pkg/mod")) &&
-		!containsStr(file, "goPatch/src/time/tick.go") &&
-		!containsStr(file, "goPatch/src/context/context.go")
+		!containsStr(file, "goPatch/src/time/tick.go")
 }
 
 func AdvocateIgnoreRoutine(file string) bool {

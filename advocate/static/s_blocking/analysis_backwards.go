@@ -66,7 +66,7 @@ func determineResouceToSSAAtTermination() {
 		}
 
 		switch elem.(type) {
-		case *trace.ElementReplay, *trace.ElementRoutineEnd:
+		case *trace.ElementRoutineEnd:
 			continue
 		case *trace.ElementFork:
 			lastWasFork[elem.ResourceID()] = true

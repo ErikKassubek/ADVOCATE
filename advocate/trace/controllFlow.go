@@ -383,6 +383,11 @@ func (this *ElementControllFlow) ReplayID() string {
 	return ""
 }
 
+// Replayable returns if element can be part of replay
+func (this *ElementControllFlow) Replayable() bool {
+	return false
+}
+
 // ========================================================
 // MARK: Copy
 // ========================================================

@@ -159,8 +159,8 @@ func (this Bug) ToString() string {
 		arg2Str = "locks: "
 	case helper.PCyclicDeadlock:
 		typeStr = "Possible cyclic deadlock:"
-		arg1Str = "head: "
-		arg2Str = "tail: "
+		arg1Str = "blocked: "
+		arg2Str = "acquired: "
 	case helper.PMixedDeadlock:
 		typeStr = "Possible Mixed Deadlock:"
 		arg1Str = "send/close: "
@@ -295,6 +295,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.PUnlockBeforeLock
 	case "P05":
 		bug.Type = helper.PCyclicDeadlock
+		containsArg2 = true
 	case "P06":
 		bug.Type = helper.PMixedDeadlock
 	case "L00":

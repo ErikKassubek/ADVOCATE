@@ -126,7 +126,7 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 	// --------- WRITE LOCK ---------
 	case trace.MutexLock, trace.MutexTryLock:
 		mdPushRD(t, tid, lockID, element, element)
-		t.CurrentLockset.Add(lockID)
+		t.CurrentLockset.Add(lockID, element)
 		t.LockDepth++
 		t.WriteDepth++
 
@@ -139,7 +139,7 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 
 		if t.ReadLockCount[lockID] == 1 {
 			mdPushRD(t, tid, lockID, element, element)
-			t.CurrentLockset.Add(lockID)
+			t.CurrentLockset.Add(lockID, element)
 			t.LockDepth++
 		}
 		t.ReadDepth++

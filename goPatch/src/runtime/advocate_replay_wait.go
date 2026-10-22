@@ -108,7 +108,7 @@ func WaitForReplayPath(op Operation, file string, line int) chan int {
 	routine := GetReplayRoutineID()
 	key := intToString(routine) + "$" + file + "#" + intToString(line)
 
-	if !constratins.isInConstraint(key) {
+	if !constraintMain.isInConstraint(key) {
 		if printDebug {
 			println("ReleaseN: ", key)
 		}
@@ -118,13 +118,13 @@ func WaitForReplayPath(op Operation, file string, line int) chan int {
 	chWait := make(chan int, 1)
 
 	// is next, can be release directly
-	if ok, info := constratins.isNext(key); ok {
+	if ok, info := constraintMain.isNext(key); ok {
 		if printDebug {
 			println("ReleaseD: ", key)
 		}
 
 		chWait <- info
-		constratins.update(key)
+		constraintMain.update(key)
 		return chWait
 	}
 
@@ -190,7 +190,7 @@ func WaitForReplayFinish() bool {
 
 	if replayEnabled {
 		for {
-			if constratins.isDone() {
+			if constraintMain.isDone() {
 				break
 			}
 

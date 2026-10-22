@@ -425,7 +425,7 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 
 	for _, elem := range elements {
 		if clocks {
-			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
+			fmt.Println(elem.thread, elem.string, elem.vc.String(), elem.wVc.String())
 		} else {
 			fmt.Println(elem.thread, elem.string)
 		}

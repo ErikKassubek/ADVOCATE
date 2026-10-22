@@ -44,6 +44,8 @@ const (
 	exitCode
 	desc
 	class
+	arg1
+	arg2
 )
 
 var printedExplanations = make(map[bug]struct{})
@@ -326,7 +328,24 @@ func writeFile(path string, index string, description map[bugKeys]string,
 
 		for key := range positions {
 			res += "###  "
-			res += bugElemType[key] + "\n\n"
+
+			closeBracket := false
+			switch key {
+			case 2:
+				res += description[arg1] + " ("
+				closeBracket = true
+			case 3:
+				res += description[arg2] + " ("
+				closeBracket = true
+			}
+
+			res += bugElemType[key]
+
+			if closeBracket {
+				res += ")"
+			}
+
+			res += "\n\n"
 
 			for j, pos := range positions[key] {
 				if pos == ":-1" {

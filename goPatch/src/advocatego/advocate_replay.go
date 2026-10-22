@@ -61,9 +61,9 @@ func InitReplay(tracePath string, timeout int, init bool) {
 // Parameter:
 //   - timeout int: timeout in seconds
 func startReplay(timeout int) {
-	if printDebug {
-		println("Reading constraints from " + tracePathRewritten)
-	}
+	// if printDebug {
+	// 	println("Reading constraints from " + tracePathRewritten)
+	// }
 
 	// if trace folder does not exist, panic
 	if _, err := os.Stat(tracePathRewritten); os.IsNotExist(err) {
@@ -143,10 +143,19 @@ func readReplayConstraint(tracePathRewritten string) int {
 	runtime.NewConstraint()
 
 	numberConstraints := 0
+
+	firstLine := true
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		elem := scanner.Text()
 		if elem == "" {
+			continue
+		}
+
+		if firstLine {
+			firstLine = false
+			runtime.AddConstraintInfo(elem)
 			continue
 		}
 

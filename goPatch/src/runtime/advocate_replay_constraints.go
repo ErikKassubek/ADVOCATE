@@ -11,6 +11,8 @@
 
 package runtime
 
+const constraintElemNoInfo = -100
+
 type ConstraintElem struct {
 	key   string
 	index int
@@ -37,8 +39,18 @@ func AddConstraintElemFromString(info string) {
 		info:  stringToInt(fields[3]),
 	}
 
-	constratins.Add(newConst)
+	constraintMain.Add(newConst)
 
+}
+
+func AddConstraintInfo(info string) {
+	fields := split(info, ':')
+	if len(fields) != 2 {
+		return
+	}
+
+	NumberElemConstraint = stringToInt(fields[0])
+	NumberElemClosure = stringToInt(fields[1])
 }
 
 type Constraint struct {
@@ -51,7 +63,7 @@ type Constraint struct {
 }
 
 func NewConstraint() {
-	constratins = Constraint{
+	constraintMain = Constraint{
 		order:       make([]ConstraintElem, 0),
 		elems:       make(map[string]map[int]bool),
 		elemIndex:   make(map[string]int),
@@ -103,6 +115,10 @@ func (this *Constraint) isDone() bool {
 	return len(this.order) == this.replayIndex
 }
 
+func GetReplayIndex() int {
+	return constraintMain.replayIndex
+}
+
 /*
 // Info determines if the operation of the key should be blocked or released
 // Returns:
@@ -113,7 +129,7 @@ func (this *Constraint) isInConstraint(key string) bool {
 	info, ok := this.elems[key]
 	// unlock(&this.mu)
 
-	// is never in constratins
+	// is never in constraintMain
 	if !ok {
 		return false
 	}
@@ -169,5 +185,5 @@ func (this *Constraint) releaseAllBlocked() {
 }
 
 func ReleaseAllBlocked() {
-	constratins.releaseAllBlocked()
+	constraintMain.releaseAllBlocked()
 }

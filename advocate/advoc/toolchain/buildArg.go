@@ -15,6 +15,7 @@ import (
 	"advocate/fuzzing/f_roc"
 	"advocate/utils/flags"
 	"advocate/utils/io"
+	"advocate/utils/log"
 	"bufio"
 	"errors"
 	"fmt"
@@ -110,9 +111,13 @@ func buildArgsMain(fileName string, replay bool, replayNumber string,
 			replayPath = "rewrittenConstraints"
 		}
 
-		tr, _, _, _ := io.CreateTraceFromFiles(replayPath, false)
+		tr, _, _, err := io.CreateTraceFromFiles(replayPath, false)
+		if err != nil {
+			log.Errorf("Could not read trace: %s %s", fileName, err)
+			return "", err
+		}
 		trConst := f_roc.TraceToConstraint(tr)
-		f_base.WriteConstraint(replayPath, tr, trConst)
+		f_base.WriteConstraint(replayPath, tr, trConst, nil)
 	}
 
 	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, fuzzingTrace, true), nil
@@ -200,7 +205,7 @@ func buildArgsUnit(fileName, testName string, replay bool, fuzzing int, replayIn
 
 		tr, _, _, _ := io.CreateTraceFromFiles(replayPath, false)
 		trConst := f_roc.TraceToConstraint(tr)
-		f_base.WriteConstraint(replayPath, tr, trConst)
+		f_base.WriteConstraint(replayPath, tr, nil, trConst)
 	}
 
 	return getBuildArg(fileName, replay, replayPath, flags.Timeout, record, fuzzing, replayInfo, false), nil

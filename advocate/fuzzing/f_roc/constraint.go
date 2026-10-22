@@ -171,6 +171,9 @@ func (this *Constraint) Copy() Constraint {
 // Returns:
 //   - the number of elements in the chain
 func (this *Constraint) Len() int {
+	if this == nil {
+		return 0
+	}
 	return len(this.Elems)
 }
 

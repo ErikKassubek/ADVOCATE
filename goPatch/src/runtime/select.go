@@ -131,7 +131,7 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 	if ch != nil {
 		selectedCase := <-ch
 
-		if selectedCase == -1 {
+		if selectedCase == constraintElemNoInfo {
 			return originalSelect(cas0, order0, pc0, nsends, nrecvs, block, ai)
 		}
 

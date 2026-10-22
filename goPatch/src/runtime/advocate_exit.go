@@ -128,7 +128,7 @@ func AdvocatePanic(msg any) {
 	}
 	hasPanicked = true
 
-	constratins.releaseAllBlocked()
+	constraintMain.releaseAllBlocked()
 
 	SetExitCodeFromPanicMsg(msg)
 

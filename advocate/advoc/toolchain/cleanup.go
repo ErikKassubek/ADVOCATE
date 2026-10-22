@@ -17,6 +17,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 var LastMovedTraceDest = ""
@@ -142,6 +143,10 @@ func RemoveTraces(path string) {
 	filepath.WalkDir(path, func(p string, _ os.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+
+		if flags.TracePath != "" && strings.HasPrefix(p, strings.TrimSuffix(flags.TracePath, string(filepath.Separator))) {
+			return nil
 		}
 
 		// Use Glob to check if the file/directory matches the pattern

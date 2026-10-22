@@ -210,3 +210,66 @@ func (rt ResultType) IsPos() bool {
 func (rt ResultType) IsActual() bool {
 	return string(rt)[0] == 'A'
 }
+
+func (rt ResultType) Args() (string, string) {
+	switch rt {
+	case ASendOnClosed:
+		return "send", "close"
+	case ARecvOnClosed:
+		return "recv", "close"
+	case ACloseOnClosed:
+		return "panic", "close"
+	case ACloseOnNilChannel:
+		return "close", ""
+	case ANegWG:
+		return "done", ""
+	case AUnlockOfNotLockedMutex:
+		return "unlock", ""
+	case ABlocking:
+		return "blocking", ""
+	case ADeadlock:
+		return "blocking", "" // TODO: add holding
+	case AConcurrentRecv:
+		return "recv", "recv"
+	case AMixedDeadlock:
+		return "", ""
+
+	// possible
+	case PSendOnClosed:
+		return "send", "close"
+	case PRecvOnClosed:
+		return "recv", "close"
+	case PNegWG:
+		return "done", "add"
+	case PUnlockBeforeLock:
+		return "unlock", "lock"
+	case PCyclicDeadlock:
+		return "blocked", "acquired"
+	case PMixedDeadlock:
+		return "send", "recv"
+
+	// leaks
+	case LUnknown:
+		return "leak", ""
+	case LChan:
+		return "leak", ""
+	case LNilChan:
+		return "leak", ""
+	case LSelect:
+		return "leak", ""
+	case LMutex:
+		return "leak", ""
+	case LWaitGroup:
+		return "leak", ""
+	case LCond:
+		return "leak", ""
+
+	// recording
+	case RUnknownPanic:
+		return "", ""
+	case RTimeout:
+		return "", ""
+	}
+
+	return "", ""
+}

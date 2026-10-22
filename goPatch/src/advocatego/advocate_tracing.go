@@ -199,19 +199,21 @@ func writeToTraceFileInfo(numberRoutines int) {
 
 	// TODO: make this work again
 
-	// if runtime.NumberActiveReleased > 0 || runtime.NumberActive == 0 {
-	// 	reachedActive = 1
-	// }
-	// allActiveReleased := 0
-	// if runtime.NumberActiveReleased == runtime.NumberActive {
-	// 	allActiveReleased = 1
-	// }
+	numberReleased := runtime.GetReplayIndex()
 
-	// exitCode, exitPos := runtime.GetExitCode()
-	// replayOldest, replayDisabled, replayAck := runtime.GetReplayStatus()
+	if numberReleased >= runtime.NumberElemClosure {
+		reachedActive = 1
+	}
+	allActiveReleased := 0
+	if numberReleased >= runtime.NumberElemConstraint+runtime.NumberElemClosure {
+		allActiveReleased = 1
+	}
 
-	exitCode, exitPos := 0, ""
-	replayOldest, replayDisabled, replayAck := 0, 0, 0
+	exitCode, exitPos := runtime.GetExitCode()
+	replayOldest, replayDisabled, replayAck := false, false, false // TODO: fix
+
+	// exitCode, exitPos := 0, ""
+	// replayOldest, replayDisabled, replayAck := 0, 0, 0
 
 	file.WriteString(fmt.Sprintf("ExitCode!%d\n", exitCode))
 	file.WriteString(fmt.Sprintf("ExitPosition!%s\n", exitPos))
@@ -220,7 +222,7 @@ func writeToTraceFileInfo(numberRoutines int) {
 	file.WriteString(fmt.Sprintf("ReplayAck!%d\n", replayAck))
 	file.WriteString(fmt.Sprintf("NumberRoutines!%d\n", numberRoutines))
 	file.WriteString(fmt.Sprintf("ActiveReached!%d\n", reachedActive))
-	file.WriteString(fmt.Sprintf("AllActiveReleased!%d\n", true))
+	file.WriteString(fmt.Sprintf("AllActiveReleased!%d\n", allActiveReleased))
 	if timerStarted {
 		file.WriteString(fmt.Sprintf("Runtime!%d", int(duration.Seconds())))
 	} else {

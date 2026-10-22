@@ -12,14 +12,20 @@
 package runtime
 
 var (
-	constratins Constraint
-	waiting     = newWaitingOps()
+	constraintMain Constraint
+	waiting        = newWaitingOps()
 
 	spawns  = make(map[int][]int)
 	selects = make(map[string][]int)
 
 	replayEnabled = false
 	selectEnabled = false
+)
+
+var (
+	NumberElemConstraint = 0
+	NumberElemClosure    = 0
+	NumberElemReleased   = 0
 )
 
 var (

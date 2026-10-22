@@ -12,6 +12,7 @@ package explanation
 import (
 	"advocate/utils/consts"
 	"advocate/utils/helper"
+	"advocate/utils/types"
 )
 
 // type (bug / diagnostics)
@@ -314,12 +315,15 @@ func GetCodeFromDescription(description string) helper.ResultType {
 // Returns:
 //   - map[bugKeys]string: bug type descriptions
 func getBugTypeDescription(bt helper.ResultType) map[bugKeys]string {
+	args1, args2 := bt.Args()
 	return map[bugKeys]string{
 		crit:        bugCrit[bt],
 		name:        bugNames[bt],
 		bugType:     string(bt),
 		explanation: bugExplanations[bt],
 		class:       bugClass[bt],
+		arg1:        types.CapitalizeFirst(args1),
+		arg2:        types.CapitalizeFirst(args2),
 	}
 }
 

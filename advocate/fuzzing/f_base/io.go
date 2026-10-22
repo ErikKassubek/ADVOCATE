@@ -52,13 +52,12 @@ func WriteMutConstraint(tr *trace.Trace, mut *f_roc.Constraint, first bool) (boo
 	}
 
 	closure := f_roc.CalcuateStableClosure(*mut)
-	mut.Merge(closure)
 
 	// write the active map to a "replay_constratins.log"
 	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
-		WriteConstraint(fuzzingTracePath, tr, mut)
+		WriteConstraint(fuzzingTracePath, tr, mut, closure)
 	} else {
-		WriteConstraint(fuzzingTracePath, tr, mut)
+		WriteConstraint(fuzzingTracePath, tr, mut, closure)
 	}
 
 	muta := Mutation{MutType: MutPiType, MutPie: NumberWrittenMutations}
@@ -165,7 +164,9 @@ func GetPath(path string) string {
 // Parameter
 //   - fuzzingTracePath string: path to the trace folder
 //   - mut *chain: chain to write
-func writeConstraintOrder(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.Constraint) {
+//   - mutLen int: number of elements in mutation (without closure)
+//   - closureLen int: number of elements in closure
+func writeConstraintOrder(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.Constraint, mutLen, closureLen int) {
 	constraintPath := filepath.Join(fuzzingTracePath, paths.NameReplayConstraints)
 
 	f, err := os.Create(constraintPath)
@@ -175,6 +176,8 @@ func writeConstraintOrder(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.C
 	}
 
 	defer f.Close()
+
+	f.WriteString(fmt.Sprintf("%d:%d\n", mutLen, closureLen))
 
 	// find the counter for all elements in the mut
 	mutCounter := make(map[trace.Element]int)
@@ -237,8 +240,16 @@ func writeForkMap(fuzzingTracePath string, tr *trace.Trace) {
 
 }
 
-func WriteConstraint(tracePath string, tr *trace.Trace, mut *f_roc.Constraint) {
-	writeConstraintOrder(tracePath, tr, mut)
+func WriteConstraint(tracePath string, tr *trace.Trace, mut, closure *f_roc.Constraint) {
+	mutLen := mut.Len()
+	closureLen := 0
+
+	if closure != nil {
+		closure.Len()
+		mut.Merge(closure)
+	}
+
+	writeConstraintOrder(tracePath, tr, mut, mutLen, closureLen)
 	writeForkMap(tracePath, tr)
 }
 

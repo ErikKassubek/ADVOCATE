@@ -235,7 +235,7 @@ func (this *Trace) GetNotReturned(onlyNonBlocked bool) []int {
 //   - *TraceElement: The element
 //   - error: An error if the element does not exist
 func (this *Trace) GetTraceElementFromBugArg(bugArg string) (Element, error) {
-	splitArg := strings.Split(bugArg, ":")
+	splitArg := strings.Split(bugArg, "#")
 
 	if splitArg[0] != "T" {
 		return nil, errors.New("Bug argument is not a trace element (does not start with T): " + bugArg)

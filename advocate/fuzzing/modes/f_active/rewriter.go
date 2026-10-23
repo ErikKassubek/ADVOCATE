@@ -11,7 +11,7 @@
 package f_active
 
 import (
-	"advocate/trace"
+	"advocate/fuzzing/f_roc"
 	"advocate/utils/helper"
 	"advocate/utils/results/bugs"
 	"errors"
@@ -28,9 +28,11 @@ import (
 //   - bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)
 //   - code: expected exit code
 //   - error: An error if the trace could not be created
-func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.ResultType][]string) (rewriteNeeded bool, code int, err error) {
-	rewriteNeeded = false
+func RewriteTrace(bug bugs.Bug, rewrittenBugs map[helper.ResultType][]string) (constr *f_roc.Constraint, code int, err error) {
 	code = helper.ExitCodeNone
+
+	constr = nil
+
 	switch bug.Type {
 
 	// ACTUAL BUGS
@@ -54,27 +56,21 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		err = errors.New("Rewriting trace for concurrent receive is not possible")
 	case helper.PSendOnClosed:
 		code = helper.ExitCodeSendClose
-		rewriteNeeded = true
-		err = rewriteClosedChannel(tr, bug)
+		// err = rewriteClosedChannel(tr, bug)  // TODP: rewrite
 	case helper.PRecvOnClosed:
 		code = helper.ExitCodeRecvClose
-		rewriteNeeded = true
-		err = rewriteClosedChannel(tr, bug)
+		// err = rewriteClosedChannel(tr, bug)  // TODO: rewrite
 	case helper.PNegWG:
 		code = helper.ExitCodeNegativeWG
-		rewriteNeeded = true
-		err = rewriteGraph(tr, bug, code)
+		// err = rewriteGraph(tr, bug, code)  // TODO: rewrite
 	case helper.PUnlockBeforeLock:
 		code = helper.ExitCodeUnlockBeforeLock
-		rewriteNeeded = true
-		err = rewriteGraph(tr, bug, code)
+		// err = rewriteGraph(tr, bug, code)  // TODO: rewrite
 	case helper.PCyclicDeadlock:
-		rewriteNeeded = true
-		err = rewriteCyclicDeadlock(tr, bug)
+		constr, err = rewriteCyclicDeadlock(bug) // TODO: rewrite
 	case helper.PMixedDeadlock:
 		code = helper.ExitCodeMixedDeadlock
-		rewriteNeeded = true
-		err = rewriteMixedDeadlock(tr, bug, code)
+		// err = rewriteMixedDeadlock(tr, bug, code)  // TODO: rewrite
 
 	// LEAKS
 	case helper.LUnknown, helper.LChan, helper.LSelect, helper.LNilChan, helper.LMutex, helper.LWaitGroup, helper.LCond:
@@ -86,5 +82,6 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	default:
 		err = errors.New("For the given bug type no trace rewriting is implemented")
 	}
-	return rewriteNeeded, code, err
+
+	return constr, code, err
 }

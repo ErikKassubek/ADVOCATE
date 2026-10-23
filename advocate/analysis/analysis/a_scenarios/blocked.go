@@ -179,8 +179,7 @@ func reportBlocking(routs map[int]struct{}, rt helper.ResultType) {
 	}
 
 	if len(obj) != 0 {
-		results.Result(results.CRITICAL, rt,
-			"Blocked", obj, "", []results.ResultElem{})
+		results.Result(results.CRITICAL, rt, obj, nil)
 	}
 }
 
@@ -229,8 +228,7 @@ func reportLeak(l []int) {
 			}
 		}
 
-		results.Result(results.CRITICAL, leakType, "", []results.ResultElem{
-			objRes}, "", []results.ResultElem{})
+		results.Result(results.CRITICAL, leakType, []results.ResultElem{objRes}, nil)
 
 	}
 }

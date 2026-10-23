@@ -16,6 +16,8 @@ import (
 	"errors"
 )
 
+// TODO: rewrite with constraints and closure
+
 // Given a send/recv on a closed channel, rewrite the trace to make the bug
 // occur. The trace is rewritten as follows:
 // We assume, that the send/recv on the closed channel did not actually occur

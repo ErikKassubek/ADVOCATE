@@ -309,7 +309,6 @@ func (self *instructionWithInfo) sameResource(inst *instructionWithInfo) bool {
 
 }
 
-// TODO: fix
 func (self *instructionWithInfo) addReferenceIndex(iwi *instructionWithInfo, index1, index2 int) {
 	if _, ok := self.Reference[index1]; !ok {
 		self.Reference[index1] = make(map[*instructionWithInfo]map[int]bool)
@@ -347,7 +346,6 @@ func (self *instructionWithInfo) addReferenceIndex(iwi *instructionWithInfo, ind
 	}
 }
 
-// TODO: fix
 func (self *instructionWithInfo) addReferenceAll(iwi *instructionWithInfo) {
 	indices := make(map[int]bool)
 

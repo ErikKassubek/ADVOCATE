@@ -14,6 +14,7 @@ import (
 	"advocate/fuzzing/f_base"
 	"advocate/fuzzing/f_fuzzing"
 	"advocate/utils/command"
+	"advocate/utils/consts"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
@@ -65,7 +66,7 @@ func Run() error {
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoCR
-	if flags.Mode == "fuzzing" && (flags.FuzzingMode == f_base.GFuzz ||
+	if flags.Mode == consts.ModeFuzzing && (flags.FuzzingMode == f_base.GFuzz ||
 		flags.FuzzingMode == f_base.GoPie || flags.FuzzingMode == f_base.GoCR) {
 		flags.Scenarios = "-"
 		flags.OnlyAPanicAndLeak = true
@@ -96,15 +97,20 @@ func Run() error {
 
 	switch flags.Mode {
 	case "analysis":
+		flags.Mode = consts.ModeAnalysis
 		err = modeToolchain(modeMainTest, record, analysis, replay)
 	case "fuzzing":
+		flags.Mode = consts.ModeFuzzing
 		err = modeFuzzing()
 	case "record", "recording", "trace":
+		flags.Mode = consts.ModeRecord
 		flags.DeleteTraces = false
 		err = modeToolchain(modeMainTest, record, !analysis, !replay)
 	case "replay":
+		flags.Mode = consts.ModeReplay
 		err = modeToolchain(modeMainTest, !record, !analysis, replay)
-	// case "static": // TODO: only for testing, when working move into analysis
+		// case "static": // TODO: only for testing, when working move into analysis
+		// flags.Mode = consts.ModeReplay
 	// 	flags.DeleteTraces = false
 	// 	err = modeToolchain(modeMainTest, record, analysis, !replay)
 	// 	err = s_blocking.BuildStaticBlockingAnalysis()
@@ -131,7 +137,7 @@ func Run() error {
 	} else {
 		log.Errorf("%d internal replay timeouts occurred", numberTimeout)
 	}
-	if flags.Mode == "analysis" || flags.Mode == "fuzzing" {
+	if flags.Mode == consts.ModeAnalysis || flags.Mode == consts.ModeFuzzing {
 		if numberTestWithRes == 0 {
 			log.Info("No bugs have been found/indicated")
 		} else {

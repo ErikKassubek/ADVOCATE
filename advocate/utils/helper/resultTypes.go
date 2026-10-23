@@ -266,7 +266,7 @@ func (rt ResultType) Args() (string, string) {
 
 	// recording
 	case RUnknownPanic:
-		return "", ""
+		return "panic", ""
 	case RTimeout:
 		return "", ""
 	}

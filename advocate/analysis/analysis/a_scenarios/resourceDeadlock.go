@@ -378,7 +378,7 @@ func CheckForResourceDeadlock() {
 			return
 		}
 
-		results.Result(results.CRITICAL, helper.PCyclicDeadlock, "stuck", stuckElements, "holding", acquiredElements)
+		results.Result(results.CRITICAL, helper.PCyclicDeadlock, stuckElements, acquiredElements)
 	}
 }
 

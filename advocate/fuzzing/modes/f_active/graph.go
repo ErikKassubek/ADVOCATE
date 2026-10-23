@@ -16,6 +16,8 @@ import (
 	"advocate/utils/results/bugs"
 )
 
+// TODO rewrite with constraints and closure
+
 // Create a new trace for a negative wait group counter (done before add)
 //
 // Parameter:

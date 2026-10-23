@@ -127,7 +127,7 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*a_clock.Vector
 				}
 
 				results.Result(results.WARNING, helper.AConcurrentRecv,
-					"recv", []results.ResultElem{arg1}, "recv", []results.ResultElem{arg2})
+					[]results.ResultElem{arg1}, []results.ResultElem{arg2})
 			}
 		}
 	}

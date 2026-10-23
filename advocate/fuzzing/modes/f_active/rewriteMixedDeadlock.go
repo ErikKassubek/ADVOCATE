@@ -6,6 +6,8 @@
 //
 // License: BSD-3-Clause
 
+// TODO: rewrite with constraints and closure
+
 package f_active
 
 import (

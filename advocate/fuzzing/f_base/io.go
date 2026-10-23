@@ -51,7 +51,7 @@ func WriteMutConstraint(tr *trace.Trace, mut *f_roc.Constraint, first bool) (boo
 		return false, err
 	}
 
-	closure := f_roc.CalcuateStableClosure(*mut)
+	closure := f_roc.CalcuateStableClosure(mut)
 
 	// write the active map to a "replay_constratins.log"
 	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
@@ -166,13 +166,13 @@ func GetPath(path string) string {
 //   - mut *chain: chain to write
 //   - mutLen int: number of elements in mutation (without closure)
 //   - closureLen int: number of elements in closure
-func writeConstraintOrder(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.Constraint, mutLen, closureLen int) {
+func writeConstraintOrder(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.Constraint, mutLen, closureLen int) error {
 	constraintPath := filepath.Join(fuzzingTracePath, paths.NameReplayConstraints)
 
 	f, err := os.Create(constraintPath)
 	if err != nil {
-		log.Error("Failed to create fuzzing trace folder: ", err.Error())
-		return
+		log.Error("Failed to create constraint file: ", err.Error())
+		return err
 	}
 
 	defer f.Close()
@@ -211,9 +211,11 @@ func writeConstraintOrder(fuzzingTracePath string, tr *trace.Trace, mut *f_roc.C
 		key := fmt.Sprintf("%d:%s:%d:%s\n", elem.RoutineID(), elem.Pos(), mutCounter[elem], info)
 		f.WriteString(key)
 	}
+
+	return nil
 }
 
-func writeForkMap(fuzzingTracePath string, tr *trace.Trace) {
+func writeForkMap(fuzzingTracePath string, tr *trace.Trace) error {
 	tree := tr.ForkTree()
 
 	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayForkTree)
@@ -221,7 +223,7 @@ func writeForkMap(fuzzingTracePath string, tr *trace.Trace) {
 	f, err := os.Create(activePath)
 	if err != nil {
 		log.Error("Failed to create fuzzing trace folder: ", err.Error())
-		return
+		return err
 	}
 
 	defer f.Close()
@@ -238,9 +240,11 @@ func writeForkMap(fuzzingTracePath string, tr *trace.Trace) {
 		f.WriteString(key)
 	}
 
+	return nil
+
 }
 
-func WriteConstraint(tracePath string, tr *trace.Trace, mut, closure *f_roc.Constraint) {
+func WriteConstraint(tracePath string, tr *trace.Trace, mut, closure *f_roc.Constraint) error {
 	mutLen := mut.Len()
 	closureLen := 0
 
@@ -249,8 +253,20 @@ func WriteConstraint(tracePath string, tr *trace.Trace, mut, closure *f_roc.Cons
 		mut.Merge(closure)
 	}
 
-	writeConstraintOrder(tracePath, tr, mut, mutLen, closureLen)
-	writeForkMap(tracePath, tr)
+	log.Debug2("WRITE: ", tracePath)
+
+	err := os.MkdirAll(tracePath, 0755)
+	if err != nil {
+		log.Error("Failed to create constraint folder: ", err.Error())
+		return err
+	}
+
+	err = writeConstraintOrder(tracePath, tr, mut, mutLen, closureLen)
+	if err != nil {
+		return err
+	}
+	err = writeForkMap(tracePath, tr)
+	return err
 }
 
 func getRoutPos(elem trace.Element) string {

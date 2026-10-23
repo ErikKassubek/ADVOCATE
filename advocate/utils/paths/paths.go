@@ -24,6 +24,7 @@ import (
 
 // names
 const (
+	NameTrace             = "advocateTrace"
 	NameResult            = "advocateResult"
 	NameOutput            = "output.log"
 	NameFuzzingData       = "fuzzingData.log"

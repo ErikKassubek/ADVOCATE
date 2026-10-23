@@ -59,8 +59,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 					Line:       ch.Line(),
 				}
 
-				results.Result(results.CRITICAL, helper.PSendOnClosed,
-					"send", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
+				results.Result(results.CRITICAL, helper.PSendOnClosed, []results.ResultElem{arg1}, []results.ResultElem{arg2})
 			}
 		}
 	}
@@ -110,10 +109,10 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 
 	if actual {
 		results.Result(results.CRITICAL, helper.ASendOnClosed,
-			"send", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
+			[]results.ResultElem{arg1}, []results.ResultElem{arg2})
 	} else {
 		results.Result(results.CRITICAL, helper.PSendOnClosed,
-			"send", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
+			[]results.ResultElem{arg1}, []results.ResultElem{arg2})
 	}
 
 }
@@ -153,6 +152,6 @@ func CheckForClosedOnClosed(ch *trace.ElementChannel) {
 		}
 
 		results.Result(results.CRITICAL, helper.ACloseOnClosed,
-			"close", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
+			[]results.ResultElem{arg1}, []results.ResultElem{arg2})
 	}
 }

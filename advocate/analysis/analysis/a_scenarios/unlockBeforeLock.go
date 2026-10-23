@@ -147,8 +147,7 @@ func CheckForUnlockBeforeLock() {
 				})
 			}
 
-			results.Result(results.CRITICAL, helper.PUnlockBeforeLock, "unlock",
-				args1, "lock", args2)
+			results.Result(results.CRITICAL, helper.PUnlockBeforeLock, args1, args2)
 		}
 	}
 }

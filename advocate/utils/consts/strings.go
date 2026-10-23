@@ -1,6 +1,8 @@
 package consts
 
-import "path/filepath"
+import (
+	"path/filepath"
+)
 
 const (
 	ItExitedWithTheFollowingCode                   = "It exited with the following code: "
@@ -16,7 +18,15 @@ const (
 	Confirmed = "Confirmed"
 	Runtime   = "Runtime"
 
+	ModeRecord   = "record"
+	ModeReplay   = "replay"
+	ModeFuzzing  = "fuzzing"
+	ModeAnalysis = "analysis"
+	ModeGui      = "gui"
+
 	ConfirmedTheBug = "confirmed the bug"
+
+	RewrittenConsts = "rewrittenConstraints"
 
 	PosSep = "#"
 

@@ -12,6 +12,7 @@ package toolchain
 
 import (
 	"advocate/utils/command"
+	"advocate/utils/consts"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -134,10 +135,10 @@ func runWorkflowMain(
 
 	// Apply analyzer
 	if runAnalysis {
-		analyzerOutput := filepath.Join(paths.ProgDir, "advocateTrace")
+		analyzerOutput := filepath.Join(paths.ProgDir, paths.NameTrace)
 
 		err = runAnalyzer(analyzerOutput, paths.NameResultReadable, paths.NameResultMachine,
-			"rewrittenTrace", fuzzing, "", "main")
+			consts.RewrittenConsts, fuzzing, "", "main")
 
 		if err != nil {
 			return 0, 0, err
@@ -149,7 +150,7 @@ func runWorkflowMain(
 		log.Info("Run replay")
 		// Find rewrittenTrace directories
 		if runAnalysis {
-			rewrittenTraces, err = filepath.Glob(filepath.Join(paths.ProgDir, "rewrittenTrace*"))
+			rewrittenTraces, err = filepath.Glob(filepath.Join(paths.ProgDir, consts.RewrittenConsts+"*"))
 			if err != nil {
 				return 0, 0, fmt.Errorf("Error finding rewritten traces: %v", err)
 			}
@@ -163,7 +164,7 @@ func runWorkflowMain(
 		for _, trace := range rewrittenTraces {
 			traceNum := extractTraceNum(trace)
 			fmt.Printf("Apply replay header for file f %s and trace %s\n", paths.Prog, traceNum)
-			buildFlags, err := buildArgsMain(paths.Prog, true, traceNum, false, fuzzing, fuzzingTrace, false)
+			buildFlags, err := buildArgsMain(paths.Prog, true, traceNum, true, fuzzing, fuzzingTrace, false)
 			if err != nil {
 				return 0, 0, err
 			}
@@ -179,8 +180,6 @@ func runWorkflowMain(
 			log.Info("Run program for replay")
 			execPath := paths.MakePathLocal(flags.ExecName)
 			command.RunCommand(origStdout, origStderr, command.NoTimeout, execPath)
-
-			fmt.Printf("Remove replay header from %s\n", paths.Prog)
 		}
 		timer.Stop(timer.Replay)
 	}

@@ -525,8 +525,7 @@ func mdReportCandidate(
 	results.Result(
 		results.CRITICAL,
 		helper.PMixedDeadlock,
-		"stuck", []results.ResultElem{stuckElement},
-		"cycle", cycleElements,
+		[]results.ResultElem{stuckElement}, cycleElements,
 	)
 }
 

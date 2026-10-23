@@ -10,6 +10,7 @@
 package toolchain
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -31,7 +32,7 @@ var LastMovedTraceDest = ""
 //   - total bool: merge all already created logs into total log, for fuzzing
 func collect(progPath, packagePath, destination string, total bool) {
 	filesToMove := []string{
-		"advocateTrace",
+		paths.NameTrace,
 		paths.NameResultMachine,
 		paths.NameResultReadable,
 		paths.NameOutput,
@@ -39,6 +40,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 	pattersToMove := []string{
 		"rewrittenTrace*",
+		consts.RewrittenConsts + "*",
 	}
 
 	logsToCollect := []string{
@@ -100,7 +102,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 		}
 		dest := filepath.Join(destination, file)
 
-		if file == "advocateTrace" {
+		if file == paths.NameTrace {
 			movedTraces++
 			dest = filepath.Join(pathTraces, file+"_"+strconv.Itoa(movedTraces))
 			LastMovedTraceDest = dest

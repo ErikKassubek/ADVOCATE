@@ -167,14 +167,14 @@ func (this TraceElementResult) isInvalid() bool {
 // Parameter:
 //   - level resultLevel: level of the message (critical, warning, ...)
 //   - resType ResultType: type of bug that was found
-//   - argType1 string: description of the type of elements in arg1
 //   - arg1 []ResultElem]: elements directly involved in the bug (e.g. in send on closed the send)
-//   - argType2 string: description of the type of elements in arg2
-//   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
-func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
+//   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close), set to nil if no elem
+func Result(level resultLevel, resType helper.ResultType, arg1 []ResultElem, arg2 []ResultElem) {
 	if filterInvalidResults(resType, arg1) {
 		return
 	}
+
+	argType1, argType2 := resType.Args()
 
 	// if flags.FuzzingMode == "Guided" && !resType.IsActual() {
 	// 	return
@@ -222,7 +222,7 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	}
 
 	resultReadable += "\n"
-	if len(arg2) > 0 {
+	if arg2 != nil || len(arg2) == 0 {
 		resultReadable += "\t" + argType2 + ": "
 		resultMachine += ","
 		for i, arg := range arg2 {

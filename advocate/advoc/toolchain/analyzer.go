@@ -12,6 +12,8 @@ package toolchain
 import (
 	"advocate/analysis/a_analysis"
 	"advocate/analysis/a_base"
+	"advocate/fuzzing/f_base"
+	"advocate/fuzzing/f_roc"
 	"advocate/fuzzing/modes/f_active"
 	"advocate/utils/consts"
 	"advocate/utils/control"
@@ -193,26 +195,23 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return false, nil
 	}
 
-	traceCopy, err := a_base.CopyMainTrace()
+	constr, code, err := f_active.RewriteTrace(bug, *rewrittenTrace)
+
 	if err != nil {
-		return false, err
+		return constr != nil, err
 	}
 
-	rewriteNeeded, code, err := f_active.RewriteTrace(&traceCopy, bug, *rewrittenTrace)
+	closure := f_roc.CalcuateStableClosure(constr)
 
+	err = f_base.WriteConstraint(newTrace, &a_base.MainTrace, constr, closure)
 	if err != nil {
-		return rewriteNeeded, err
-	}
-
-	err = io.WriteTrace(&traceCopy, newTrace, true, true)
-	if err != nil {
-		return rewriteNeeded, err
+		return constr != nil, err
 	}
 
 	err = io.WriteRewriteInfoFile(newTrace, bug, code, resultIndex)
 	if err != nil {
-		return rewriteNeeded, err
+		return constr != nil, err
 	}
 
-	return rewriteNeeded, nil
+	return constr != nil, nil
 }

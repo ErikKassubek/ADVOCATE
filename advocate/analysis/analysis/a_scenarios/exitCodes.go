@@ -42,7 +42,7 @@ func RunAnalysisOnExitCodes(all bool) {
 			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.ACloseOnClosed,
-			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
+			[]results.ResultElem{arg1}, nil)
 		a_base.BugWasFound = true
 	case helper.ExitCodeCloseNil: // close on nil
 		file, line, err := trace.PosFromPosString(a_base.ExitPos)
@@ -58,7 +58,7 @@ func RunAnalysisOnExitCodes(all bool) {
 			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.ACloseOnNilChannel,
-			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
+			[]results.ResultElem{arg1}, nil)
 		a_base.BugWasFound = true
 	case helper.ExitCodeNegativeWG: // negative wg counter
 		file, line, err := trace.PosFromPosString(a_base.ExitPos)
@@ -74,7 +74,7 @@ func RunAnalysisOnExitCodes(all bool) {
 			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.ANegWG,
-			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
+			[]results.ResultElem{arg1}, nil)
 		a_base.BugWasFound = true
 	case helper.ExitCodeUnlockBeforeLock: // unlock of not locked mutex
 		file, line, err := trace.PosFromPosString(a_base.ExitPos)
@@ -90,7 +90,7 @@ func RunAnalysisOnExitCodes(all bool) {
 			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.AUnlockOfNotLockedMutex,
-			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
+			[]results.ResultElem{arg1}, nil)
 		a_base.BugWasFound = true
 	case helper.ExitCodePanic: // unknown panic
 		file, line, err := trace.PosFromPosString(a_base.ExitPos)
@@ -106,11 +106,11 @@ func RunAnalysisOnExitCodes(all bool) {
 			Line:       line,
 		}
 		results.Result(results.CRITICAL, helper.RUnknownPanic,
-			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
+			[]results.ResultElem{arg1}, nil)
 		a_base.BugWasFound = true
 	case helper.ExitCodeTimeout: // timeout
 		results.Result(results.CRITICAL, helper.RTimeout,
-			"", []results.ResultElem{}, "", []results.ResultElem{})
+			[]results.ResultElem{}, nil)
 	}
 	if all {
 		if a_base.ExitCode == helper.ExitCodeSendClose { // send on closed
@@ -127,7 +127,7 @@ func RunAnalysisOnExitCodes(all bool) {
 				Line:       line,
 			}
 			results.Result(results.CRITICAL, helper.ASendOnClosed,
-				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
+				[]results.ResultElem{arg1}, nil)
 			a_base.BugWasFound = true
 		}
 	}

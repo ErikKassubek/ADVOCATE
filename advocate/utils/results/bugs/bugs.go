@@ -101,97 +101,57 @@ func (this Bug) GetBugString() string {
 //   - string: The bug as a string
 func (this Bug) ToString() string {
 	typeStr := ""
-	arg1Str := ""
-	arg2Str := ""
+	arg1Str, arg2Str := this.Type.Args()
+
 	switch this.Type {
 	case helper.RUnknownPanic:
 		typeStr = "Unknown Panic:"
-		arg1Str = "Panic: "
 	case helper.RTimeout:
 		typeStr = "Timeout"
 	case helper.ASendOnClosed:
 		typeStr = "Actual Send on Closed Channel:"
-		arg1Str = "send: "
-		arg2Str = "close: "
 	case helper.ARecvOnClosed:
 		typeStr = "Actual Receive on Closed Channel:"
-		arg1Str = "recv: "
-		arg2Str = "close: "
 	case helper.ACloseOnClosed:
 		typeStr = "Actual Close on Closed Channel:"
-		arg1Str = "close: "
-		arg2Str = "close: "
 	case helper.ACloseOnNilChannel:
 		typeStr = "Actual close on nil channel:"
-		arg1Str = "close: "
-		arg2Str = "close: "
 	case helper.AConcurrentRecv:
 		typeStr = "Concurrent Receive:"
-		arg1Str = "recv: "
-		arg2Str = "recv: "
 	case helper.ABlocking:
 		typeStr = "Blocking routine:"
-		arg1Str = "blocking: "
 	case helper.ADeadlock:
 		typeStr = "Deadlock:"
-		arg1Str = "blocking: "
 	case helper.ANegWG:
 		typeStr = "Actual negative Wait Group:"
-		arg1Str = "done: "
 	case helper.AUnlockOfNotLockedMutex:
 		typeStr = "Actual unlock of not locked mutex:"
-		arg1Str = "unlock:"
 	case helper.PSendOnClosed:
 		typeStr = "Possible send on closed channel:"
-		arg1Str = "send: "
-		arg2Str = "close: "
 	case helper.PRecvOnClosed:
 		typeStr = "Possible receive on closed channel:"
-		arg1Str = "recv: "
-		arg2Str = "close: "
 	case helper.PNegWG:
 		typeStr = "Possible negative waitgroup counter:"
-		arg1Str = "done: "
-		arg2Str = "add: "
 	case helper.PUnlockBeforeLock:
 		typeStr = "Possible unlock of a not locked mutex:"
-		arg1Str = "unlocks: "
-		arg2Str = "locks: "
 	case helper.PCyclicDeadlock:
 		typeStr = "Possible cyclic deadlock:"
-		arg1Str = "blocked: "
-		arg2Str = "acquired: "
 	case helper.PMixedDeadlock:
 		typeStr = "Possible Mixed Deadlock:"
-		arg1Str = "send/close: "
-		arg2Str = "recv: "
 	case helper.LUnknown:
 		typeStr = "Leak on routine"
-		arg1Str = "elem: "
 	case helper.LChan:
 		typeStr = "Leak on a channel:"
-		arg1Str = "elem: "
 	case helper.LNilChan:
 		typeStr = "Leak on nil channel:"
-		arg1Str = "elem: "
 	case helper.LSelect:
 		typeStr = "Leak on select:"
-		arg1Str = "elem: "
 	case helper.LMutex:
 		typeStr = "Leak on mutex:"
-		arg1Str = "elem: "
-		arg2Str = "last: "
 	case helper.LWaitGroup:
 		typeStr = "Leak on wait group:"
-		arg1Str = "elem: "
 	case helper.LCond:
 		typeStr = "Leak on conditional variable:"
-		arg1Str = "elem: "
-	// case helper.SNotExecutedWithPartner:
-	// 	typeStr = "Not executed select with potential partner"
-	// 	arg1Str = "select: "
-	// 	arg2Str = "partner: "
-
 	default:
 		log.Error("Unknown bug type in toString: " + string(this.Type))
 		return ""
